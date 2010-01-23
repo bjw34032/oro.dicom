@@ -1,0 +1,13 @@
+Package: oro.dicom
+Version: 0.2.0
+Date: 2009-8-30
+Title: Rigorous - DICOM Input / Output
+Author: Brandon Whitcher
+Maintainer: Brandon Whitcher <bjw34032@users.sourceforge.net>
+Depends: R (>= 2.0.0)
+ZipData: no
+Description: Data input/output functions for data that conforms to the 
+  Digital Imaging and Communications in Medicine (DICOM) Standard, part
+  of the Rigorous bundle.
+License: BSD
+URL: http://oro.us.com
