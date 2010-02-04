@@ -1,0 +1,78 @@
+
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "oro.dicom"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('oro.dicom')
+> 
+> assign(".oldSearch", search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("dec2base")
+> ### * dec2base
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dec2base
+> ### Title: Convert Decimal to Base N Number in String
+> ### Aliases: dec2base dec2hex
+> ### Keywords: misc
+> 
+> ### ** Examples
+> 
+> x <- dec2base(23, 2)
+> print(x) 
+[1] "10111"
+> 
+> 
+> 
+> cleanEx()
+> nameEx("dicom_info")
+> ### * dicom_info
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dicomInfo
+> ### Title: Read Single DICOM File
+> ### Aliases: dicomInfo dicom.fields dicom.VRfields
+> ### Keywords: file
+> 
+> ### ** Examples
+> 
+> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> 
+> x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  3.581 0.243 9.031 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

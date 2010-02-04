@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{dicomSeparate}
 \alias{dicomSeparate}
 \title{Read All DICOM Files in a Directory}
@@ -6,15 +11,20 @@
   recorded.
 }
 \usage{
-dicomSeparate(path, debug=TRUE)
+dicomSeparate(path, debug=TRUE, ...)
 }
 \arguments{
   \item{path}{Path name to the DICOM directory.}
   \item{debug}{Flag to provide limited progress information.}
+  \item{...}{Arguments to be passed to \code{dicomInfo}.}
 }
 \details{
+  ...
 }
 \value{
+  A list structure with two major components:
+  \item{img}{All images associated with the DICOM directory.}
+  \item{hdr}{All header files associated with the DICOM directory.}
 }
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -24,5 +34,5 @@ dicomSeparate(path, debug=TRUE)
   \code{\link{dicomInfo}}
 }
 %\examples{}
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{file}

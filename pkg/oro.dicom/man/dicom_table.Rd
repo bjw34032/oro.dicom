@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{dicomTable}
 \alias{dicomTable}
 \title{Construct Data Frame from DICOM Headers}
@@ -31,5 +36,5 @@ dicomTable(hdrs, fields, numeric=rep(TRUE, length(fields)))
   \code{\link{extractHeader}}
 }
 %\examples{}
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{misc}

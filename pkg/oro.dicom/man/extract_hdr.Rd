@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{extractHeader}
 \alias{extractHeader}
 \title{Extract Single Field from DICOM Headers}
@@ -31,5 +36,5 @@ extractHeader(hdrs, string, numeric=TRUE, names=FALSE)
   \code{\link{dicomInfo}}
 }
 %\examples{}
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{misc}

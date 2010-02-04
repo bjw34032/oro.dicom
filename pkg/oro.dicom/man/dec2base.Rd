@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{dec2base}
 \alias{dec2base}
 \alias{dec2hex}
@@ -21,7 +26,7 @@ dec2hex(n, len=0)
   This function converts the nonnegative integer \code{n} to the
   specified base.  \code{n} must be a nonnegative integer smaller than
   $2^52$, \code{base} must be an integer between 2 and 36 and \code{len}
-  suggests the lengt of the character string.
+  suggests the length of the character string.
 }
 %\references{}
 %\seealso{}
@@ -29,5 +34,5 @@ dec2hex(n, len=0)
 x <- dec2base(23, 2)
 print(x) 
 }
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{misc}
