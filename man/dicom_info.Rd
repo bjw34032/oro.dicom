@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{dicomInfo}
 \alias{dicomInfo}
 \alias{dicom.fields}
@@ -9,7 +14,7 @@
 }
 \usage{
 dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
-          DICM = TRUE, warn=-1)
+          DICM = TRUE, warn=-1, verbose = FALSE)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -22,10 +27,13 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     (default = \code{TRUE}).}
   \item{warn}{is a number to regulate the display of warnings (default =
     -1).  See \code{options} for more details.}
+  \item{verbose}{}
 }
 \details{
+  ...
 }
 \value{
+  List.
 }
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -36,11 +44,11 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   \code{\link{dicomSeparate}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="DICOM")[1])
-image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 
-x <- dicomInfo(system.file("dcm/Spine1.dcm", package="DICOM")[1])
-image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 }
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{file}

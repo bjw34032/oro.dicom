@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{writeDicomHeader}
 \alias{writeDicomHeader}
 \title{Write DICOM Table to ASCII File}
@@ -26,5 +31,5 @@ writeDicomHeader(dtable, filename, ...)
   \code{\link{write.table}}
 }
 %\examples{}
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{file}

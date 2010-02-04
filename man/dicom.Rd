@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{DICOM Lookup Tables}
 \alias{dicom.fields.data}
 \title{Lookup Tables for DICOM Header Information}

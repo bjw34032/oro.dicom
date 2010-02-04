@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{str2time}
 \alias{str2time}
 \alias{str2date}
@@ -8,12 +13,13 @@
   DICOM date entry (DA) is converted into a simple alternative format.
 }
 \usage{
-str2time(tt)
-str2date(dd)
+str2time(tt, format.out = "%02i:%02i:%08.5f")
+str2date(dd, format.in = "%Y%m%d", format.out = "%d %b %Y")
 }
 \arguments{
   \item{tt}{TM field from a DICOM header.}
   \item{dd}{DA field from a DICOM header.}
+  \item{format.in,format.out}{Appropriate formatting of input or output.}
 }
 \details{
   DICOM \dQuote{TM} format consists of a string of characters of the
@@ -69,5 +75,5 @@ str2date(dd)
   \code{\link{dicomInfo}}
 }
 %\examples{}
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{misc}
