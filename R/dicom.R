@@ -33,7 +33,7 @@
 ##
 
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, warn=-1, verbose=FALSE) {
+                      DICM=TRUE, warn=-1, debug=FALSE) {
   ##
   ## "The default DICOM Transfer Syntax, which shall be supported by
   ## all AEs, uses Little Endian encoding and is specified in Annex
@@ -141,9 +141,11 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   oldwarn <- options()$warn
   options(warn=warn)
   ## Some shortcuts...
-  dcm.group <- dicom.fields()$group # [, "group"]
-  dcm.element <- dicom.fields()$element # [, "element"]
-  VRcode <- dicom.VRfields()$code # [, "code"]
+  data("dicom.dic")
+  dcm.group <- dicom.dic$group # [, "group"]
+  dcm.element <- dicom.dic$element # [, "element"]
+  data("dicom.VR")
+  VRcode <- dicom.VR$code # [, "code"]
   ## Open connection
   fid <- file(fname, "rb")
   ## First 128 bytes are not used
@@ -162,21 +164,21 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
-    pixel.data <- ifelse(group %in% "7FE0" & element %in% "0010", TRUE, FALSE)
+    pixel.data <- ifelse(group == "7FE0" & element == "0010", TRUE, FALSE)
+    index <- dcm.group %in% group & dcm.element %in% element
     vrstr <- readChar(fid, n=2)
     if (! vrstr %in% VRcode) {
       ## Implicit VR (see diagram above)
       implicit <- TRUE
       seek(fid, where=seek(fid) - 2) # go back two bytes
-      index <- dcm.group %in% group & dcm.element %in% element
-      vrstr <- dicom.fields()$code[index] # VR string from (group,element)
+      ## index <- dcm.group %in% group & dcm.element %in% element
+      vrstr <- dicom.dic$code[index] # VR string from (group,element)
       length <- readBin(fid, integer(), size=4, endian=endian) # length
     }
-    index <- VRcode %in% vrstr
-    if (any(index)) {
-      VR <- dicom.VRfields()[index, ]
+    if (any(VRindex <- VRcode %in% vrstr)) {
+      VR <- dicom.VR[VRindex, ]
     } else {
-      VR <- dicom.VRfields()[VRcode %in% "UN", ]
+      VR <- dicom.VR[VRcode %in% "UN", ]
     }
     if (pixel.data) {
       skip <- readBin(fid, integer(), size=2, endian=endian)
@@ -199,11 +201,10 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                     SQ = sequence.header(fid, endian),
                     null.header(VR, group, element, fid, endian))
     }
-    index <- dcm.group %in% group & dcm.element %in% element
-    name <- ifelse(any(index), dicom.fields()$name[index], "Unknown")
+    name <- ifelse(any(index), dicom.dic$name[index], "Unknown")
     hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
                         out$value))
-    if (verbose) {
+    if (debug) {
       cat("", seek(fid), group, element, name, VR$code, out$length,
           out$value, sep="\t", fill=TRUE)
     }
@@ -218,9 +219,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 
   nr <- as.numeric(hdr$value[hdr$name %in% "Rows"])
   nc <- as.numeric(hdr$value[hdr$name %in% "Columns"])
-  img <- matrix(img[1:(nc*nr)], nc, nr)
+  img <- t(matrix(img[1:(nc*nr)], nc, nr))
   if (flipud) {
-    img <- img[, nr:1]
+    img <- img[nr:1,]
   }
 
   ## Warnings?
@@ -228,19 +229,19 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   list(hdr=hdr, img=img)
 }
 
-dicomSeparate <- function(path, debug=TRUE, ...) {
+dicomSeparate <- function(path, verbose=FALSE, counter=100, ...) {
   filenames <- system(paste("ls", path), intern=TRUE)
   nfiles <- length(filenames)
   headers <- images <- vector("list", nfiles)
   names(images) <- names(headers) <- sub("\\.", "", filenames)
-  for(i in 1:nfiles) {
-    if(debug && (i %% 50 == 0))
+  for (i in 1:nfiles) {
+    if (verbose && (i %% counter == 0))
       cat("  ", i, "files processed...", fill=TRUE)
     dcm <- dicomInfo(paste(path, filenames[i], sep="/"), ...)
     images[[i]] <- dcm$img
     headers[[i]] <- dcm$hdr
   }
-  list(hdr = headers, img = images)
+  list(hdr=headers, img=images)
 }
 
 dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {

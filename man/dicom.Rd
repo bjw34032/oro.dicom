@@ -3,14 +3,16 @@
 %
 % $Id: $
 
-\name{DICOM Lookup Tables}
-\alias{dicom.fields.data}
+\name{DICOM Dictionary}
+\alias{dicom.dic}
+\alias{dicom.VR}
 \title{Lookup Tables for DICOM Header Information}
 \description{
   Lookup tables for DICOM header information.
 }
 \usage{
-data(dicom.fields.data)
+data(dicom.dic)
+data(dicom.VR)
 }
 % \format{}
 \source{

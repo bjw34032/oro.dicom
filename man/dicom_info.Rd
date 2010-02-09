@@ -5,8 +5,6 @@
 
 \name{dicomInfo}
 \alias{dicomInfo}
-\alias{dicom.fields}
-\alias{dicom.VRfields}
 \title{Read Single DICOM File}
 \description{
   All information, both header and image, is read into a list structure
@@ -14,7 +12,7 @@
 }
 \usage{
 dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
-          DICM = TRUE, warn=-1, verbose = FALSE)
+          DICM = TRUE, warn=-1, debug = FALSE)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -27,7 +25,7 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     (default = \code{TRUE}).}
   \item{warn}{is a number to regulate the display of warnings (default =
     -1).  See \code{options} for more details.}
-  \item{verbose}{}
+  \item{debug}{}
 }
 \details{
   ...
