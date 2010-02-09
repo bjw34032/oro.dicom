@@ -11,11 +11,12 @@
   recorded.
 }
 \usage{
-dicomSeparate(path, debug=TRUE, ...)
+dicomSeparate(path, verbose = FALSE, counter = 100, ...)
 }
 \arguments{
   \item{path}{Path name to the DICOM directory.}
-  \item{debug}{Flag to provide limited progress information.}
+  \item{verbose}{Flag to provide limited progress information.}
+  \item{counter}{}
   \item{...}{Arguments to be passed to \code{dicomInfo}.}
 }
 \details{
