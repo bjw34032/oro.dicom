@@ -1,0 +1,28 @@
+code,name,bytes,fixed
+AE,ApplicationEntity,16,0
+AS,AgeString,4,1
+AT,AttributeTag,4,1
+CS,CodeString,16,0
+DA,Date,8,1
+DS,DecimalString,16,0
+DT,DateTime,26,0
+FL,FloatingPointSingle,4,1
+FD,FloatingPointDouble,8,1
+IS,IntegerString,12,0
+LO,LongStrong,64,0
+LT,LongText,10240,0
+OB,OtherByte String,0,0
+OW,OtherWord String,0,0
+PN,PersonName,64,0
+SH,ShortString,16,0
+SL,SignedLong,4,1
+SQ,SequenceOfItems,0,0
+SS,SignedShort,2,1
+ST,ShortText,1024,0
+TM,Time,16,0
+UI,UniqueIdentifier UID,64,0
+UL,UnsignedLong,4,1
+UN,Unknown,0,0
+US,UnsignedShort,2,1
+UT,UnlimitedText,0,0
+
