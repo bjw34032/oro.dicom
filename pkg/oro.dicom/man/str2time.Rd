@@ -13,8 +13,8 @@
   DICOM date entry (DA) is converted into a simple alternative format.
 }
 \usage{
-str2time(tt, format.out = "%02i:%02i:%08.5f")
-str2date(dd, format.in = "%Y%m%d", format.out = "%d %b %Y")
+str2time(tt, format.out)
+str2date(dd, format.in, format.out)
 }
 \arguments{
   \item{tt}{TM field from a DICOM header.}
