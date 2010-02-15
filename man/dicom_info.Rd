@@ -25,7 +25,8 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     (default = \code{TRUE}).}
   \item{warn}{is a number to regulate the display of warnings (default =
     -1).  See \code{options} for more details.}
-  \item{debug}{}
+  \item{debug}{is a logical variable (default = \code{FALSE}) that
+    regulates to display of intermediate processing steps.}
 }
 \details{
   ...

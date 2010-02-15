@@ -41,5 +41,6 @@ str2time <- function(tt, format.out="%02i:%02i:%08.5f") {
   list(txt = sprintf(format.out, hh, mm, ss), time = 3600*hh + 60*mm + ss)
 }
   
-str2date <- function(dd, format.in="%Y%m%d", format.out="%d %b %Y")
+str2date <- function(dd, format.in="%Y%m%d", format.out="%d %b %Y") {
   format(as.Date(dd, format.in), format.out)
+}

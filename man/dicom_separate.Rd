@@ -16,7 +16,8 @@ dicomSeparate(path, verbose = FALSE, counter = 100, ...)
 \arguments{
   \item{path}{Path name to the DICOM directory.}
   \item{verbose}{Flag to provide limited progress information.}
-  \item{counter}{}
+  \item{counter}{Frequency of updating the diaplay about the progress of
+    file processing.}
   \item{...}{Arguments to be passed to \code{dicomInfo}.}
 }
 \details{
