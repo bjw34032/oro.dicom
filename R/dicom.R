@@ -234,8 +234,16 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   list(hdr=hdr, img=img)
 }
 
-dicomSeparate <- function(path, verbose=FALSE, counter=100, ...) {
-  filenames <- system(paste("ls", path), intern=TRUE)
+dicomSeparate <- function(path, verbose=FALSE, counter=100,
+                          recursive=TRUE, exclude=NULL, ...) {
+  if (recursive) {
+    filenames <- system(paste("find", path, "-type f"), intern=TRUE)
+  } else {
+    filenames <- system(paste("ls", path), intern=TRUE)
+  }
+  if (! is.null(exclude)) {
+    filenames <- grep(exclude, filenames, value=TRUE, invert=TRUE)
+  }
   nfiles <- length(filenames)
   headers <- images <- vector("list", nfiles)
   names(images) <- names(headers) <- sub("\\.", "", filenames)
