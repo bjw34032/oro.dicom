@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.1)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.2)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -46,8 +46,8 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.1)
 > 
 > 
 > cleanEx()
-> nameEx("dicom_info")
-> ### * dicom_info
+> nameEx("dicomInfo")
+> ### * dicomInfo
 > 
 > flush(stderr()); flush(stdout())
 > 
@@ -66,10 +66,48 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.1)
 > 
 > 
 > 
+> cleanEx()
+> nameEx("extractHeader")
+> ### * extractHeader
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: extractHeader
+> ### Title: Extract Single Field from DICOM Headers
+> ### Aliases: extractHeader
+> ### Keywords: misc
+> 
+> ### ** Examples
+> 
+> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> serieDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
+> IOP <- extractHeader(x$hdr, "ImageOrientation(Patient)", numeric=FALSE)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("matchHeader")
+> ### * matchHeader
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: matchHeader
+> ### Title: Match String to DICOM Header Field
+> ### Aliases: matchHeader
+> 
+> ### ** Examples
+> 
+> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> modality <- extractHeader(x$hdr, "Modality", numeric=FALSE)
+> matchHeader(modality, "mr") # case insensitive by default
+[1] TRUE
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.993 0.028 1.337 0 0 
+Time elapsed:  1.45 0.081 2.483 0 0 
 > grDevices::dev.off()
 null device 
           1 

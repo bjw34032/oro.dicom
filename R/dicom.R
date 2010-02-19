@@ -33,7 +33,7 @@
 ##
 
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, warn=-1, debug=FALSE) {
+                      DICM=TRUE, pixelData=TRUE, warn=-1, debug=FALSE) {
   ##
   ## "The default DICOM Transfer Syntax, which shall be supported by
   ## all AEs, uses Little Endian encoding and is specified in Annex
@@ -180,7 +180,8 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     } else {
       VR <- dicom.VR[VRcode %in% "UN", ]
     }
-    if (pixel.data) {
+    if (pixel.data & pixelData) {
+      ## cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
       skip <- readBin(fid, integer(), size=2, endian=endian)
       length <- readBin(fid, integer(), size=4, endian=endian)
       BitsAllocated <- which(hdr[, 3] %in% "BitsAllocated")[1]
@@ -217,11 +218,15 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   hdr$length <- as.numeric(hdr$length)
   hdr$value <- as.character(hdr$value)
 
-  nr <- as.numeric(hdr$value[hdr$name %in% "Rows"])
-  nc <- as.numeric(hdr$value[hdr$name %in% "Columns"])
-  img <- t(matrix(img[1:(nc*nr)], nc, nr))
-  if (flipud) {
-    img <- img[nr:1,]
+  if (pixelData) {
+    nr <- as.numeric(hdr$value[hdr$name %in% "Rows"])
+    nc <- as.numeric(hdr$value[hdr$name %in% "Columns"])
+    img <- t(matrix(img[1:(nc*nr)], nc, nr))
+    if (flipud) {
+      img <- img[nr:1,]
+    }
+  } else {
+    img <- NULL
   }
 
   ## Warnings?
@@ -235,8 +240,9 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100, ...) {
   headers <- images <- vector("list", nfiles)
   names(images) <- names(headers) <- sub("\\.", "", filenames)
   for (i in 1:nfiles) {
-    if (verbose && (i %% counter == 0))
+    if (verbose && (i %% counter == 0)) {
       cat("  ", i, "files processed...", fill=TRUE)
+    }
     dcm <- dicomInfo(paste(path, filenames[i], sep="/"), ...)
     images[[i]] <- dcm$img
     headers[[i]] <- dcm$hdr
@@ -245,8 +251,8 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100, ...) {
 }
 
 dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {
-  require("dcemriS4")
-  aim <- dcemriS4::anlz(img, ...)
+  require("oro.nifti")
+  aim <- oro.nifti::anlz(img, ...)
   ## (x,y) pixel dimensions
   aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(hdr, "PixelSpacing", FALSE)[1], " ")))
   ## z pixel dimensions
@@ -284,8 +290,8 @@ dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {
 
 dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE, 
                         descrip="SeriesDescription", ...) {
-  require("dcemriS4")
-  nim <- dcemriS4::nifti(img, ...)
+  require("oro.nifti")
+  nim <- oro.nifti::nifti(img, ...)
   ## (x,y) pixel dimensions
   nim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(hdr, "PixelSpacing", FALSE)[1], " ")))
   ## z pixel dimensions
@@ -317,37 +323,4 @@ dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE,
   }
   return(nim)
 }
-
-extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE) {
-  out.list <- lapply(hdrs,
-                     function(hdr) {
-                       if(sum(index <- hdr$name %in% string) > 0)
-                         hdr$value[index]
-                       else
-                         NA
-                       })
-  out.names <- names(out.list)
-  out.vec <- unlist(out.list)
-  if (numeric) {
-    out.vec <- as.numeric(out.vec)
-  }
-  if (names) {
-    names(out.vec) <- out.names
-  } else {
-    out.vec <- as.vector(out.vec)
-  }
-  return(out.vec)
-}
-
-dicomTable <- function(hdrs, fields, numeric=rep(TRUE,length(fields))) {
-  N <- length(fields)
-  mat <- NULL
-  for(i in 1:N)
-    mat <- cbind(mat, extractHeader(hdrs, fields[i], numeric[i]))
-  dimnames(mat)[[2]] <- fields
-  as.data.frame(mat)
-}
-
-writeDicomHeader <- function(dtable, filename, ...)
-  write.table(dtable, filename, quote=FALSE, sep="\t", ...)
 
