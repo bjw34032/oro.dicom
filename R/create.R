@@ -32,8 +32,7 @@
 ## $Id: $
 ##
 
-create3D <- function(dcm, X, Y, Z, sliceLocation, patientPosition="HFS",
-                     mode="double", transpose=TRUE, pixelData=TRUE,
+create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
                      path=NULL) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
@@ -43,12 +42,29 @@ create3D <- function(dcm, X, Y, Z, sliceLocation, patientPosition="HFS",
       stop("DICOM \"img\" information is not present.")
     }
   } else {
+    if (is.null(path)) {
+      stop("The path to the DICOM files must be provided.")
+    }
     if (is.null(dcm$hdr)) {
       dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
     }
   }
+  X <- unique(extractHeader(dcm$hdr, "Rows"))
+  if (length(X) != 1) {
+    stop("Row lengths are not identical.")
+  }
+  Y <- unique(extractHeader(dcm$hdr, "Columns"))
+  if (length(Y) != 1) {
+    stop("Column lengths are not identical.")
+  }
+  Z <- length(dcm$hdr)
+  print(c(X, Y, Z))
   img <- array(0, c(X,Y,Z))
   storage.mode(img) <- mode
+  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+  if (any(is.na(sliceLocation))) {
+    stop("Missing values are present in SliceLocation.")
+  }
   if (pixelData) {
     for (z in 1:Z) {
       z.order <- order(sliceLocation)[z]
@@ -64,6 +80,10 @@ create3D <- function(dcm, X, Y, Z, sliceLocation, patientPosition="HFS",
     img <- aperm(img, c(2,1,3))
   }
   sliceLocation <<- sliceLocation[order(sliceLocation)]
+  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
+  if (length(patientPosition) != 1) {
+    stop("PatientPosition(s) are not identical.")
+  }
   if (patientPosition == "FFS") {
     img <- img[,,Z:1]
     sliceLocation <<- rev(sliceLocation)
