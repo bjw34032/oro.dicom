@@ -11,13 +11,16 @@
   recorded.
 }
 \usage{
-dicomSeparate(path, verbose = FALSE, counter = 100, ...)
+dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
+              exclude = NULL, ...)
 }
 \arguments{
   \item{path}{Path name to the DICOM directory.}
   \item{verbose}{Flag to provide limited progress information.}
   \item{counter}{Frequency of updating the diaplay about the progress of
     file processing.}
+  \item{recursive}{Search recursively down from the given path name.}
+  \item{exclude}{Exclude file names containing this character string.}
   \item{...}{Arguments to be passed to \code{dicomInfo}.}
 }
 \details{

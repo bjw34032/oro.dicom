@@ -11,18 +11,17 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, X, Y, Z, sliceLocation, patientPosition = "HFS",
-         mode = "double", transpose = TRUE, pixelData = TRUE,
+create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
          path = NULL)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
     \code{TRUE}) or the DICOM header information (if \code{pixelData} =
     \code{FALSE}).}
-  \item{X,Y,Z}{are the dimensions of the array.}
-  \item{sliceLocation}{is a vector of slice locations from the DICOM header.}
-  \item{patientPosition}{is a character string denoting the patient
-    position in the scanner.}
+%  \item{X,Y,Z}{are the dimensions of the array.}
+%  \item{sliceLocation}{is a vector of slice locations from the DICOM header.}
+%  \item{patientPosition}{is a character string denoting the patient
+%    position in the scanner.}
   \item{mode}{is a valid character string for \code{storage.mode}.}
   \item{transpose}{is necessary to switch the definition of rows and
     columns from DICOM to R.}
