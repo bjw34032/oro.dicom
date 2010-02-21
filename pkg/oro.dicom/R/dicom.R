@@ -239,7 +239,7 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   if (recursive) {
     filenames <- system(paste("find", path, "-type f"), intern=TRUE)
   } else {
-    filenames <- system(paste("ls", path), intern=TRUE)
+    filenames <- file.path(dcm.path, system(paste("ls", path), intern=TRUE))
   }
   if (! is.null(exclude)) {
     filenames <- grep(exclude, filenames, value=TRUE, invert=TRUE)
@@ -251,7 +251,7 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
     if (verbose && (i %% counter == 0)) {
       cat("  ", i, "files processed...", fill=TRUE)
     }
-    dcm <- dicomInfo(paste(path, filenames[i], sep="/"), ...)
+    dcm <- dicomInfo(filenames[i], ...)
     images[[i]] <- dcm$img
     headers[[i]] <- dcm$hdr
   }
