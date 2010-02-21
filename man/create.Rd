@@ -33,9 +33,7 @@ create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
 \value{
   Multi-dimensional array of medical imaging data.
 }
-\details{
-  ...
-}
+%\details{}
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
   \url{http://medical.nema.org}

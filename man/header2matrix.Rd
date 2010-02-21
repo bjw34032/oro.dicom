@@ -7,7 +7,8 @@
 \alias{header2matrix}
 \title{Converts DICOM Header Field to a Matrix}
 \description{
-  ...
+  Converts a vector of DICOM header information, assuming there are
+  multiple entries per element of the vector, into a matrix.
 }
 \usage{
 header2matrix(hdr, ncol, sep = " ", byrow = TRUE)
@@ -21,9 +22,7 @@ header2matrix(hdr, ncol, sep = " ", byrow = TRUE)
   \item{byrow}{is a logical variable (default = \code{TRUE}) telling the
     routine to populate the matrix by rows then columns.}
 }
-\details{
-  ...
-}
+%\details{}
 \value{
   Matrix with \code{length(hdr)} rows and \code{ncol} columns.
 }
@@ -34,6 +33,12 @@ header2matrix(hdr, ncol, sep = " ", byrow = TRUE)
 \seealso{
   \code{\link{extractHeader}}, \code{\link{matrix}}
 }
-%\examples{}
+\examples{
+x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+pixelSpacing <- extractHeader(x$hdr, "PixelSpacing", numeric=FALSE)
+pSmat <- header2matrix(pixelSpacing, ncol=2)
+IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
+IOPmat <- header2matrix(IOP, ncol=6)
+}
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 %\keyword{file}
