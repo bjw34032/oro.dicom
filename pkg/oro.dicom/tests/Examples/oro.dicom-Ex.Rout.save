@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.2)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -80,8 +80,32 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.2)
 > ### ** Examples
 > 
 > x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> serieDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
-> IOP <- extractHeader(x$hdr, "ImageOrientation(Patient)", numeric=FALSE)
+> seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
+> print(seriesDescription)
+[1] "Liver/SpleeT2W/UTSE/RC$ COR    TSE   2000      100    90"
+> IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
+> print(IOP)
+[1] "1.000000 0.000000 0.000000 0.000000 0.000000 -1.000000"
+> 
+> 
+> 
+> cleanEx()
+> nameEx("header2matrix")
+> ### * header2matrix
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: header2matrix
+> ### Title: Converts DICOM Header Field to a Matrix
+> ### Aliases: header2matrix
+> 
+> ### ** Examples
+> 
+> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> pixelSpacing <- extractHeader(x$hdr, "PixelSpacing", numeric=FALSE)
+> pSmat <- header2matrix(pixelSpacing, ncol=2)
+> IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
+> IOPmat <- header2matrix(IOP, ncol=6)
 > 
 > 
 > 
@@ -107,7 +131,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.2)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.45 0.081 2.483 0 0 
+Time elapsed:  0.81 0.03 0.841 0 0 
 > grDevices::dev.off()
 null device 
           1 

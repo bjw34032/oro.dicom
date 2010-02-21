@@ -37,8 +37,10 @@ extractHeader(hdrs, string, numeric=TRUE, names=FALSE)
 }
 \examples{
 x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-serieDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
-IOP <- extractHeader(x$hdr, "ImageOrientation(Patient)", numeric=FALSE)
+seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
+print(seriesDescription)
+IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
+print(IOP)
 }
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{misc}

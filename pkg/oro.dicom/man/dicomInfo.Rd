@@ -30,9 +30,7 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   \item{debug}{is a logical variable (default = \code{FALSE}) that
     regulates to display of intermediate processing steps.}
 }
-\details{
-  ...
-}
+%\details{}
 \value{
   List.
 }
