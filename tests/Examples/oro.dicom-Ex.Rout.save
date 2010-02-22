@@ -46,6 +46,38 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > 
 > 
 > cleanEx()
+> nameEx("dicom2nifti")
+> ### * dicom2nifti
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dicom2nifti
+> ### Title: Convert DICOM Header to NIfTI
+> ### Aliases: dicom2nifti
+> ### Keywords: file
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D data <- download.file("http://members.tripod.com/~clunis_immensus/free3d/hk-40.zip", 
+> ##D                       "data.zip", quiet=TRUE)
+> ##D unzip("data.zip", exdir="tmp")
+> ##D 
+> ##D dcmList <- dicomSeparate("tmp")
+> ##D dcmImage <- create3D(dcmList, mode="integer")
+> ##D 
+> ##D pS <- header2matrix(extractHeader(dcmList$hdr, "PixelSpacing", FALSE), 2)[1,]
+> ##D sT <- extractHeader(dcmList$hdr, "SliceThickness")[1]
+> ##D pixdim <- c(0, pS, sT, rep(1,4))
+> ##D dcmNifti <- nifti(dcmImage, datatype=4, pixdim=pixdim)
+> ##D par(bg="black")
+> ##D image(dcmNifti)
+> ##D orthographic(dcmNifti)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("dicomInfo")
 > ### * dicomInfo
 > 
@@ -131,7 +163,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.81 0.03 0.841 0 0 
+Time elapsed:  0.87 0.02 0.89 0 0 
 > grDevices::dev.off()
 null device 
           1 
