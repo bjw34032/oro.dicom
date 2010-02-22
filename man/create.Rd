@@ -11,8 +11,7 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
-         path = NULL)
+create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE, ...)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -27,8 +26,7 @@ create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
     columns from DICOM to R.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
-  \item{path}{is the path to the directory holding the DICOM files (only
-    necessary when \code{pixelData} = \code{FALSE}).}
+  \item{\ldots}{\ldots}
 }
 \value{
   Multi-dimensional array of medical imaging data.
@@ -42,6 +40,22 @@ create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
   \code{\link{array}}, \code{\link{dicomInfo}},
   \code{\link{storage.mode}}
 }
-%\examples{}
+\examples{
+## pixelData = TRUE
+## The DICOM image data are read from dicomSeparate()
+dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+dcmImage <- create3D(dcmList, mode="integer")
+graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
+                xlab="", ylab="")
+
+## pixelData = FALSE
+## The DICOM image data are read from create3D()
+## This may save on memory for large batches of DICOM data
+dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
+                         pixelData=FALSE)
+dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
+graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
+                xlab="", ylab="")
+}
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 %\keyword{}
