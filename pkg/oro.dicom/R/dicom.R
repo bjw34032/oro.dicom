@@ -64,35 +64,44 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 
   ## Sub-routines
   
-  unsigned.header <- function(VR, fid, endian) {
+  unsigned.header <- function(VR, implicit, fid, endian) {
     ## "Unsigned Long" and "Unsigned Short"
-    length <- readBin(fid, integer(), size=2, endian=endian)
+    length <- ifelse(implicit,
+                     readBin(fid, integer(), size=4, endian=endian),
+                     readBin(fid, integer(), size=2, endian=endian))
     value <- readBin(fid, integer(), n=length/VR$bytes,
                      size=VR$bytes, signed=FALSE, endian=endian)
     list(length=length, value=paste(value, collapse=" "))
   }
   
-  signed.header <- function(VR, fid, endian) {
+  signed.header <- function(VR, implicit, fid, endian) {
     ## "Signed Long" and "Signed Short"
-    length <- readBin(fid, integer(), size=2, endian=endian)
+    length <- ifelse(implicit,
+                     readBin(fid, integer(), size=4, endian=endian),
+                     readBin(fid, integer(), size=2, endian=endian))
     value <- readBin(fid, integer(), n=length/VR$bytes,
                      size=VR$bytes, signed=TRUE, endian=endian)
     list(length=length, value=paste(value, collapse=" "))
   }
   
-  floating.header <- function(VR, fid, endian) {
+  floating.header <- function(VR, implicit, fid, endian) {
     ## "Floating Point Single" and "Floating Point Double"
-    length <- readBin(fid, integer(), size=2, endian=endian)
+    length <- ifelse(implicit,
+                     readBin(fid, integer(), size=4, endian=endian),
+                     readBin(fid, integer(), size=2, endian=endian))
     value <- readBin(fid, numeric(), n=length/VR$bytes,
                      size=VR$bytes, signed=TRUE, endian=endian)
     list(length=length, value=value)
   }
   
-  other.header <- function(fid, endian) {
-    skip <- readBin(fid, integer(), size=2, endian=endian)
-    length <- readBin(fid, integer(), size=4, endian=endian)
-    ## value <- iconv(rawToChar(readBin(fid, "raw", length), multiple=TRUE), to="UTF-8")
-    ## list(length=length, value=paste(value, collapse=""))
+  other.header <- function(fid, implicit, endian) {
+    ## "OtherByteString" or "OtherWordString"
+    if (implicit) {
+      length <- readBin(fid, integer(), size=4, endian=endian)
+    } else {
+      skip <- readBin(fid, integer(), size=2, endian=endian)
+      length <- readBin(fid, integer(), size=4, endian=endian)
+    }
     seek(fid, where=seek(fid) + length) # skip over this field
     list(length=length, value <- "skipped")
   }
@@ -137,6 +146,16 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     list(length=length, value=value)
   }
   
+  unknown.header <- function(VR, implicit, fid, endian) {
+    length <- ifelse(implicit,
+                     readBin(fid, integer(), size=4, endian=endian),
+                     readBin(fid, integer(), size=2, endian=endian))
+    value <- iconv(rawToChar(readBin(fid, "raw", length)), to="UTF-8")
+    value <- sub(" +$", "", value) # remove white space at end
+    value <- gsub("[\\]", " ", value) # remove "\\"s
+    list(length=length, value=value)
+  }
+
   ## Warnings?
   oldwarn <- options()$warn
   options(warn=warn)
@@ -165,25 +184,33 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     pixel.data <- ifelse(group == "7FE0" & element == "0010", TRUE, FALSE)
-    index <- dcm.group %in% group & dcm.element %in% element
-    vrstr <- readChar(fid, n=2)
+    index <- which(dcm.group %in% group & dcm.element %in% element)
+    vrstr <- iconv(rawToChar(readBin(fid, "raw", 2)), to="UTF-8") # readChar(fid, n=2)
+    if (debug && length(index) != 1) {
+      warning(sprintf("DICOM tag (%s,%s) is not in current dictionary.",
+                      group, element))
+    }
     if (! vrstr %in% VRcode) {
       ## Implicit VR (see diagram above)
       implicit <- TRUE
       seek(fid, where=seek(fid) - 2) # go back two bytes
-      ## index <- dcm.group %in% group & dcm.element %in% element
       vrstr <- dicom.dic$code[index] # VR string from (group,element)
-      length <- readBin(fid, integer(), size=4, endian=endian) # length
     }
     if (any(VRindex <- VRcode %in% vrstr)) {
-      VR <- dicom.VR[VRindex, ]
+      VR <- dicom.VR[VRcode %in% vrstr, ]
     } else {
       VR <- dicom.VR[VRcode %in% "UN", ]
     }
-    if (pixel.data & pixelData) {
-      ## cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
-      skip <- readBin(fid, integer(), size=2, endian=endian)
-      length <- readBin(fid, integer(), size=4, endian=endian)
+    if (pixel.data && pixelData) {
+      if (debug) {
+        cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
+      }
+      if (implicit) {
+        length <- readBin(fid, integer(), size=4, endian=endian)
+      } else {
+        skip <- readBin(fid, integer(), size=2, endian=endian)
+        length <- readBin(fid, integer(), size=4, endian=endian)
+      }
       BitsAllocated <- which(hdr[, 3] %in% "BitsAllocated")[1]
       bytes <- as.numeric(hdr[BitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
@@ -191,16 +218,16 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       out <- list(length=length, value=NA)
     } else {
       out <- switch(VR$code,
-                    UL = unsigned.header(VR, fid, endian),
-                    US = unsigned.header(VR, fid, endian),
-                    SL = signed.header(VR, fid, endian),
-                    SS = signed.header(VR, fid, endian),
-                    FS = floating.header(VR, fid, endian),
-                    FD = floating.header(VR, fid, endian),
-                    OB = other.header(fid, endian),
-                    OW = other.header(fid, endian),
+                    UL = unsigned.header(VR, implicit, fid, endian),
+                    US = unsigned.header(VR, implicit, fid, endian),
+                    SL = signed.header(VR, implicit, fid, endian),
+                    SS = signed.header(VR, implicit, fid, endian),
+                    FS = floating.header(VR, implicit, fid, endian),
+                    FD = floating.header(VR, implicit, fid, endian),
+                    OB = other.header(fid, implicit, endian),
+                    OW = other.header(fid, implicit, endian),
                     SQ = sequence.header(fid, endian),
-                    null.header(VR, group, element, fid, endian))
+                    unknown.header(VR, implicit, fid, endian))
     }
     name <- ifelse(any(index), dicom.dic$name[index], "Unknown")
     hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
