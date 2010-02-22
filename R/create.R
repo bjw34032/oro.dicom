@@ -33,7 +33,7 @@
 ##
 
 create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
-                     path=NULL) {
+                     path=NULL, ...) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -42,9 +42,9 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
       stop("DICOM \"img\" information is not present.")
     }
   } else {
-    if (is.null(path)) {
-      stop("The path to the DICOM files must be provided.")
-    }
+    ##if (is.null(path)) {
+    ##  stop("The path to the DICOM files must be provided.")
+    ##}
     if (is.null(dcm$hdr)) {
       dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
     }
@@ -58,7 +58,6 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
     stop("Column lengths are not identical.")
   }
   Z <- length(dcm$hdr)
-  print(c(X, Y, Z))
   img <- array(0, c(X,Y,Z))
   storage.mode(img) <- mode
   sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
@@ -73,7 +72,7 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   } else {
     for (z in 1:Z) {
       z.order <- order(sliceLocation)[z]
-      img[,,z] <- dicomInfo(file.path(path, names(dcm$hdr)[[z.order]]))$img
+      img[,,z] <- dicomInfo(names(dcm$hdr)[[z.order]])$img
     }
   }
   if (transpose) {

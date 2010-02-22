@@ -147,12 +147,23 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   }
   
   unknown.header <- function(VR, implicit, fid, endian) {
-    length <- ifelse(implicit,
-                     readBin(fid, integer(), size=4, endian=endian),
-                     readBin(fid, integer(), size=2, endian=endian))
-    value <- iconv(rawToChar(readBin(fid, "raw", length)), to="UTF-8")
-    value <- sub(" +$", "", value) # remove white space at end
-    value <- gsub("[\\]", " ", value) # remove "\\"s
+    if (VR$bytes > 0) {
+      length <- ifelse(implicit,
+                       readBin(fid, integer(), size=4, endian=endian),
+                       readBin(fid, integer(), size=2, endian=endian))
+      value <- iconv(rawToChar(readBin(fid, "raw", length)), to="UTF-8")
+      value <- sub(" +$", "", value) # remove white space at end
+      value <- gsub("[\\]", " ", value) # remove "\\"s
+    } else {
+      if (implicit) {
+        length <- readBin(fid, integer(), size=4, endian=endian)
+      } else {
+        skip <- readBin(fid, integer(), size=2, endian=endian)
+        length <- readBin(fid, integer(), size=4, endian=endian)
+      }
+      skip <- readBin(fid, integer(), length, size=1, endian=endian)
+      value <- "skip"
+    }
     list(length=length, value=value)
   }
 
