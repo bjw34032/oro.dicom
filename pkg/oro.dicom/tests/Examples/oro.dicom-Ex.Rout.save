@@ -27,6 +27,36 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > cleanEx()
+> nameEx("create")
+> ### * create
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: Create
+> ### Title: Create Arrays from DICOM Headers/Images
+> ### Aliases: create3D
+> 
+> ### ** Examples
+> 
+> ## pixelData = TRUE
+> ## The DICOM image data are read from dicomSeparate()
+> dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+> dcmImage <- create3D(dcmList, mode="integer")
+> graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
++                 xlab="", ylab="")
+> 
+> ## pixelData = FALSE
+> ## The DICOM image data are read from create3D()
+> ## This may save on memory for large batches of DICOM data
+> dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
++                          pixelData=FALSE)
+> dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
+> graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
++                 xlab="", ylab="")
+> 
+> 
+> 
+> cleanEx()
 > nameEx("dec2base")
 > ### * dec2base
 > 
@@ -59,16 +89,14 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D data <- download.file("http://members.tripod.com/~clunis_immensus/free3d/hk-40.zip", 
-> ##D                       "data.zip", quiet=TRUE)
-> ##D unzip("data.zip", exdir="tmp")
-> ##D 
-> ##D dcmList <- dicomSeparate("tmp")
+> ##D ## pixelData = TRUE
+> ##D dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
 > ##D dcmImage <- create3D(dcmList, mode="integer")
-> ##D 
+> ##D ## Accumulate voxel dimensions
 > ##D pS <- header2matrix(extractHeader(dcmList$hdr, "PixelSpacing", FALSE), 2)[1,]
 > ##D sT <- extractHeader(dcmList$hdr, "SliceThickness")[1]
 > ##D pixdim <- c(0, pS, sT, rep(1,4))
+> ##D require("oro.nifti")
 > ##D dcmNifti <- nifti(dcmImage, datatype=4, pixdim=pixdim)
 > ##D par(bg="black")
 > ##D image(dcmNifti)
@@ -163,7 +191,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.87 0.02 0.89 0 0 
+Time elapsed:  38.85 0.31 39.162 0 0 
 > grDevices::dev.off()
 null device 
           1 

@@ -284,7 +284,7 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   }
   nfiles <- length(filenames)
   headers <- images <- vector("list", nfiles)
-  names(images) <- names(headers) <- sub("\\.", "", filenames)
+  names(images) <- names(headers) <- filenames
   for (i in 1:nfiles) {
     if (verbose && (i %% counter == 0)) {
       cat("  ", i, "files processed...", fill=TRUE)
