@@ -1,0 +1,47 @@
+\name{getOrientation}
+\alias{getOrientation}
+\title{Convert Direction Cosines to Anatomical Direction}
+\description{
+  For cross-sectional DICOM images the orientation must be derived from
+  the Image Orientation (Patient) direction cosines.
+}
+\usage{
+getOrientation(xyz)
+}
+\arguments{
+  \item{xyz}{is a vector of direction cosines from
+    \dQuote{ImageOrientationPatient} (0020,0037).}
+}
+\details{
+  C.7.6.2.1.1 Image Position And Image Orientation.  The Image Position 
+  (0020,0032) specifies the x, y, and z coordinates of the upper left
+  hand corner of the image; it is the center of the first voxel
+  transmitted.  Image Orientation (0020,0037) specifies the direction  
+  cosines of the first row and the first column with respect to the
+  patient.  These Attributes shall be provide as a pair.  Row value for
+  the x, y, and z axes respectively followed by the Column value for the
+  x, y, and z axes respectively.  The direction of the axes is defined
+  fully by the patient's orientation.  The x-axis is increasing to the
+  left hand side of the patient.  The y-axis is increasing to the
+  posterior side of the patient.  The z-axis is increasing toward the
+  head of the patient.  The patient based coordinate system is a right
+  handed system; i.e., the vector cross product of a unit vector along
+  the positive x-axis and a unit vector along the positive y-axis is
+  equal to a unit vector along the positive z-axis.}
+\value{
+  Anatomical direction shall be designated by the capital letters:
+  \item{A}{anterior}
+  \item{P}{posterior}
+  \item{R}{right}
+  \item{L}{left}
+  \item{H}{head}
+  \item{F}{foot}
+}
+\references{
+  \url{http://www.dclunie.com/medical-image-faq/html/part2.html}
+}
+\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+%\seealso{}
+%\examples{}
+%\keyword{}
+
