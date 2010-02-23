@@ -275,9 +275,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 dicomSeparate <- function(path, verbose=FALSE, counter=100,
                           recursive=TRUE, exclude=NULL, ...) {
   if (recursive) {
-    filenames <- system(paste("find", path, "-type f"), intern=TRUE)
+    filenames <- list.files(path, full.names=TRUE, recursive=TRUE)
   } else {
-    filenames <- file.path(path, system(paste("ls", path), intern=TRUE))
+    filenames <- list.files(path, full.names=TRUE)
   }
   if (! is.null(exclude)) {
     filenames <- grep(exclude, filenames, value=TRUE, invert=TRUE)
