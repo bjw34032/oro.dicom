@@ -44,10 +44,10 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
 }
 \examples{
 x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 
 x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 }
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{file}
