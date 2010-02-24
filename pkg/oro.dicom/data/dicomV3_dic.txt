@@ -54,6 +54,7 @@ group	element	code	offset	name
 0004	1512	UI	1	ReferencedTransferSyntaxUIDInFile
 0004	151A	UI	1-n	ReferencedRelatedGeneralSOPClassUIDInFile
 0004	1600	UL	1	NumberOfReferences
+0008	0000	UL	1	GroupLength
 0008	0001	UL	1	LengthToEnd
 0008	0005	CS	1-n	SpecificCharacterSet
 0008	0008	CS	1-n	ImageType
@@ -227,6 +228,7 @@ group	element	code	offset	name
 0009	1315	LO	1	SMIIdentificationLabel
 0009	1316	LO	1	CPUIdentificationLabel
 0009	1320	SH	1	HeaderVersion
+0010	0000	UL	1	GroupLength
 0010	0010	PN	1	PatientsName
 0010	0020	LO	1	PatientID
 0010	0021	LO	1	IssuerOfPatientID
@@ -287,6 +289,7 @@ group	element	code	offset	name
 0011	00D0	LO	1	PatientBillingType
 0011	00D2	LO	1	PatientBillingAddress
 0011	1010	SS	1	PatientStatus
+0012	0000	UL	1	GroupLength
 0012	0010	LO	1	ClinicalTrialSponsorName
 0012	0020	LO	1	ClinicalTrialProtocolID
 0012	0021	LO	1	ClinicalTrialProtocolName
@@ -299,6 +302,7 @@ group	element	code	offset	name
 0012	0060	LO	1	ClinicalTrialCoordinatingCenterName
 0012	0062	CS	1	PatientIdentityRemoved
 0012	0063	SQ	1	DeidentificationMethodCodeSequence
+0013	0000	UL	1	GroupLength
 0013	0010	DA	1	ModificationDate
 0013	0012	TM	1	ModificationTime
 0013	0020	PN	1	PatientName
@@ -313,6 +317,7 @@ group	element	code	offset	name
 0013	0042	LO	1	PatientRestDirection
 0013	0044	LO	1	PatientPosition
 0013	0046	LO	1	ViewDirection
+0018	0000	UL	1	GroupLength
 0018	0010	LO	1	ContrastBolusAgent
 0018	0012	SQ	1	ContrastBolusAgentSequence
 0018	0014	SQ	1	ContrastBolusAdministrationRouteSequence
@@ -951,6 +956,7 @@ group	element	code	offset	name
 0019	14D9	IS	1	LinesPerSegment
 0019	14DA	CS	1	PhaseCodingDirection
 0019	1456	DS	1	ReceiverFilterFrequency
+0020	0000	UL	1	GroupLength
 0020	000D	UI	1	StudyInstanceUID
 0020	000E	UI	1	SeriesInstanceUID
 0020	0010	SH	1	StudyID
@@ -1031,6 +1037,7 @@ group	element	code	offset	name
 0020	9228	UL	1	ConcatenationFrameOffsetNumber
 0020	9238	LO	1	FunctionalGroupPrivateCreator
 0020	9251	FD	1	RRIntervalTimeMeasured
+0022	0000	UL	1	GroupLength
 0022	0001	US	1	LightPathFilterPassThroughWavelength
 0022	0002	US	2	LightPathFilterPassBand
 0022	0003	US	1	ImagePathFilterPassThroughWavelength
@@ -1062,6 +1069,7 @@ group	element	code	offset	name
 0022	0020	SQ	1	StereoPairsSequence
 0022	0021	SQ	1	LeftImageSequence
 0022	0022	SQ	1	RightImageSequence
+0028	0000	UL	1	GroupLength
 0028	0002	US	1	SamplesperPixel
 0028	0003	US	1	SamplesperPixelUsed
 0028	0004	CS	1	PhotometricInterpretation
@@ -1164,6 +1172,7 @@ group	element	code	offset	name
 0028	9132	SQ	1	FrameVOILUTSequence
 0028	9145	SQ	1	PixelValueTransformationSequence
 0028	9235	CS	1	SignalDomaInRows
+0029	0000	UL	1	GroupLength
 0029	1108	CS	1	MedComHeaderType
 0029	1109	LO	1	MedComHeaderVersion
 0029	1110	CS	1	WindowStyle
@@ -1186,6 +1195,7 @@ group	element	code	offset	name
 0029	1154	DS	1	EstimatedRetrieveTime
 0029	1155	DS	1	DataSizeOfRetrievedImages
 0029	1160	LO	1	Splash
+0032	0000	UL	1	GroupLength
 0032	000A	CS	1	StudyStatusID
 0032	000C	CS	1	StudyPriorityID
 0032	0012	LO	1	StudyIDIssuer
@@ -1212,6 +1222,7 @@ group	element	code	offset	name
 0032	1064	SQ	1	RequestedProcedureCodeSequence
 0032	1070	LO	1	RequestedContrastAgent
 0032	4000	LT	1	StudyComments
+0038	0000	UL	1	GroupLength
 0038	0004	SQ	1	ReferencedPatientAliasSequence
 0038	0008	CS	1	VisitStatusID
 0038	0010	LO	1	AdmissionID
@@ -1263,6 +1274,7 @@ group	element	code	offset	name
 003A	0300	SQ	1	MultiplexedAudioChannelsDescriptionCodeSequence
 003A	0301	IS	1	ChannelIdentificationCode
 003A	0302	CS	1	ChannelMode
+0040	0000	UL	1	GroupLength
 0040	0001	AE	1-n	ScheduledStationAETitle
 0040	0002	DA	1	ScheduledProcedureStepStartDate
 0040	0003	TM	1	ScheduledProcedureStepStartTime
@@ -1456,10 +1468,12 @@ group	element	code	offset	name
 0040	E004	DT	1	HL7DocumentEffectiveTime
 0040	E006	SQ	1	HL7DocumentTypeCodeSequence
 0040	E010	UT	1	RetrieveUR
+0042	0000	UL	1	GroupLength
 0042	0010	ST	1	DocumentTitle
 0042	0011	OB	1	EncapsulatedDocument
 0042	0012	LO	1	MIMETypeOfEncapsulatedDocument
 0042	0013	SQ	1	SourceInstanceSequence
+0050	0000	UL	1	GroupLength
 0050	0004	CS	1	CalibrationImage
 0050	0010	SQ	1	DeviceSequence
 0050	0014	DS	1	DeviceLength
@@ -1468,6 +1482,7 @@ group	element	code	offset	name
 0050	0018	DS	1	DeviceVolume
 0050	0019	DS	1	InterMarkerDistance
 0050	0020	LO	1	DeviceDescription
+0054	0000	UL	1	GroupLength
 0054	0010	US	1-n	EnergyWindowVector
 0054	0011	US	1	NumberOfEnergyWindows
 0054	0012	SQ	1	EnergyWindowInformationSequence
@@ -1554,6 +1569,7 @@ group	element	code	offset	name
 0060	3008	US	1	HistogramBInWidth
 0060	3010	LO	1	HistogramExplanation
 0060	3020	UL	1-n	HistogramData
+0070	0000	UL	1	GroupLength
 0070	0001	SQ	1	GraphicAnnotationSequence
 0070	0002	CS	1	GraphicLayer
 0070	0003	CS	1	BoundingBoxAnnotationUnits
@@ -1607,6 +1623,7 @@ group	element	code	offset	name
 0070	031A	UI	1	FiducialUID
 0070	031C	SQ	1	FiducialSetSequence
 0070	031E	SQ	1	FiducialSequence
+0088	0000	UL	1	GroupLength
 0088	0130	SH	1	StorageMediaFileSetID
 0088	0140	UI	1	StorageMediaFileSetUID
 0088	0200	SQ	1	IconImageSequence
