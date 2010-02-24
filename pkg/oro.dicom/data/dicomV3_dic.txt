@@ -2701,6 +2701,6 @@ group	element	code	offset	name
 7FE0	0010	OB	1	PixelData
 FFFA	FFFA	SQ	1	DigitalSignaturesSequence
 FFFC	FFFC	OB	1	DataSetTrailingPadding
-FFFE	E000	UL	1	Item
-FFFE	E00D	UL	1	ItemDelimitationItem
-FFFE	E0DD	UL	1	SequenceDelimitationItem
+FFFE	E000	UN	1	Item
+FFFE	E00D	UN	1	ItemDelimitationItem
+FFFE	E0DD	UN	1	SequenceDelimitationItem

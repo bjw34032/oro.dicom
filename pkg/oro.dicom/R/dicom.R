@@ -106,11 +106,14 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     list(length=length, value <- "skipped")
   }
   
-  sequence.header <- function(fid, endian) {
+  sequence.header <- function(group, element, fid, endian) {
     ## "Sequence of Items" with bytes = 0
     skip <- readBin(fid, integer(), size=2, endian=endian)
     length <- readBin(fid, integer(), size=4, endian=endian)
-    seek(fid, where=seek(fid) + length) # skip over all sequence items
+    if (is.null(SQ) && length < 0) {
+      SQ <<- paste("(", group, ",", element, ")", sep="")
+    }
+    seek(fid, where=seek(fid) + max(0,length)) # skip over all sequence items
     list(length=length, value="sequence")
   }
   
@@ -161,7 +164,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         skip <- readBin(fid, integer(), size=2, endian=endian)
         length <- readBin(fid, integer(), size=4, endian=endian)
       }
-      skip <- readBin(fid, integer(), length, size=1, endian=endian)
+      skip <- readBin(fid, integer(), max(0,length), size=1, endian=endian)
       value <- "skip"
     }
     list(length=length, value=value)
@@ -190,6 +193,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   }
   hdr <- NULL
   pixel.data <- FALSE
+  SQ <- NULL
   while (! pixel.data) {
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
@@ -226,7 +230,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       bytes <- as.numeric(hdr[BitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
       img <- readBin(fid, integer(), length, size=bytes, endian=endian)
-      out <- list(length=length, value=NA)
+      out <- list(length=length, value=NULL)
     } else {
       out <- switch(VR$code,
                     UL = unsigned.header(VR, implicit, fid, endian),
@@ -237,15 +241,18 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                     FD = floating.header(VR, implicit, fid, endian),
                     OB = other.header(fid, implicit, endian),
                     OW = other.header(fid, implicit, endian),
-                    SQ = sequence.header(fid, endian),
+                    SQ = sequence.header(group, element, fid, endian),
                     unknown.header(VR, implicit, fid, endian))
     }
     name <- ifelse(any(index), dicom.dic$name[index], "Unknown")
     hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
-                        out$value))
+                        out$value, ifelse(is.null(SQ), "", SQ)))
     if (debug) {
       cat("", seek(fid), group, element, name, VR$code, out$length,
-          out$value, sep="\t", fill=TRUE)
+          out$value, ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
+    }
+    if (name == "SequenceDelimitationItem") {
+      SQ <- NULL
     }
   }
   close(fid)
