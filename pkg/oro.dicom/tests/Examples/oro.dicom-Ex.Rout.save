@@ -119,10 +119,10 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### ** Examples
 > 
 > x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > 
 > x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > 
 > 
 > 
@@ -191,7 +191,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  38.85 0.31 39.162 0 0 
+Time elapsed:  40.07 0.16 40.282 0 0 
 > grDevices::dev.off()
 null device 
           1 
