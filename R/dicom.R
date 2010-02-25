@@ -108,8 +108,14 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   
   sequence.header <- function(group, element, fid, endian) {
     ## "Sequence of Items" with bytes = 0
-    skip <- readBin(fid, integer(), size=2, endian=endian)
-    length <- readBin(fid, integer(), size=4, endian=endian)
+    if (implicit) {
+      length <- readBin(fid, integer(), size=4, endian=endian)
+    } else {
+      skip <- readBin(fid, integer(), size=2, endian=endian)
+      length <- readBin(fid, integer(), size=4, endian=endian)
+    }
+    ## skip <- readBin(fid, integer(), size=2, endian=endian)
+    ## length <- readBin(fid, integer(), size=4, endian=endian)
     if (is.null(SQ) && length < 0) {
       SQ <<- paste("(", group, ",", element, ")", sep="")
     }
@@ -195,6 +201,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   pixel.data <- FALSE
   SQ <- NULL
   while (! pixel.data) {
+    seek.old <- seek(fid)
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
@@ -248,8 +255,12 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
                         out$value, ifelse(is.null(SQ), "", SQ)))
     if (debug) {
-      cat("", seek(fid), group, element, name, VR$code, out$length,
+      cat("", seek.old, group, element, name, VR$code, out$length,
           out$value, ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
+    }
+    if (out$length > file.info(fname)$size) {
+      stop(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
+                      group, element, out$length, file.info(fname)$size))
     }
     if (name == "SequenceDelimitationItem") {
       SQ <- NULL
