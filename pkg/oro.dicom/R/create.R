@@ -87,3 +87,29 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 
+create4D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
+                     mosaic=FALSE, ...) {
+  if (pixelData) {
+    if (is.null(dcm$hdr)) {
+      stop("DICOM \"hdr\" information is not present.")
+    }
+    if (is.null(dcm$img)) {
+      stop("DICOM \"img\" information is not present.")
+    }
+  } else {
+    if (is.null(dcm$hdr)) {
+      dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
+    }
+  }
+  X <- unique(extractHeader(dcm$hdr, "Rows"))
+  if (length(X) != 1) {
+    stop("Row lengths are not identical.")
+  }
+  Y <- unique(extractHeader(dcm$hdr, "Columns"))
+  if (length(Y) != 1) {
+    stop("Column lengths are not identical.")
+  }
+  Z <- length(dcm$hdr)
+  
+  return(1)
+}

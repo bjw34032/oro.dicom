@@ -103,7 +103,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       length <- readBin(fid, integer(), size=4, endian=endian)
     }
     seek(fid, where=seek(fid) + length) # skip over this field
-    list(length=length, value <- "skipped")
+    list(length=length, value="skipped")
   }
   
   sequence.header <- function(group, element, fid, endian) {
@@ -197,9 +197,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       stop("DICM != DICM")
     }
   }
+  SQ <- NULL
   hdr <- NULL
   pixel.data <- FALSE
-  SQ <- NULL
   while (! pixel.data) {
     seek.old <- seek(fid)
     implicit <- FALSE
@@ -237,7 +237,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       bytes <- as.numeric(hdr[BitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
       img <- readBin(fid, integer(), length, size=bytes, endian=endian)
-      out <- list(length=length, value=NULL)
+      out <- list(length=length, value="")
     } else {
       out <- switch(VR$code,
                     UL = unsigned.header(VR, implicit, fid, endian),
@@ -260,7 +260,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     }
     if (out$length > file.info(fname)$size) {
       stop(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
-                      group, element, out$length, file.info(fname)$size))
+                   group, element, out$length, file.info(fname)$size))
     }
     if (name == "SequenceDelimitationItem") {
       SQ <- NULL
@@ -269,7 +269,8 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   close(fid)
 
   hdr <- as.data.frame(hdr)
-  names(hdr) <- c("group", "element", "name", "code", "length", "value")
+  names(hdr) <- c("group", "element", "name", "code", "length",
+                  "value", "sequence")
   hdr$name <- as.character(hdr$name)
   hdr$length <- as.numeric(hdr$length)
   hdr$value <- as.character(hdr$value)

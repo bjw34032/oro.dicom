@@ -5,6 +5,7 @@
 
 \name{Create}
 \alias{create3D}
+\alias{create4D}
 \title{Create Arrays from DICOM Headers/Images}
 \description{
   A DICOM list structure is used to produce a multi-dimensional array
@@ -12,6 +13,8 @@
 }
 \usage{
 create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE, ...)
+create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
+         mosaic = FALSE, ...)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -26,6 +29,8 @@ create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE, ...)
     columns from DICOM to R.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
+  \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
+    storage of the data in Siemens \sQuote{Mosaic} format.}
   \item{\ldots}{\ldots}
 }
 \value{
