@@ -13,7 +13,7 @@
 }
 \usage{
 create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE, ...)
-create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
+create4D(dcm, W, mode = "double", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, ...)
 }
 \arguments{
@@ -29,6 +29,7 @@ create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
     columns from DICOM to R.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
+  \item{W}{is the fourth dimension of the array.}
   \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
     storage of the data in Siemens \sQuote{Mosaic} format.}
   \item{\ldots}{\ldots}
