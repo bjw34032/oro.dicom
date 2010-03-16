@@ -42,7 +42,7 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
       stop("DICOM \"img\" information is not present.")
     }
   } else {
-    if (is.null(dcm$hdr)) {
+    if (is.null(dcm$img)) {
       dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
     }
   }
@@ -75,14 +75,16 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
-  sliceLocation <<- sliceLocation[order(sliceLocation)]
   patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
   if (length(patientPosition) != 1) {
     stop("PatientPosition(s) are not identical.")
   }
   if (patientPosition == "FFS") {
+    sliceLocation <- sliceLocation[order(sliceLocation)]
     img <- img[,,Z:1]
     sliceLocation <<- rev(sliceLocation)
+  } else {
+    sliceLocation <<- sliceLocation[order(sliceLocation)]
   }
   return(img)
 }
