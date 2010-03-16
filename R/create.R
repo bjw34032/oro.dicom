@@ -54,7 +54,8 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (length(Y) != 1) {
     stop("Column lengths are not identical.")
   }
-  Z <- length(dcm$hdr)
+  ## Check if the DICOM list has length > 1
+  Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
   img <- array(0, c(X,Y,Z))
   storage.mode(img) <- mode
   sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
@@ -89,8 +90,8 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 
-create4D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
-                     mosaic=FALSE, ...) {
+create4D <- function(dcm, W, mode="double", transpose=TRUE,
+                     pixelData=TRUE, mosaic=FALSE, ...) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -112,6 +113,23 @@ create4D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
     stop("Column lengths are not identical.")
   }
   Z <- length(dcm$hdr)
-  
+  img <- array(0, c(X,Y,Z,W))
+  storage.mode(img) <- mode
+  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+  if (any(is.na(sliceLocation))) {
+    stop("Missing values are present in SliceLocation.")
+  }
+  if (pixelData) {
+    for (z in 1:Z) {
+      z.order <- order(sliceLocation)[z]
+      img[,,z] <- dcm$img[[z.order]]
+    }
+  } else {
+    for (z in 1:Z) {
+      z.order <- order(sliceLocation)[z]
+      img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+    }
+  }
+
   return(1)
 }
