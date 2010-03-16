@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.4)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -34,7 +34,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > 
 > ### Name: Create
 > ### Title: Create Arrays from DICOM Headers/Images
-> ### Aliases: create3D
+> ### Aliases: create3D create4D
 > 
 > ### ** Examples
 > 
@@ -44,6 +44,10 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > dcmImage <- create3D(dcmList, mode="integer")
 > graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
 +                 xlab="", ylab="")
+> sliceLocation <- extractHeader(dcmList$hdr, "SliceLocation")
+> dSL <- abs(diff(sliceLocation))
+> plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
++      main="Difference in Slice Location")
 > 
 > ## pixelData = FALSE
 > ## The DICOM image data are read from create3D()
@@ -191,7 +195,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.3)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  40.07 0.16 40.282 0 0 
+Time elapsed:  77.422 5.756 262.502 0 0 
 > grDevices::dev.off()
 null device 
           1 
