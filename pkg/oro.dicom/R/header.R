@@ -38,12 +38,14 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
                     stringsAsFactors=stringsAsFactors)
   names(csv) <- as.vector(apply(hdrs[[1]][,1:3], 1, paste, collapse=collapse))
   ## Loop through all records and "merge" them
-  for (l in 2:length(hdrs)) {
-    temp <- data.frame(matrix(hdrs[[l]]$value, 1, nrow(hdrs[[l]])),
-                       stringsAsFactors=stringsAsFactors)
-    names(temp) <- as.vector(apply(hdrs[[l]][,1:3], 1, paste,
-                                   collapse=collapse))
-    csv <- merge(csv, temp, all=TRUE)
+  if (length(hdrs) > 1) {
+    for (l in 2:length(hdrs)) {
+      temp <- data.frame(matrix(hdrs[[l]]$value, 1, nrow(hdrs[[l]])),
+                         stringsAsFactors=stringsAsFactors)
+      names(temp) <- as.vector(apply(hdrs[[l]][,1:3], 1, paste,
+                                     collapse=collapse))
+      csv <- merge(csv, temp, all=TRUE)
+    }
   }
   row.names(csv) <- names(hdrs)
   return(csv)
