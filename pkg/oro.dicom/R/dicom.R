@@ -233,8 +233,13 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         skip <- readBin(fid, integer(), size=2, endian=endian)
         length <- readBin(fid, integer(), size=4, endian=endian)
       }
-      BitsAllocated <- which(hdr[, 3] %in% "BitsAllocated")[1]
-      bytes <- as.numeric(hdr[BitsAllocated, 6]) / 8
+      if (length < 0) {
+        M <- which(hdr[, 3] %in% "Rows")[1]
+        N <- which(hdr[, 3] %in% "Columns")[1]
+        length <- as.numeric(hdr[M, 6]) * as.numeric(hdr[N, 6])
+      }
+      bitsAllocated <- which(hdr[, 3] %in% "BitsAllocated")[1]
+      bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
       img <- readBin(fid, integer(), length, size=bytes, endian=endian)
       out <- list(length=length, value="")
@@ -259,7 +264,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
           out$value, ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
     }
     if (out$length > file.info(fname)$size) {
-      stop(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
+      warning(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
                    group, element, out$length, file.info(fname)$size))
     }
     if (name == "SequenceDelimitationItem") {
@@ -354,7 +359,8 @@ dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {
 }
 
 dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE, 
-                        descrip="SeriesDescription", ...) {
+                        descrip="SeriesDescription",
+                        aux.file=NULL, ...) {
   require("oro.nifti")
   nim <- oro.nifti::nifti(img, ...)
   ## (x,y) pixel dimensions
@@ -375,13 +381,19 @@ dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE,
   if (nchar(descrip.string) > 80)
     warning("Description is greater than 80 characters and will be truncated")
   nim@"descrip" <- descrip.string
+  ## aux_file
+  if (! is.null(aux.file)) {
+    if (nchar(descrip.string) > 24)
+      warning("aux_file is greater than 24 characters and will be truncated")
+    nim@"aux_file" <- aux.file
+  }
   ## units
   if (length(units) == 2) {
     nim@"xyzt_units" <- space.time2xyzt(units[1], units[2])
   } else {
     stop("units must be a length=2 vector")
   }
-  ## rescaling (more of a CT thing?)
+  ## rescale
   if (rescale) {
     nim@"scl_slope" <- extractHeader(hdr, "RescaleSlope")[1]
     nim@"scl_inter" <- extractHeader(hdr, "RescaleIntercept")[1]

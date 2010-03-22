@@ -33,7 +33,7 @@
 ##
 
 create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
-                     ...) {
+                     mosaic=FALSE, mosaicXY=NULL, ...) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -54,23 +54,49 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (length(Y) != 1) {
     stop("Column lengths are not identical.")
   }
-  ## Check if the DICOM list has length > 1
-  Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
-  img <- array(0, c(X,Y,Z))
-  storage.mode(img) <- mode
-  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-  if (any(is.na(sliceLocation))) {
-    stop("Missing values are present in SliceLocation.")
-  }
-  if (pixelData) {
-    for (z in 1:Z) {
-      z.order <- order(sliceLocation)[z]
-      img[,,z] <- dcm$img[[z.order]]
+  if (mosaic) {
+    if (is.null(dim(dcm$img)))
+      stop("Multiple MOSAIC files detected, please use create4D()")
+    if (is.null(mosaicXY)) {
+      acquisitionMatrix <-
+        header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
+      x <- acquisitionMatrix[1,1]
+      y <- acquisitionMatrix[1,4]
+      if (is.na(x) || is.na(y))
+        stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
+    } else {
+      x <- mosaicXY[1]
+      y <- mosaicXY[2]
     }
+    z <- (X/x) * (Y/y)
+    img <- array(0, c(x,y,z))
+    k <- 1
+    for (i in (X/x):1) {
+      for (j in 1:(Y/y)) {
+        img[,,k] <- dcm$img[((i-1)*x)+1:x, ((j-1)*y)+1:y]
+        k <- k+1
+      }
+    }
+    storage.mode(img) <- mode
   } else {
-    for (z in 1:Z) {
-      z.order <- order(sliceLocation)[z]
-      img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+    ## Check if the DICOM list has length > 1
+    Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
+    img <- array(0, c(X,Y,Z))
+    storage.mode(img) <- mode
+    sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+    if (any(is.na(sliceLocation))) {
+      stop("Missing values are present in SliceLocation.")
+    }
+    if (pixelData) {
+      for (z in 1:Z) {
+        z.order <- order(sliceLocation)[z]
+        img[,,z] <- dcm$img[[z.order]]
+      }
+    } else {
+      for (z in 1:Z) {
+        z.order <- order(sliceLocation)[z]
+        img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+      }
     }
   }
   if (transpose) {
@@ -80,18 +106,20 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (length(patientPosition) != 1) {
     stop("PatientPosition(s) are not identical.")
   }
-  if (patientPosition == "FFS") {
-    sliceLocation <- sliceLocation[order(sliceLocation)]
-    img <- img[,,Z:1]
-    sliceLocation <<- rev(sliceLocation)
-  } else {
-    sliceLocation <<- sliceLocation[order(sliceLocation)]
+  if (! mosaic) {
+    if (patientPosition == "FFS") {
+      sliceLocation <- sliceLocation[order(sliceLocation)]
+      img <- img[,,Z:1]
+      sliceLocation <<- rev(sliceLocation)
+    } else {
+      sliceLocation <<- sliceLocation[order(sliceLocation)]
+    }
   }
   return(img)
 }
 
 create4D <- function(dcm, W, mode="double", transpose=TRUE,
-                     pixelData=TRUE, mosaic=FALSE, ...) {
+                     pixelData=TRUE, mosaic=FALSE, mosaicXY=NULL, ...) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -100,7 +128,7 @@ create4D <- function(dcm, W, mode="double", transpose=TRUE,
       stop("DICOM \"img\" information is not present.")
     }
   } else {
-    if (is.null(dcm$hdr)) {
+    if (is.null(dcm$img)) {
       dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
     }
   }
@@ -112,24 +140,64 @@ create4D <- function(dcm, W, mode="double", transpose=TRUE,
   if (length(Y) != 1) {
     stop("Column lengths are not identical.")
   }
-  Z <- length(dcm$hdr)
-  img <- array(0, c(X,Y,Z,W))
-  storage.mode(img) <- mode
-  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-  if (any(is.na(sliceLocation))) {
-    stop("Missing values are present in SliceLocation.")
-  }
-  if (pixelData) {
-    for (z in 1:Z) {
-      z.order <- order(sliceLocation)[z]
-      img[,,z] <- dcm$img[[z.order]]
+  if (mosaic) {
+    if (is.null(mosaicXY)) {
+      acquisitionMatrix <-
+        header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
+      x <- acquisitionMatrix[1,1]
+      y <- acquisitionMatrix[1,4]
+      if (is.na(x) || is.na(y))
+        stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
+    } else {
+      x <- mosaicXY[1]
+      y <- mosaicXY[2]
     }
+    z <- (X/x) * (Y/y)
+    img <- array(0, c(x,y,z,W))
+    k <- 1
+    for (i in (X/x):1) {
+      for (j in 1:(Y/y)) {
+        img[,,k] <- dcm$img[((i-1)*x)+1:x, ((j-1)*y)+1:y]
+        k <- k+1
+      }
+    }
+    storage.mode(img) <- mode
   } else {
-    for (z in 1:Z) {
-      z.order <- order(sliceLocation)[z]
-      img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+    ## Check if the DICOM list has length > 1
+    Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
+    img <- array(0, c(X,Y,Z,W))
+    storage.mode(img) <- mode
+    sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+    if (any(is.na(sliceLocation))) {
+      stop("Missing values are present in SliceLocation.")
+    }
+    if (pixelData) {
+      for (z in 1:Z) {
+        z.order <- order(sliceLocation)[z]
+        img[,,z] <- dcm$img[[z.order]]
+      }
+    } else {
+      for (z in 1:Z) {
+        z.order <- order(sliceLocation)[z]
+        img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+      }
     }
   }
-
-  return(1)
+  if (transpose) {
+    img <- aperm(img, c(2,1,3))
+  }
+  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
+  if (length(patientPosition) != 1) {
+    stop("PatientPosition(s) are not identical.")
+  }
+  if (! mosaic) {
+    if (patientPosition == "FFS") {
+      sliceLocation <- sliceLocation[order(sliceLocation)]
+      img <- img[,,Z:1]
+      sliceLocation <<- rev(sliceLocation)
+    } else {
+      sliceLocation <<- sliceLocation[order(sliceLocation)]
+    }
+  }
+  return(img)
 }

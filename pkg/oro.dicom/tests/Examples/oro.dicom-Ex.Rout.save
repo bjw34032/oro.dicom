@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.4)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.5)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -41,10 +41,9 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.4)
 > ## pixelData = TRUE
 > ## The DICOM image data are read from dicomSeparate()
 > dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+> sliceLocation <- NULL
 > dcmImage <- create3D(dcmList, mode="integer")
-> graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
-+                 xlab="", ylab="")
-> sliceLocation <- extractHeader(dcmList$hdr, "SliceLocation")
+> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > dSL <- abs(diff(sliceLocation))
 > plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
 +      main="Difference in Slice Location")
@@ -55,8 +54,14 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.4)
 > dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
 +                          pixelData=FALSE)
 > dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
-> graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
-+                 xlab="", ylab="")
+> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> 
+> ## mosaic = TRUE
+> dcm <- dicomInfo(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
++                              package="oro.dicom"))
+> dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
+> image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
++       xlab="", ylab="")
 > 
 > 
 > 
@@ -195,7 +200,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.4)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  77.422 5.756 262.502 0 0 
+Time elapsed:  43.7 0.88 44.637 0 0 
 > grDevices::dev.off()
 null device 
           1 
