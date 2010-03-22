@@ -12,9 +12,10 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE, ...)
+create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
+         mosaic = FALSE, mosaicXY = NULL, ...)
 create4D(dcm, W, mode = "double", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, ...)
+         mosaic = FALSE, mosaicXY = NULL, ...)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -32,6 +33,9 @@ create4D(dcm, W, mode = "double", transpose = TRUE, pixelData = TRUE,
   \item{W}{is the fourth dimension of the array.}
   \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
     storage of the data in Siemens \sQuote{Mosaic} format.}
+  \item{mosaicXY}{is a vector of length two that provides the (x,y)
+    dimensions of the individual images.  Default behavior is to use the
+    AcquisitonMatrix to determine the (x,y) values.}
   \item{\ldots}{\ldots}
 }
 \value{
@@ -52,8 +56,7 @@ create4D(dcm, W, mode = "double", transpose = TRUE, pixelData = TRUE,
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
 sliceLocation <- NULL
 dcmImage <- create3D(dcmList, mode="integer")
-graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
-                xlab="", ylab="")
+image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 dSL <- abs(diff(sliceLocation))
 plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
      main="Difference in Slice Location")
@@ -64,8 +67,14 @@ plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
                          pixelData=FALSE)
 dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
-graphics::image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE,
-                xlab="", ylab="")
+image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+
+## mosaic = TRUE
+dcm <- dicomInfo(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
+                             package="oro.dicom"))
+dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
+image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
+      xlab="", ylab="")
 }
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 %\keyword{}

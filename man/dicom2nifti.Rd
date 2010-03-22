@@ -12,7 +12,7 @@
 }
 \usage{
 dicom2nifti(img, hdr, units=c("mm","sec"), rescale=FALSE, 
-            descrip="SeriesDescription", ...)
+            descrip="SeriesDescription", aux.file=NULL, ...)
 }
 \arguments{
   \item{img}{Multi-dimensional data volume}
@@ -21,7 +21,9 @@ dicom2nifti(img, hdr, units=c("mm","sec"), rescale=FALSE,
   \item{rescale}{Should slope and intercept parameters be extracted from
     the DICOM headers and saved?}
   \item{descrip}{DICOM header field(s) to be included in the
-    \code{descrip}}
+    \code{descrip} slot for the \code{nifti} class object.}
+  \item{aux.file}{Character string to be included in the \code{aux_file}
+    slot for the \code{nifti} class object.}
   \item{...}{Arguments to be passed to \code{nifti}}
 }
 \value{
