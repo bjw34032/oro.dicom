@@ -1,6 +1,6 @@
 
-R version 2.10.1 (2009-12-14)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.0 alpha (2010-04-05 r51607)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,7 +22,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.5)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -200,7 +200,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.5)
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  43.7 0.88 44.637 0 0 
+Time elapsed:  33.78 0.84 34.626 0 0 
 > grDevices::dev.off()
 null device 
           1 

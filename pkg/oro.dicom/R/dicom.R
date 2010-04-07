@@ -64,6 +64,11 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 
   ## Sub-routines
   
+  readCharWithEmbeddedNuls <- function(fid, n) {
+    txt <- readBin(fid, "raw", n)
+    iconv(rawToChar(txt[txt != as.raw(0)]), to="UTF-8")
+  }
+
   unsigned.header <- function(VR, implicit, fid, endian) {
     ## "Unsigned Long" and "Unsigned Short"
     length <- ifelse(implicit,
@@ -129,8 +134,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         length <- readBin(fid, integer(), size=2, endian=endian)
       }
       ## Trim trailing white space
-      value <- sub(" +$", "",
-                   iconv(rawToChar(readBin(fid, "raw", length)), to="UTF-8"))
+      value <- sub(" +$", "", readCharWithEmbeddedNuls(fid, length))
       ## Replace all "\\"s with " "
       value <- gsub("[\\]", " ", value)
       ## Remove all non {a-zA-Z} characters with white space
@@ -160,7 +164,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       length <- ifelse(implicit,
                        readBin(fid, integer(), size=4, endian=endian),
                        readBin(fid, integer(), size=2, endian=endian))
-      value <- iconv(rawToChar(readBin(fid, "raw", length)), to="UTF-8")
+      value <- readCharWithEmbeddedNuls(fid, length)
       value <- sub(" +$", "", value) # remove white space at end
       value <- gsub("[\\]", " ", value) # remove "\\"s
     } else {
@@ -207,7 +211,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     pixel.data <- ifelse(group == "7FE0" & element == "0010", TRUE, FALSE)
     index <- which(dcm.group %in% group & dcm.element %in% element)
-    vrstr <- iconv(rawToChar(readBin(fid, "raw", 2)), to="UTF-8") # readChar(fid, n=2)
+    vrstr <- readCharWithEmbeddedNuls(fid, n=2) # iconv(rawToChar(readBin(fid, "raw", 2)), to="UTF-8") # readChar(fid, n=2)
     if (debug && length(index) != 1) {
       warning(sprintf("DICOM tag (%s,%s) is not in current dictionary.",
                       group, element))
