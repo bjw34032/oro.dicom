@@ -99,28 +99,23 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
       }
     }
   }
+  sliceLocation <<- sliceLocation[order(sliceLocation)]
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
-  imageOrientationPatient <-
-    header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE),
-                  ncol=6)
-  firstRow <- getOrientation(imageOrientationPatient[1,1:3])
-  firstColumn <- getOrientation(imageOrientationPatient[1,4:6])
-  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
-  if (length(patientPosition) != 1) {
-    stop("PatientPosition(s) are not identical.")
-  }
-  if (! mosaic) {
-    if ((diff(sliceLocation)[1] < 0 && patientPosition == "FFS") ||
-        (diff(sliceLocation)[1] > 0 && patientPosition == "HFS")) {
-      sliceLocation <- sliceLocation[order(sliceLocation)]
-      img <- img[,,Z:1]
-      sliceLocation <<- rev(sliceLocation)
-    } else {
-      sliceLocation <<- sliceLocation[order(sliceLocation)]
-    }
-  }
+#  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
+#  if (length(patientPosition) != 1) {
+#    stop("PatientPosition(s) are not identical.")
+#  }
+#  if (! mosaic) {
+#    if (patientPosition == "FFS") {
+#      sliceLocation <- sliceLocation[order(sliceLocation)]
+#      img <- img[,,Z:1]
+#      sliceLocation <<- rev(sliceLocation)
+#    } else {
+#  sliceLocation <<- sliceLocation[order(sliceLocation)]
+#    }
+#  }
   return(img)
 }
 
