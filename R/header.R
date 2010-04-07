@@ -36,15 +36,25 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
   ## Use first record to establish data.frame
   csv <- data.frame(matrix(hdrs[[1]]$value, 1, nrow(hdrs[[1]])),
                     stringsAsFactors=stringsAsFactors)
-  names(csv) <- as.vector(apply(hdrs[[1]][,1:3], 1, paste, collapse=collapse))
+  names(csv) <-
+    paste(sub("^-", "", gsub("[^0-9]+", "-", hdrs[[1]]$sequence)),
+          as.vector(apply(hdrs[[1]][,1:3], 1, paste, collapse=collapse)),
+          sep="")
   ## Loop through all records and "merge" them
   if (length(hdrs) > 1) {
     for (l in 2:length(hdrs)) {
       temp <- data.frame(matrix(hdrs[[l]]$value, 1, nrow(hdrs[[l]])),
                          stringsAsFactors=stringsAsFactors)
-      names(temp) <- as.vector(apply(hdrs[[l]][,1:3], 1, paste,
-                                     collapse=collapse))
-      csv <- merge(csv, temp, all=TRUE)
+      names(temp) <-
+        paste(sub("^-", "", gsub("[^0-9]+", "-", hdrs[[l]]$sequence)),
+              as.vector(apply(hdrs[[l]][,1:3], 1, paste, collapse=collapse)),
+              sep="")
+      if (length(names(csv)) == length(names(temp)) &&
+          all(names(csv) == names(temp))) {
+        csv <- rbind(csv, temp)
+      } else {
+        out <- merge(csv, temp, by=NULL, all=TRUE)
+      }
     }
   }
   row.names(csv) <- names(hdrs)
@@ -57,11 +67,14 @@ extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE) {
   }
   out.list <- lapply(hdrs,
                      function(hdr) {
-                       if(sum(index <- hdr$name %in% string) > 0)
+                       index <- which(hdr$name %in% string &
+                                      hdr$sequence == "")
+                       if(sum(index) > 0) {
                          hdr$value[index]
-                       else
+                       } else {
                          NA
-                       })
+                       }
+                     })
   out.names <- names(out.list)
   out.vec <- unlist(out.list)
   if (numeric) {

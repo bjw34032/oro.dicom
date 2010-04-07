@@ -121,8 +121,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     }
     ## skip <- readBin(fid, integer(), size=2, endian=endian)
     ## length <- readBin(fid, integer(), size=4, endian=endian)
-    if (is.null(SQ) && length < 0) {
-      SQ <<- paste("(", group, ",", element, ")", sep="")
+    if (length < 0) { # (is.null(SQ) && length < 0) {
+      ## Append (group,element) doublets for nexted SequenceItem tags
+      SQ <<- paste(SQ, "(", group, ",", element, ")", sep="")
     }
     seek(fid, where=seek(fid) + max(0,length)) # skip over all sequence items
     list(length=length, value="sequence")
@@ -262,22 +263,29 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     }
     name <- ifelse(any(index), dicom.dic$name[index], "Unknown")
     hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
-                        out$value, ifelse(is.null(SQ), "", SQ)))
+                        paste(out$value, collapse=" "),
+                        ifelse(is.null(SQ), "", SQ)))
     if (debug) {
       cat("", seek.old, group, element, name, VR$code, out$length,
-          out$value, ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
+          paste(out$value, collapse=" "),
+          ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
     }
     if (out$length > file.info(fname)$size) {
       warning(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
                    group, element, out$length, file.info(fname)$size))
     }
-    if (name == "SequenceDelimitationItem") {
-      SQ <- NULL
+    if (name == "SequenceDelimitationItem" && ! is.null(SQ)) {
+      sSQ <- unlist(strsplit(SQ, "\\)\\(")) # separate (group,element) doublets
+      if ((lSQ <- length(sSQ)) > 1) {
+        SQ <- paste(sSQ[-lSQ], ")", sep="") # remove the last (group,element) doublet
+      } else {
+        SQ <- NULL # set SQ to NULL
+      }
     }
   }
   close(fid)
 
-  hdr <- as.data.frame(hdr)
+  hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
   names(hdr) <- c("group", "element", "name", "code", "length",
                   "value", "sequence")
   hdr$name <- as.character(hdr$name)
