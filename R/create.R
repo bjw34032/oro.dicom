@@ -102,12 +102,18 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
+  imageOrientationPatient <-
+    header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE),
+                  ncol=6)
+  firstRow <- getOrientation(imageOrientationPatient[1,1:3])
+  firstColumn <- getOrientation(imageOrientationPatient[1,4:6])
   patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
   if (length(patientPosition) != 1) {
     stop("PatientPosition(s) are not identical.")
   }
   if (! mosaic) {
-    if (patientPosition == "FFS") {
+    if ((diff(sliceLocation)[1] < 0 && patientPosition == "FFS") ||
+        (diff(sliceLocation)[1] > 0 && patientPosition == "HFS")) {
       sliceLocation <- sliceLocation[order(sliceLocation)]
       img <- img[,,Z:1]
       sliceLocation <<- rev(sliceLocation)
@@ -118,8 +124,8 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 
-create4D <- function(dcm, W, mode="double", transpose=TRUE,
-                     pixelData=TRUE, mosaic=FALSE, mosaicXY=NULL, ...) {
+create4D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
+                     mosaic=FALSE, mosaicXY=NULL, W=NULL, ...) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -146,19 +152,22 @@ create4D <- function(dcm, W, mode="double", transpose=TRUE,
         header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
       x <- acquisitionMatrix[1,1]
       y <- acquisitionMatrix[1,4]
-      if (is.na(x) || is.na(y))
+      if (is.na(x) || x == 0 || is.na(y) || y == 0)
         stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
     } else {
       x <- mosaicXY[1]
       y <- mosaicXY[2]
     }
     z <- (X/x) * (Y/y)
+    W <- length(dcm$hdr)
     img <- array(0, c(x,y,z,W))
-    k <- 1
-    for (i in (X/x):1) {
-      for (j in 1:(Y/y)) {
-        img[,,k] <- dcm$img[((i-1)*x)+1:x, ((j-1)*y)+1:y]
-        k <- k+1
+    for (w in 1:W) {
+      k <- 1
+      for (i in (X/x):1) {
+        for (j in 1:(Y/y)) {
+          img[,,k,w] <- dcm$img[[w]][((i-1)*x)+1:x, ((j-1)*y)+1:y]
+          k <- k+1
+        }
       }
     }
     storage.mode(img) <- mode
@@ -184,7 +193,7 @@ create4D <- function(dcm, W, mode="double", transpose=TRUE,
     }
   }
   if (transpose) {
-    img <- aperm(img, c(2,1,3))
+    img <- aperm(img, c(2,1,3,4))
   }
   patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
   if (length(patientPosition) != 1) {
@@ -193,7 +202,7 @@ create4D <- function(dcm, W, mode="double", transpose=TRUE,
   if (! mosaic) {
     if (patientPosition == "FFS") {
       sliceLocation <- sliceLocation[order(sliceLocation)]
-      img <- img[,,Z:1]
+      img <- img[,,Z:1,]
       sliceLocation <<- rev(sliceLocation)
     } else {
       sliceLocation <<- sliceLocation[order(sliceLocation)]

@@ -14,8 +14,8 @@
 \usage{
 create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, ...)
-create4D(dcm, W, mode = "double", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL, ...)
+create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
+         mosaic = FALSE, mosaicXY = NULL, W = NULL, ...)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
