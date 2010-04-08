@@ -85,6 +85,29 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 > 
 > 
 > cleanEx()
+> nameEx("dicom2analyze")
+> ### * dicom2analyze
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: dicom2analyze
+> ### Title: Convert DICOM Header to Analyze
+> ### Aliases: dicom2analyze
+> ### Keywords: file
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+> ##D require("oro.nifti")
+> ##D dcmAnlz <- dicom2analyze(dcmList, datatype=4, mode="integer")
+> ##D image(dcmAnlz)
+> ##D orthographic(dcmAnlz)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("dicom2nifti")
 > ### * dicom2nifti
 > 
@@ -98,16 +121,9 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D ## pixelData = TRUE
 > ##D dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
-> ##D dcmImage <- create3D(dcmList, mode="integer")
-> ##D ## Accumulate voxel dimensions
-> ##D pS <- header2matrix(extractHeader(dcmList$hdr, "PixelSpacing", FALSE), 2)[1,]
-> ##D sT <- extractHeader(dcmList$hdr, "SliceThickness")[1]
-> ##D pixdim <- c(0, pS, sT, rep(1,4))
 > ##D require("oro.nifti")
-> ##D dcmNifti <- nifti(dcmImage, datatype=4, pixdim=pixdim)
-> ##D par(bg="black")
+> ##D dcmNifti <- dicom2nifti(dcmList, datatype=4, mode="integer")
 > ##D image(dcmNifti)
 > ##D orthographic(dcmNifti)
 > ## End(Not run)
@@ -197,10 +213,51 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 > 
 > 
 > 
+> cleanEx()
+> nameEx("planes")
+> ### * planes
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: Orthogonal Planes
+> ### Title: Orthogonal Planes
+> ### Aliases: is.axial is.coronal is.sagittal
+> ### Keywords: misc
+> 
+> ### ** Examples
+> 
+> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> iop <-
++   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+> is.axial(iop)
+[1] FALSE
+> is.coronal(iop)
+[1] TRUE
+> is.sagittal(iop)
+[1] FALSE
+> 
+> x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> iop <-
++   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+> is.axial(iop)
+Warning in is.axial(iop) :
+  Oblique acquisition in ImageOrientationPatient.
+[1] FALSE
+> is.coronal(iop)
+Warning in is.coronal(iop) :
+  Oblique acquisition in ImageOrientationPatient.
+[1] FALSE
+> is.sagittal(iop)
+Warning in is.sagittal(iop) :
+  Oblique acquisition in ImageOrientationPatient.
+[1] TRUE
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  33.78 0.84 34.626 0 0 
+Time elapsed:  33.94 1.01 34.983 0 0 
 > grDevices::dev.off()
 null device 
           1 

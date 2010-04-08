@@ -11,11 +11,12 @@
   format.
 }
 \usage{
-dicom2analyze(img, hdr, descrip="SeriesDescription", ...)
+dicom2analyze(dcm, reslice = TRUE, descrip = "SeriesDescription", ...)
 }
 \arguments{
-  \item{img}{Multi-dimensional data volume}
-  \item{hdr}{DICOM header}
+  \item{dcm}{DICOM object containing both header and image information.}
+  \item{reslice}{Logical variable (default = \code{TRUE}) indicating if
+    the data volume should be resliced.}
   \item{descrip}{DICOM header field(s) to be included in the
     \code{descrip}}
   \item{...}{Arguments to be passed to \code{anlz}}
@@ -34,8 +35,16 @@ dicom2analyze(img, hdr, descrip="SeriesDescription", ...)
   \url{http://medical.nema.org}
 }
 \seealso{
-  \code{\link{dicom2nifti}}, \code{\link[dcemriS4]{anlz}}
+  \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
 }
-%\examples{}
+\examples{
+\dontrun{
+dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+require("oro.nifti")
+dcmAnlz <- dicom2analyze(dcmList, datatype=4, mode="integer")
+image(dcmAnlz)
+orthographic(dcmAnlz)
+}
+}
 \author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
 \keyword{file}

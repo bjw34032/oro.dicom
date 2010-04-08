@@ -129,37 +129,6 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     list(length=length, value="sequence")
   }
   
-  null.header <- function(VR, group, element, fid, endian) {
-    if (VR$bytes > 0) {
-      if (! implicit) {
-        length <- readBin(fid, integer(), size=2, endian=endian)
-      }
-      ## Trim trailing white space
-      value <- sub(" +$", "", readCharWithEmbeddedNuls(fid, length))
-      ## Replace all "\\"s with " "
-      value <- gsub("[\\]", " ", value)
-      ## Remove all non {a-zA-Z} characters with white space
-      ## value <- gsub("[^{a-zA-Z}]", " ", value)
-      if (VR$code == "UI") {
-        value <- sub("\\0", "", value) # Remove trailing \0
-      }
-    } else {
-      if (! implicit) {
-        skip <- readBin(fid, integer(), size=2, endian=endian)
-        length <- readBin(fid, integer(), size=4, endian=endian)
-      }
-      if (length >= 0 &&
-          (VR$code != "SQ" && (group != "FFFE" &&
-             (! element %in% c("E000","E00D","E0DD"))))) {
-        skip <- readBin(fid, integer(), length, size=1, endian=endian)
-        value <- "skip"
-      } else {
-        value <- "nothing matched"
-      }
-    }
-    list(length=length, value=value)
-  }
-  
   unknown.header <- function(VR, implicit, fid, endian) {
     if (VR$bytes > 0) {
       length <- ifelse(implicit,
@@ -332,22 +301,34 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   list(hdr=headers, img=images)
 }
 
-dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {
+dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
+                          ...) {
+  img <- create3D(dcm, ...)
+  if (reslice) {
+    cat("## swapping dimensions...", fill=TRUE)
+    img <- swapDimension(img, dcm)
+  } else {
+    cat("## NOT swapping dimensions...", fill=TRUE)
+  }
   require("oro.nifti")
   aim <- oro.nifti::anlz(img, ...)
-  ## (x,y) pixel dimensions
-  aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(hdr, "PixelSpacing", FALSE)[1], " ")))
-  ## z pixel dimensions
-  aim@"pixdim"[4] <- ifelse(aim@"dim_"[1] > 2,
-                            extractHeader(hdr, "SliceThickness")[1],
-                            1)
+  if (is.null(attr(img,"pixdim"))) {
+    ## (x,y) pixel dimensions
+    aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(dcm$hdr, "PixelSpacing", FALSE)[1], " ")))
+    ## z pixel dimensions
+    aim@"pixdim"[4] <- ifelse(aim@"dim_"[1] > 2,
+                              extractHeader(dcm$hdr, "SliceThickness")[1],
+                              1)
+  } else {
+    aim@"pixdim"[2:4] <- attr(img,"pixdim")
+  }
   ## description
   for (i in 1:length(descrip))
     if (i == 1) {
-      descrip.string <- extractHeader(hdr, descrip[i], FALSE)[1]
+      descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
     } else {
       descrip.string <- paste(descrip.string,
-                              extractHeader(hdr, descrip[i], FALSE)[1],
+                              extractHeader(dcm$hdr, descrip[i], FALSE)[1],
                               sep="; ")
     }
   if (nchar(descrip.string) > 80) {
@@ -357,37 +338,49 @@ dicom2analyze <- function(img, hdr, descrip="SeriesDescription", ...) {
     aim@"descrip" <- descrip.string
   }
   ## originator
-  aim$"originator" <- substring(extractHeader(hdr, "RequestingPhysician")[1],
+  aim$"originator" <- substring(extractHeader(dcm$hdr, "RequestingPhysician")[1],
                                 1, 10)
   ## scannum
-  aim@"scannum" <- substring(extractHeader(hdr, "StudyID")[1], 1, 10)
+  aim@"scannum" <- substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10)
   ## patient_id
-  aim@"patient_id" <- substring(extractHeader(hdr, "PatientID")[1], 1, 10)
+  aim@"patient_id" <- substring(extractHeader(dcm$hdr, "PatientID")[1], 1, 10)
   ## exp_date
-  aim@"exp_date" <- substring(extractHeader(hdr, "StudyDate")[1], 1, 10)
+  aim@"exp_date" <- substring(extractHeader(dcm$hdr, "StudyDate")[1], 1, 10)
   ## exp_time
-  aim@"exp_time" <- substring(extractHeader(hdr, "StudyTime")[1], 1, 10)
+  aim@"exp_time" <- substring(extractHeader(dcm$hdr, "StudyTime")[1], 1, 10)
   return(aim)
 }
 
-dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE, 
-                        descrip="SeriesDescription",
+dicom2nifti <- function(dcm, units=c("mm","sec"), rescale=FALSE,
+                        reslice=TRUE, descrip="SeriesDescription",
                         aux.file=NULL, ...) {
+  img <- create3D(dcm, ...)
+  if (reslice) {
+    cat("## swapping dimensions...", fill=TRUE)
+    img <- swapDimension(img, dcm)
+  } else {
+    cat("## NOT swapping dimensions...", fill=TRUE)
+  }
   require("oro.nifti")
   nim <- oro.nifti::nifti(img, ...)
-  ## (x,y) pixel dimensions
-  nim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(hdr, "PixelSpacing", FALSE)[1], " ")))
-  ## z pixel dimensions
-  nim@"pixdim"[4] <- ifelse(nim@"dim_"[1] > 2,
-                            extractHeader(hdr, "SliceThickness")[1],
-                            1)
+  if (is.null(attr(img,"pixdim"))) {
+    ## (x,y) pixel dimensions
+    pixelSpacing <- extractHeader(dcm$hdr, "PixelSpacing", FALSE)
+    nim@"pixdim"[2:3] <- header2matrix(pixelSpacing, 2)[1,]
+    ## z pixel dimensions
+    nim@"pixdim"[4] <- ifelse(nim@"dim_"[1] > 2,
+                              extractHeader(dcm$hdr, "SliceThickness")[1],
+                              1)
+  } else {
+    nim@"pixdim"[2:4] <- attr(img,"pixdim")
+  }
   ## description
   for (i in 1:length(descrip))
     if (i == 1) {
-      descrip.string <- extractHeader(hdr, descrip[i], FALSE)[1]
+      descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
     } else {
       descrip.string <- paste(descrip.string,
-                              extractHeader(hdr, descrip[i], FALSE)[1],
+                              extractHeader(dcm$hdr, descrip[i], FALSE)[1],
                               sep="; ")
     }
   if (nchar(descrip.string) > 80)
@@ -407,8 +400,8 @@ dicom2nifti <- function(img, hdr, units=c("mm","sec"), rescale=FALSE,
   }
   ## rescale
   if (rescale) {
-    nim@"scl_slope" <- extractHeader(hdr, "RescaleSlope")[1]
-    nim@"scl_inter" <- extractHeader(hdr, "RescaleIntercept")[1]
+    nim@"scl_slope" <- extractHeader(dcm$hdr, "RescaleSlope")[1]
+    nim@"scl_inter" <- extractHeader(dcm$hdr, "RescaleIntercept")[1]
   }
   return(nim)
 }

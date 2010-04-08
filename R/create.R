@@ -32,8 +32,8 @@
 ## $Id: $
 ##
 
-create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
-                     mosaic=FALSE, mosaicXY=NULL, ...) {
+create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
+                     mosaic=FALSE, mosaicXY=NULL) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -103,24 +103,11 @@ create3D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
-#  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
-#  if (length(patientPosition) != 1) {
-#    stop("PatientPosition(s) are not identical.")
-#  }
-#  if (! mosaic) {
-#    if (patientPosition == "FFS") {
-#      sliceLocation <- sliceLocation[order(sliceLocation)]
-#      img <- img[,,Z:1]
-#      sliceLocation <<- rev(sliceLocation)
-#    } else {
-#  sliceLocation <<- sliceLocation[order(sliceLocation)]
-#    }
-#  }
   return(img)
 }
 
-create4D <- function(dcm, mode="double", transpose=TRUE, pixelData=TRUE,
-                     mosaic=FALSE, mosaicXY=NULL, W=NULL, ...) {
+create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
+                     mosaic=FALSE, mosaicXY=NULL, W=NULL) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
