@@ -61,6 +61,7 @@ getOrientation <- function(xyz, delta=0.0001) {
 }
 
 swapDimension <- function(img, dcm) {
+  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
   patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
   if (length(patientPosition) != 1) {
     stop("PatientPosition(s) are not identical.")
@@ -68,19 +69,25 @@ swapDimension <- function(img, dcm) {
   imageOrientationPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
   ## Ensure all rows of imageOrientationPatient are identical!
-  first.row <- getOrientation(imageOrientationPatient[1,1:3])
-  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  pixelSpacing <-
+    header2matrix(extractHeader(dcm$hdr, "PixelSpacing", FALSE), 2)
+  ## Ensure all rows of pixelSpacing are identical!
+  sliceThickness <- extractHeader(dcm$hdr, "SliceThickness")
+  pixdim <- c(unique(pixelSpacing), unique(sliceThickness))
+  first.row <- getOrientation(unique(imageOrientationPatient)[1:3])
+  first.col <- getOrientation(unique(imageOrientationPatient)[4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     stop("Oblique acquisition in ImageOrientationPatient.")
   }
   X <- nrow(img)
   Y <- ncol(img)
   Z <- dim(img)[3]
-  axial <- c("L","R","A","P")
-  if (first.row %in% axial && first.col %in% axial) {
+  if (is.axial(imageOrientationPatient)) {
     cat("## Axial acquisition", fill=TRUE)
     if (first.row %in% c("A","P")) {
-      img <- aperm(img, c(2,1,3))
+      index <- c(2,1,3)
+      img <- aperm(img, index)
+      pixdim <- pixdim[index]
     }
     if (first.row == "R") {
       img <- img[X:1,,]
@@ -96,11 +103,12 @@ swapDimension <- function(img, dcm) {
       sliceLocation <<- rev(sliceLocation)
     }
   }
-  coronal <- c("L","R","H","F")
-  if (first.row %in% coronal && first.col %in% coronal) {
+  if (is.coronal(imageOrientationPatient)) {
     cat("## Coronal acquisition", fill=TRUE)
     if (first.row %in% c("H","F")) {
-      img <- aperm(img, c(2,1,3))
+      index <- c(2,1,3)
+      img <- aperm(img, index)
+      pixdim <- pixdim[index]
     }
     if (first.row == "R") {
       img <- img[X:1,,]
@@ -115,13 +123,16 @@ swapDimension <- function(img, dcm) {
       img <- img[,,Z:1]
       sliceLocation <<- rev(sliceLocation)
     }
-    img <- aperm(img, c(1,3,2)) # re-organize orthogonal views
+    index <- c(1,3,2)
+    img <- aperm(img, index) # re-organize orthogonal views
+    pixdim <- pixdim[index]
   }
-  sagittal <- c("A","P","H","F")
-  if (first.row %in% sagittal && first.col %in% sagittal) {
+  if (is.sagittal(imageOrientationPatient)) {
     cat("## Sagittal acquisition", fill=TRUE)
-      if (first.row %in% c("H","F")) {
-      img <- aperm(img, c(2,1,3))
+    if (first.row %in% c("H","F")) {
+      index <- c(2,1,3)
+      img <- aperm(img, index)
+      pixdim <- pixdim[index]
     }
     if (first.row == "P") {
       img <- img[X:1,,]
@@ -129,11 +140,47 @@ swapDimension <- function(img, dcm) {
     if (first.col == "H") {
       img <- img[,Y:1,]
     }
-    img <- aperm(img, c(2,3,1)) # re-organize orthogonal views
+    index <- c(3,1,2)
+    img <- aperm(img, index) # re-organize orthogonal views
+    pixdim <- pixdim[index]
   }
   ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
   if (any(is.na(sliceLocation))) {
     stop("Missing values are present in SliceLocation.")
   }
+  cat("## ", pixdim, fill=TRUE)
+  attr(img,"pixdim") <- pixdim
   return(img)
+}
+
+is.axial <- function(imageOrientationPatient, axial=c("L","R","A","P")) {
+  first.row <- getOrientation(imageOrientationPatient[1,1:3])
+  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  if (nchar(first.row) > 1 || nchar(first.col) > 1) {
+    warning("Oblique acquisition in ImageOrientationPatient.")
+  }
+  return(unlist(strsplit(first.row, ""))[1] %in% axial &
+         unlist(strsplit(first.col, ""))[1] %in% axial)
+}
+
+is.coronal <- function(imageOrientationPatient,
+                       coronal=c("L","R","H","F")) {
+  first.row <- getOrientation(imageOrientationPatient[1,1:3])
+  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  if (nchar(first.row) > 1 || nchar(first.col) > 1) {
+    warning("Oblique acquisition in ImageOrientationPatient.")
+  }
+  return(unlist(strsplit(first.row, ""))[1] %in% coronal &
+         unlist(strsplit(first.col, ""))[1] %in% coronal)
+}
+
+is.sagittal <- function(imageOrientationPatient,
+                        sagittal=c("A","P","H","F")) {
+  first.row <- getOrientation(imageOrientationPatient[1,1:3])
+  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  if (nchar(first.row) > 1 || nchar(first.col) > 1) {
+    warning("Oblique acquisition in ImageOrientationPatient.")
+  }
+  return(unlist(strsplit(first.row, ""))[1] %in% sagittal &
+         unlist(strsplit(first.col, ""))[1] %in% sagittal)
 }

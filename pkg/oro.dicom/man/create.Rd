@@ -12,10 +12,10 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL, ...)
-create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL, W = NULL, ...)
+create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
+         mosaic = FALSE, mosaicXY = NULL)
+create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
+         mosaic = FALSE, mosaicXY = NULL, W = NULL)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -36,7 +36,7 @@ create4D(dcm, mode = "double", transpose = TRUE, pixelData = TRUE,
   \item{mosaicXY}{is a vector of length two that provides the (x,y)
     dimensions of the individual images.  Default behavior is to use the
     AcquisitonMatrix to determine the (x,y) values.}
-  \item{\ldots}{\ldots}
+%  \item{\ldots}{\ldots}
 }
 \value{
   Multi-dimensional array of medical imaging data.

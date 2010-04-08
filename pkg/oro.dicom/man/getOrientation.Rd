@@ -6,11 +6,12 @@
   the Image Orientation (Patient) direction cosines.
 }
 \usage{
-getOrientation(xyz)
+getOrientation(xyz, delta = 0.0001)
 }
 \arguments{
   \item{xyz}{is a vector of direction cosines from
     \dQuote{ImageOrientationPatient} (0020,0037).}
+  \item{delta}{is the tolerance around zero for comparisons.}
 }
 \details{
   C.7.6.2.1.1 Image Position And Image Orientation.  The Image Position 
