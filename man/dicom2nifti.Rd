@@ -11,11 +11,13 @@
   format.
 }
 \usage{
-dicom2nifti(dcm, units=c("mm","sec"), rescale=FALSE, reslice=TRUE,
-            descrip="SeriesDescription", aux.file=NULL, ...)
+dicom2nifti(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
+            reslice=TRUE, descrip="SeriesDescription", aux.file=NULL,
+            ...)
 }
 \arguments{
   \item{dcm}{DICOM object containing both header and image information.}
+  \item{datatype}{...}
   \item{units}{Spatial and temporal units for \code{xyzt}}
   \item{rescale}{Should slope and intercept parameters be extracted from
     the DICOM headers and saved?}

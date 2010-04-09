@@ -83,7 +83,6 @@ swapDimension <- function(img, dcm) {
   Y <- ncol(img)
   Z <- dim(img)[3]
   if (is.axial(imageOrientationPatient)) {
-    cat("## Axial acquisition", fill=TRUE)
     if (first.row %in% c("A","P")) {
       index <- c(2,1,3)
       img <- aperm(img, index)
@@ -104,7 +103,6 @@ swapDimension <- function(img, dcm) {
     }
   }
   if (is.coronal(imageOrientationPatient)) {
-    cat("## Coronal acquisition", fill=TRUE)
     if (first.row %in% c("H","F")) {
       index <- c(2,1,3)
       img <- aperm(img, index)
@@ -128,7 +126,6 @@ swapDimension <- function(img, dcm) {
     pixdim <- pixdim[index]
   }
   if (is.sagittal(imageOrientationPatient)) {
-    cat("## Sagittal acquisition", fill=TRUE)
     if (first.row %in% c("H","F")) {
       index <- c(2,1,3)
       img <- aperm(img, index)
@@ -148,7 +145,6 @@ swapDimension <- function(img, dcm) {
   if (any(is.na(sliceLocation))) {
     stop("Missing values are present in SliceLocation.")
   }
-  cat("## ", pixdim, fill=TRUE)
   attr(img,"pixdim") <- pixdim
   return(img)
 }
