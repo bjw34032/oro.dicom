@@ -305,10 +305,7 @@ dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
                           ...) {
   img <- create3D(dcm, ...)
   if (reslice) {
-    cat("## swapping dimensions...", fill=TRUE)
     img <- swapDimension(img, dcm)
-  } else {
-    cat("## NOT swapping dimensions...", fill=TRUE)
   }
   require("oro.nifti")
   aim <- oro.nifti::anlz(img, ...)
@@ -351,18 +348,15 @@ dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
   return(aim)
 }
 
-dicom2nifti <- function(dcm, units=c("mm","sec"), rescale=FALSE,
+dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                         reslice=TRUE, descrip="SeriesDescription",
                         aux.file=NULL, ...) {
   img <- create3D(dcm, ...)
   if (reslice) {
-    cat("## swapping dimensions...", fill=TRUE)
     img <- swapDimension(img, dcm)
-  } else {
-    cat("## NOT swapping dimensions...", fill=TRUE)
   }
   require("oro.nifti")
-  nim <- oro.nifti::nifti(img, ...)
+  nim <- oro.nifti::nifti(img, datatype=datatype)
   if (is.null(attr(img,"pixdim"))) {
     ## (x,y) pixel dimensions
     pixelSpacing <- extractHeader(dcm$hdr, "PixelSpacing", FALSE)
