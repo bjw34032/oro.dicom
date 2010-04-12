@@ -257,7 +257,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  33.94 1.01 34.983 0 0 
+Time elapsed:  33.54 0.82 34.397 0 0 
 > grDevices::dev.off()
 null device 
           1 
