@@ -61,11 +61,8 @@ getOrientation <- function(xyz, delta=0.0001) {
 }
 
 swapDimension <- function(img, dcm) {
-  sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
-  if (length(patientPosition) != 1) {
-    stop("PatientPosition(s) are not identical.")
-  }
+  imagePositionPatient <-
+    header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
   imageOrientationPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
   ## Ensure all rows of imageOrientationPatient are identical!
@@ -94,13 +91,10 @@ swapDimension <- function(img, dcm) {
     if (first.col == "A") {
       img <- img[,Y:1,]
     }
-    if ((patientPosition %in% c("FFS","FFP") &&
-         sign(diff(sliceLocation))[1] < 0) ||
-        (patientPosition %in% c("HFS","HFP") &&
-         sign(diff(sliceLocation))[1] > 0)) {
-      img <- img[,,Z:1]
-      sliceLocation <<- rev(sliceLocation)
-    }
+    ## The z-axis is increasing toward the HEAD of the patient.
+    z.index <- order(imagePositionPatient[,3])
+    img <- img[,,z.index]
+    imagePositionPatient <<- imagePositionPatient[z.index,]
   }
   if (is.coronal(imageOrientationPatient)) {
     if (first.row %in% c("H","F")) {
@@ -114,13 +108,11 @@ swapDimension <- function(img, dcm) {
     if (first.col == "H") {
       img <- img[,Y:1,]
     }
-    if ((patientPosition %in% c("HFS","FFS") &&
-         sign(diff(sliceLocation))[1] < 0) ||
-        (patientPosition == c("HFP","FFP") &&
-         sign(diff(sliceLocation))[1] > 0)) {
-      img <- img[,,Z:1]
-      sliceLocation <<- rev(sliceLocation)
-    }
+    ## The y-axis is increasing to the posterior side of the patient.
+    z.index <- order(imagePositionPatient[,3])
+    img <- img[,,z.index]
+    imagePositionPatient <<- imagePositionPatient[z.index,]
+    ##
     index <- c(1,3,2)
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index]
@@ -137,13 +129,17 @@ swapDimension <- function(img, dcm) {
     if (first.col == "H") {
       img <- img[,Y:1,]
     }
+    ## The x-axis is increasing to the left hand side of the patient.
+    z.index <- order(imagePositionPatient[,3])
+    img <- img[,,z.index]
+    imagePositionPatient <<- imagePositionPatient[z.index,]
+    ## 
     index <- c(3,1,2)
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index]
   }
-  ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-  if (any(is.na(sliceLocation))) {
-    stop("Missing values are present in SliceLocation.")
+  if (any(is.na(imagePositionPatient))) {
+    stop("Missing values are present in ImagePositionPatient.")
   }
   attr(img,"pixdim") <- pixdim
   return(img)

@@ -53,7 +53,7 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
           all(names(csv) == names(temp))) {
         csv <- rbind(csv, temp)
       } else {
-        out <- merge(csv, temp, by=NULL, all=TRUE)
+        csv <- merge(csv, temp, all=TRUE)
       }
     }
   }
