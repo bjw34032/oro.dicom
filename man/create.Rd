@@ -54,10 +54,10 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
 ## pixelData = TRUE
 ## The DICOM image data are read from dicomSeparate()
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
-sliceLocation <- NULL
 dcmImage <- create3D(dcmList, mode="integer")
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
-dSL <- abs(diff(sliceLocation))
+imagePositionPatient <- attributes(dcmImage)$iop
+dSL <- abs(diff(imagePositionPatient[,3]))
 plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
      main="Difference in Slice Location")
 

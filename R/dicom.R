@@ -369,7 +369,7 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     nim@"pixdim"[2:4] <- attr(img,"pixdim")
   }
   ## description
-  for (i in 1:length(descrip))
+  for (i in 1:length(descrip)) {
     if (i == 1) {
       descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
     } else {
@@ -377,20 +377,22 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                               extractHeader(dcm$hdr, descrip[i], FALSE)[1],
                               sep="; ")
     }
+  }
   if (nchar(descrip.string) > 80)
     warning("Description is greater than 80 characters and will be truncated")
   nim@"descrip" <- descrip.string
   ## aux_file
   if (! is.null(aux.file)) {
-    if (nchar(descrip.string) > 24)
+    if (nchar(descrip.string) > 24) {
       warning("aux_file is greater than 24 characters and will be truncated")
+    }
     nim@"aux_file" <- aux.file
   }
   ## units
   if (length(units) == 2) {
     nim@"xyzt_units" <- space.time2xyzt(units[1], units[2])
   } else {
-    stop("units must be a length=2 vector")
+    stop("units must be a length = 2 vector")
   }
   ## rescale
   if (rescale) {

@@ -83,26 +83,36 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
     img <- array(0, c(X,Y,Z))
     storage.mode(img) <- mode
-    sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-    if (any(is.na(sliceLocation))) {
-      stop("Missing values are present in SliceLocation.")
+    imagePositionPatient <-
+      header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
+    if (any(is.na(imagePositionPatient))) {
+      stop("Missing values detected in ImagePositionPatient.")
     }
+    movingDimensions <- apply(imagePositionPatient, 2,
+                              function(j) any(diff(j) != 0))
+    if (sum(movingDimensions) != 1) {
+      stop("ImagePositionPatient indicates oblique slices.")
+    }
+    ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+    ## iop.order <- order(imagePositionPatient[,movingDimensions])
     if (pixelData) {
       for (z in 1:Z) {
-        z.order <- order(sliceLocation)[z]
-        img[,,z] <- dcm$img[[z.order]]
+        ## img[,,z] <- dcm$img[[iop.order[z]]]
+        img[,,z] <- dcm$img[[z]]
       }
     } else {
       for (z in 1:Z) {
-        z.order <- order(sliceLocation)[z]
-        img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+        ## img[,,z] <- dicomInfo(names(dcm$hdr)[iop.order[z]])$img
+        img[,,z] <- dicomInfo(names(dcm$hdr)[z])$img
       }
     }
   }
-  sliceLocation <<- sliceLocation[order(sliceLocation)]
+  ## imagePositionPatient <<- imagePositionPatient[iop.order,]
+  ## sliceLocation <<- sliceLocation[order(sliceLocation)]
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
+  attr(img,"ipp") <- imagePositionPatient
   return(img)
 }
 
