@@ -54,11 +54,11 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
 ## pixelData = TRUE
 ## The DICOM image data are read from dicomSeparate()
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
-dcmImage <- create3D(dcmList, mode="integer")
+dcmImage <- create3D(dcmList)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
-imagePositionPatient <- attributes(dcmImage)$iop
+imagePositionPatient <- attributes(dcmImage)$ipp
 dSL <- abs(diff(imagePositionPatient[,3]))
-plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
+plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
      main="Difference in Slice Location")
 
 ## pixelData = FALSE
@@ -66,7 +66,7 @@ plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
 ## This may save on memory for large batches of DICOM data
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
                          pixelData=FALSE)
-dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
+dcmImage <- create3D(dcmList, pixelData=FALSE)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 
 ## mosaic = TRUE

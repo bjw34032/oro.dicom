@@ -1,6 +1,6 @@
 
-R version 2.11.0 alpha (2010-04-05 r51607)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.10.1 (2009-12-14)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -41,11 +41,11 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 > ## pixelData = TRUE
 > ## The DICOM image data are read from dicomSeparate()
 > dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
-> sliceLocation <- NULL
-> dcmImage <- create3D(dcmList, mode="integer")
+> dcmImage <- create3D(dcmList)
 > image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
-> dSL <- abs(diff(sliceLocation))
-> plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Index", ylab="mm",
+> imagePositionPatient <- attributes(dcmImage)$ipp
+> dSL <- abs(diff(imagePositionPatient[,3]))
+> plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 +      main="Difference in Slice Location")
 > 
 > ## pixelData = FALSE
@@ -53,7 +53,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.6)
 > ## This may save on memory for large batches of DICOM data
 > dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
 +                          pixelData=FALSE)
-> dcmImage <- create3D(dcmList, mode="integer", pixelData=FALSE)
+> dcmImage <- create3D(dcmList, pixelData=FALSE)
 > image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > 
 > ## mosaic = TRUE
@@ -257,7 +257,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  33.54 0.82 34.397 0 0 
+Time elapsed:  72.65 6.426 279.429 0 0 
 > grDevices::dev.off()
 null device 
           1 
