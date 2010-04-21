@@ -62,9 +62,9 @@ getOrientation <- function(xyz, delta=0.0001) {
 
 swapDimension <- function(img, dcm) {
   imagePositionPatient <-
-    header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
+    signif(header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3), 3)
   imageOrientationPatient <-
-    header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
+    signif(header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6), 3)
   ## Ensure all rows of imageOrientationPatient are identical!
   pixelSpacing <-
     header2matrix(extractHeader(dcm$hdr, "PixelSpacing", FALSE), 2)
@@ -74,7 +74,7 @@ swapDimension <- function(img, dcm) {
   first.row <- getOrientation(unique(imageOrientationPatient)[1:3])
   first.col <- getOrientation(unique(imageOrientationPatient)[4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
-    stop("Oblique acquisition in ImageOrientationPatient.")
+    warning("Oblique acquisition in ImageOrientationPatient (hope for the best).")
   }
   X <- nrow(img)
   Y <- ncol(img)

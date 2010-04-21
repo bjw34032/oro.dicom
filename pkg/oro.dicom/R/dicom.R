@@ -174,7 +174,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   SQ <- NULL
   hdr <- NULL
   pixel.data <- FALSE
-  while (! pixel.data) {
+  while (! pixel.data && ! seek(fid) >= file.info(fname)$size) {
     seek.old <- seek(fid)
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
@@ -261,7 +261,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   hdr$length <- as.numeric(hdr$length)
   hdr$value <- as.character(hdr$value)
 
-  if (pixelData) {
+  if (pixel.data && pixelData) {
     nr <- as.numeric(hdr$value[hdr$name %in% "Rows"])
     nc <- as.numeric(hdr$value[hdr$name %in% "Columns"])
     img <- t(matrix(img[1:(nc*nr)], nc, nr))
@@ -295,8 +295,12 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
       cat("  ", i, "files processed...", fill=TRUE)
     }
     dcm <- dicomInfo(filenames[i], ...)
-    images[[i]] <- dcm$img
-    headers[[i]] <- dcm$hdr
+    if (! is.null(dcm$img)) {
+      images[[i]] <- dcm$img
+    }
+    if (! is.null(dcm$hdr)) {
+      headers[[i]] <- dcm$hdr
+    }
   }
   list(hdr=headers, img=images)
 }
