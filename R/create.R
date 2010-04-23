@@ -168,37 +168,42 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
     img <- array(0, c(X,Y,Z,W))
     storage.mode(img) <- mode
-    sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-    if (any(is.na(sliceLocation))) {
-      stop("Missing values are present in SliceLocation.")
+    imagePositionPatient <-
+      header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
+    if (any(is.na(imagePositionPatient))) {
+      stop("Missing values detected in ImagePositionPatient.")
     }
+    movingDimensions <- apply(imagePositionPatient, 2,
+                              function(j) any(diff(j) != 0))
+    if (sum(movingDimensions) != 1) {
+      warning("ImagePositionPatient indicates oblique slices.")
+    }
+    ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
     if (pixelData) {
       for (z in 1:Z) {
-        z.order <- order(sliceLocation)[z]
-        img[,,z] <- dcm$img[[z.order]]
+        ## z.order <- order(sliceLocation)[z]
+        img[,,z] <- dcm$img[[z]]
       }
     } else {
       for (z in 1:Z) {
-        z.order <- order(sliceLocation)[z]
-        img[,,z] <- dicomInfo(names(dcm$hdr)[z.order])$img
+        ## z.order <- order(sliceLocation)[z]
+        img[,,z] <- dicomInfo(names(dcm$hdr)[z])$img
       }
     }
   }
   if (transpose) {
     img <- aperm(img, c(2,1,3,4))
   }
-  patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
-  if (length(patientPosition) != 1) {
-    stop("PatientPosition(s) are not identical.")
-  }
-  if (! mosaic) {
-    if (patientPosition == "FFS") {
-      sliceLocation <- sliceLocation[order(sliceLocation)]
-      img <- img[,,Z:1,]
-      sliceLocation <<- rev(sliceLocation)
-    } else {
-      sliceLocation <<- sliceLocation[order(sliceLocation)]
-    }
-  }
+  ## patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
+  ## if (! mosaic) {
+  ##   if (patientPosition == "FFS") {
+  ##     sliceLocation <- sliceLocation[order(sliceLocation)]
+  ##     img <- img[,,Z:1,]
+  ##     sliceLocation <<- rev(sliceLocation)
+  ##   } else {
+  ##     sliceLocation <<- sliceLocation[order(sliceLocation)]
+  ##   }
+  ## }
+  attr(img,"ipp") <- imagePositionPatient
   return(img)
 }

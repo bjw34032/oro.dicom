@@ -353,9 +353,13 @@ dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
 }
 
 dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
-                        reslice=TRUE, descrip="SeriesDescription",
+                        reslice=TRUE, DIM=3, descrip="SeriesDescription",
                         aux.file=NULL, ...) {
-  img <- create3D(dcm, ...)
+  switch(as.character(DIM),
+         "2" = stop("The function create2D() is not available."), 
+         "3" = { img <- create3D(dcm, ...) },
+         "4" = { img <- create4D(dcm, ...) },
+         stop("Dimension parameter \"DIM\" incorrectly specified."))
   if (reslice) {
     img <- swapDimension(img, dcm)
   }
