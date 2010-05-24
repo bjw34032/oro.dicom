@@ -62,9 +62,9 @@ getOrientation <- function(xyz, delta=0.0001) {
 
 swapDimension <- function(img, dcm) {
   imagePositionPatient <-
-    signif(header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3), 3)
+    header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
   imageOrientationPatient <-
-    signif(header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6), 3)
+    header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
   ## Ensure all rows of imageOrientationPatient are identical!
   pixelSpacing <-
     header2matrix(extractHeader(dcm$hdr, "PixelSpacing", FALSE), 2)
@@ -79,6 +79,7 @@ swapDimension <- function(img, dcm) {
   X <- nrow(img)
   Y <- ncol(img)
   Z <- dim(img)[3]
+  W <- dim(img)[4]
   if (is.axial(imageOrientationPatient)) {
     if (first.row %in% c("A","P")) {
       index <- c(2,1,3)
