@@ -15,7 +15,7 @@
 create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL)
 create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL, W = NULL)
+         mosaic = FALSE, mosaicXY = NULL, nslices = NULL, ntimes = NULL)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -30,7 +30,10 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
     columns from DICOM to R.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
-  \item{W}{is the fourth dimension of the array.}
+  \item{nslices}{is the third dimension of the array.  Attempts are made
+    to determine this number from the DICOM data.}
+  \item{ntimes}{is the fourth dimension of the array.  Attempts are made
+    to determine this number from the DICOM data.}
   \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
     storage of the data in Siemens \sQuote{Mosaic} format.}
   \item{mosaicXY}{is a vector of length two that provides the (x,y)

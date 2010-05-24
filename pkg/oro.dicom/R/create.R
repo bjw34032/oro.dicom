@@ -117,7 +117,8 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
 }
 
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
-                     mosaic=FALSE, mosaicXY=NULL, W=NULL) {
+                     mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
+                     ntimes=NULL) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -151,9 +152,9 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       y <- mosaicXY[2]
     }
     z <- (X/x) * (Y/y)
-    W <- length(dcm$hdr)
-    img <- array(0, c(x,y,z,W))
-    for (w in 1:W) {
+    ntimes <- length(dcm$hdr)
+    img <- array(0, c(x,y,z,ntimes))
+    for (w in 1:ntimes) {
       k <- 1
       for (i in (X/x):1) {
         for (j in 1:(Y/y)) {
@@ -166,7 +167,7 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   } else {
     ## Check if the DICOM list has length > 1
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
-    img <- array(0, c(X,Y,Z,W))
+    img <- array(0, c(X,Y,nslices,Z/nslices))
     storage.mode(img) <- mode
     imagePositionPatient <-
       header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
@@ -178,16 +179,24 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     if (sum(movingDimensions) != 1) {
       warning("ImagePositionPatient indicates oblique slices.")
     }
-    ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
+    ## Guess number of slices
+    if (is.null(nslices)) {
+      nslices <- length(unique(imagePositionPatient[,movingDimensions]))
+    }
+    if (is.null(nslices)) {
+      stop("The number of slices has not been specified/determined.")
+    }
     if (pixelData) {
       for (z in 1:Z) {
-        ## z.order <- order(sliceLocation)[z]
-        img[,,z] <- dcm$img[[z]]
+        zz <- (z - 1) %% nslices + 1
+        ww <- (z - 1) %/% nslices + 1
+        img[,,zz,ww] <- dcm$img[[z]]
       }
     } else {
       for (z in 1:Z) {
-        ## z.order <- order(sliceLocation)[z]
-        img[,,z] <- dicomInfo(names(dcm$hdr)[z])$img
+        zz <- (z - 1) %% nslices + 1
+        ww <- (z - 1) %/% nslices + 1
+        img[,,zz,ww] <- dicomInfo(names(dcm$hdr)[z])$img
       }
     }
   }
