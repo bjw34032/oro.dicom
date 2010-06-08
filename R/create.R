@@ -119,6 +119,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL) {
+  cat("test, test, test", fill=TRUE)
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -165,10 +166,12 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     }
     storage.mode(img) <- mode
   } else {
-    ## Check if the DICOM list has length > 1
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
-    img <- array(0, c(X,Y,nslices,Z/nslices))
-    storage.mode(img) <- mode
+    if (Z == 1) {
+      warning(paste("Number of DICOM images is", Z, ".", sep=""))
+    }
+    cat("## X =", X, "Y =", Y, "Z =", Z, fill=TRUE)
+    ## Check if the DICOM list has length > 1
     imagePositionPatient <-
       header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
     if (any(is.na(imagePositionPatient))) {
@@ -183,20 +186,33 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     if (is.null(nslices)) {
       nslices <- length(unique(imagePositionPatient[,movingDimensions]))
     }
+    cat("## nslices =", nslices, fill=TRUE)
     if (is.null(nslices)) {
       stop("The number of slices has not been specified/determined.")
     }
+    ## Guess the slice order
+    instanceNumber <- extractHeader(dcm$hdr, "InstanceNumber")
+    if (length(unique(instanceNumber))) {
+      index <- order(instanceNumber)
+    } else {
+      warning("No unique slice ordering found in InstanceNumber.")
+      index <- 1:Z
+    }
+    img <- array(0, c(X,Y,nslices,Z/nslices))
+    storage.mode(img) <- mode
+    cat("index =", fill=TRUE)
+    print(index)
     if (pixelData) {
       for (z in 1:Z) {
         zz <- (z - 1) %% nslices + 1
         ww <- (z - 1) %/% nslices + 1
-        img[,,zz,ww] <- dcm$img[[z]]
+        img[,,zz,ww] <- dcm$img[[index[z]]]
       }
     } else {
       for (z in 1:Z) {
         zz <- (z - 1) %% nslices + 1
         ww <- (z - 1) %/% nslices + 1
-        img[,,zz,ww] <- dicomInfo(names(dcm$hdr)[z])$img
+        img[,,zz,ww] <- dicomInfo(names(dcm$hdr)[index[z]])$img
       }
     }
   }

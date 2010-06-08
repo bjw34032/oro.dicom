@@ -64,9 +64,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 
   ## Sub-routines
   
-  readCharWithEmbeddedNuls <- function(fid, n) {
+  readCharWithEmbeddedNuls <- function(fid, n, to="UTF-8") {
     txt <- readBin(fid, "raw", n)
-    iconv(rawToChar(txt[txt != as.raw(0)]), to="UTF-8")
+    iconv(rawToChar(txt[txt != as.raw(0)]), to=to)
   }
 
   unsigned.header <- function(VR, implicit, fid, endian) {
@@ -174,15 +174,16 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   SQ <- NULL
   hdr <- NULL
   pixel.data <- FALSE
-  while (! pixel.data && ! seek(fid) >= file.info(fname)$size) {
+  file.size <- file.info(fname)$size
+  while (! pixel.data && ! seek(fid) >= file.size) {
     seek.old <- seek(fid)
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
-    pixel.data <- ifelse(group == "7FE0" & element == "0010", TRUE, FALSE)
-    index <- which(dcm.group %in% group & dcm.element %in% element)
-    vrstr <- readCharWithEmbeddedNuls(fid, n=2) # iconv(rawToChar(readBin(fid, "raw", 2)), to="UTF-8") # readChar(fid, n=2)
-    if (debug && length(index) != 1) {
+    pixel.data <- identical(group, "7FE0") && identical(element, "0010")
+    index <- which(dcm.group == group & dcm.element == element)
+    vrstr <- readCharWithEmbeddedNuls(fid, n=2)
+    if (debug && length(index) < 1) {
       warning(sprintf("DICOM tag (%s,%s) is not in current dictionary.",
                       group, element))
     }
@@ -192,10 +193,10 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       seek(fid, where=seek(fid) - 2) # go back two bytes
       vrstr <- dicom.dic$code[index] # VR string from (group,element)
     }
-    if (any(VRindex <- VRcode %in% vrstr)) {
-      VR <- dicom.VR[VRcode %in% vrstr, ]
+    if (any(VRindex <- VRcode == vrstr)) {
+      VR <- dicom.VR[VRindex, ]
     } else {
-      VR <- dicom.VR[VRcode %in% "UN", ]
+      VR <- dicom.VR[VRcode == "UN", ] # dicom.VR[VRcode %in% "UN", ]
     }
     if (pixel.data && pixelData) {
       if (debug) {
@@ -208,11 +209,13 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         length <- readBin(fid, integer(), size=4, endian=endian)
       }
       if (length < 0) {
-        M <- which(hdr[, 3] %in% "Rows")[1]
-        N <- which(hdr[, 3] %in% "Columns")[1]
-        length <- as.numeric(hdr[M, 6]) * as.numeric(hdr[N, 6])
+        M <- which(hdr[, 3] == "Rows")[1]
+        M <- as.numeric(hdr[M, 6])
+        N <- which(hdr[, 3] == "Columns")[1]
+        N <- as.numeric(hdr[N, 6])
+        length <- M * N
       }
-      bitsAllocated <- which(hdr[, 3] %in% "BitsAllocated")[1]
+      bitsAllocated <- which(hdr[, 3] == "BitsAllocated")[1]
       bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
       img <- readBin(fid, integer(), length, size=bytes, endian=endian)
@@ -239,9 +242,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
           paste(out$value, collapse=" "),
           ifelse(is.null(SQ), "", SQ), sep="\t", fill=TRUE)
     }
-    if (out$length > file.info(fname)$size) {
+    if (out$length > file.size) {
       warning(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
-                   group, element, out$length, file.info(fname)$size))
+                   group, element, out$length, file.size))
     }
     if (name == "SequenceDelimitationItem" && ! is.null(SQ)) {
       sSQ <- unlist(strsplit(SQ, "\\)\\(")) # separate (group,element) doublets
@@ -255,15 +258,15 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   close(fid)
 
   hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
-  names(hdr) <- c("group", "element", "name", "code", "length",
-                  "value", "sequence")
+  names(hdr) <- c("group", "element", "name", "code", "length", "value",
+                  "sequence")
   hdr$name <- as.character(hdr$name)
   hdr$length <- as.numeric(hdr$length)
   hdr$value <- as.character(hdr$value)
 
   if (pixel.data && pixelData) {
-    nr <- as.numeric(hdr$value[hdr$name %in% "Rows"])
-    nc <- as.numeric(hdr$value[hdr$name %in% "Columns"])
+    nr <- as.numeric(hdr$value[hdr$name == "Rows"])
+    nc <- as.numeric(hdr$value[hdr$name == "Columns"])
     img <- t(matrix(img[1:(nc*nr)], nc, nr))
     if (flipud) {
       img <- img[nr:1,]
@@ -288,6 +291,9 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
     filenames <- grep(exclude, filenames, value=TRUE, invert=TRUE)
   }
   nfiles <- length(filenames)
+  if (verbose) {
+    cat("  ", nfiles, "files to be processed!", fill=TRUE)
+  }
   headers <- images <- vector("list", nfiles)
   names(images) <- names(headers) <- filenames
   for (i in 1:nfiles) {
