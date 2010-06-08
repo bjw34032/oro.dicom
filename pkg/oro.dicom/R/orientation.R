@@ -80,6 +80,7 @@ swapDimension <- function(img, dcm) {
   Y <- ncol(img)
   Z <- dim(img)[3]
   W <- dim(img)[4]
+  ld <- length(dim(img))
   if (is.axial(imageOrientationPatient)) {
     if (first.row %in% c("A","P")) {
       index <- c(2,1,3)
@@ -87,18 +88,15 @@ swapDimension <- function(img, dcm) {
       pixdim <- pixdim[index]
     }
     if (first.row == "R") {
-      img <- img[X:1,,]
+      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,])
     }
     if (first.col == "A") {
-      img <- img[,Y:1,]
+      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The z-axis is increasing toward the HEAD of the patient.
     z.index <- order(imagePositionPatient[,3])
     ## x <- do.call("[<-", c(list(x), dimnames(y), list(y)))
-    img <- switch(as.character(length(dim(img))),
-                  "3" = img[,,z.index],
-                  "4" = img[,,z.index,],
-                  stop("Dimension parameter \"DIM\" incorrectly specified."))
+    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,z.index,])
     imagePositionPatient <<- imagePositionPatient[z.index,]
   }
   if (is.coronal(imageOrientationPatient)) {
@@ -108,7 +106,10 @@ swapDimension <- function(img, dcm) {
       pixdim <- pixdim[index]
     }
     if (first.row == "R") {
-      img <- img[X:1,,]
+      img <- switch(as.character(length(dim(img))),
+                  "3" = img[X:1,,],
+                  "4" = img[X:1,,,],
+                  stop("Dimension parameter \"DIM\" incorrectly specified."))
     }
     if (first.col == "H") {
       img <- img[,Y:1,]
