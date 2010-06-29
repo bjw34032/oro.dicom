@@ -96,7 +96,7 @@ swapDimension <- function(img, dcm) {
     ## The z-axis is increasing toward the HEAD of the patient.
     z.index <- order(imagePositionPatient[,3])
     ## x <- do.call("[<-", c(list(x), dimnames(y), list(y)))
-    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,z.index,])
+    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
     imagePositionPatient <<- imagePositionPatient[z.index,]
   }
   if (is.coronal(imageOrientationPatient)) {
@@ -119,7 +119,7 @@ swapDimension <- function(img, dcm) {
     ## img <- img[,,z.index]
     img <- switch(as.character(length(dim(img))),
                   "3" = img[,,z.index],
-                  "4" = img[,,z.index,],
+                  "4" = img[,,Z:1,],
                   stop("Dimension parameter \"DIM\" incorrectly specified."))
     imagePositionPatient <<- imagePositionPatient[z.index,]
     ##
@@ -144,7 +144,7 @@ swapDimension <- function(img, dcm) {
     ## img <- img[,,z.index]
     img <- switch(as.character(length(dim(img))),
                   "3" = img[,,z.index],
-                  "4" = img[,,z.index,],
+                  "4" = img[,,Z:1,],
                   stop("Dimension parameter \"DIM\" incorrectly specified."))
     imagePositionPatient <<- imagePositionPatient[z.index,]
     ## 

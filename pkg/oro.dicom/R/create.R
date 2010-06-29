@@ -119,7 +119,6 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL) {
-  cat("test, test, test", fill=TRUE)
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -170,7 +169,7 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     if (Z == 1) {
       warning(paste("Number of DICOM images is", Z, ".", sep=""))
     }
-    cat("## X =", X, "Y =", Y, "Z =", Z, fill=TRUE)
+    ## cat("## X =", X, "Y =", Y, "Z =", Z, fill=TRUE)
     ## Check if the DICOM list has length > 1
     imagePositionPatient <-
       header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
@@ -179,14 +178,16 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     }
     movingDimensions <- apply(imagePositionPatient, 2,
                               function(j) any(diff(j) != 0))
-    if (sum(movingDimensions) != 1) {
-      warning("ImagePositionPatient indicates oblique slices.")
+    if (sum(movingDimensions) > 1) {
+      warning("ImagePositionPatient indicates oblique slices, assuming transverse acquisition.")
+      movingDimensions <- c(FALSE, FALSE, TRUE)
     }
+    print(movingDimensions)
     ## Guess number of slices
     if (is.null(nslices)) {
       nslices <- length(unique(imagePositionPatient[,movingDimensions]))
     }
-    cat("## nslices =", nslices, fill=TRUE)
+    ## cat("## nslices =", nslices, fill=TRUE)
     if (is.null(nslices)) {
       stop("The number of slices has not been specified/determined.")
     }
@@ -200,8 +201,8 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     }
     img <- array(0, c(X,Y,nslices,Z/nslices))
     storage.mode(img) <- mode
-    cat("index =", fill=TRUE)
-    print(index)
+    ## cat("index =", fill=TRUE)
+    ## print(index)
     if (pixelData) {
       for (z in 1:Z) {
         zz <- (z - 1) %% nslices + 1
