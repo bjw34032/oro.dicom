@@ -366,7 +366,7 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
          "3" = { img <- create3D(dcm, ...) },
          "4" = { img <- create4D(dcm, ...) },
          stop("Dimension parameter \"DIM\" incorrectly specified."))
-  if (DIM %in% 3:4 && reslice) {
+  ##if (DIM %in% 3:4 && reslice) {
   if (reslice && DIM == 3) {
     img <- swapDimension(img, dcm)
   }
