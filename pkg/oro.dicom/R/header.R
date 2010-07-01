@@ -100,3 +100,18 @@ writeHeader <- function(dtable, filename, ...) {
   write.table(dtable, filename, quote=FALSE, sep="\t", ...)
 }
 
+nextHeader <- function(dcm, string, reference, str.warning,
+                       htmlfile=NULL, heading=3, numeric=FALSE) {
+  header <- extractHeader(dcm$hdr, string=string, numeric=numeric)
+  for (i in 1:length(reference)) {
+    if (any(matchHeader(header, string=reference[i]))) {
+      if (! is.null(htmlfile)) {
+        hwrite(str.warning, htmlfile, heading=3)
+      } else {
+        warning(str.warning)
+      }
+      return(expression(next))
+    }
+  }
+  invisible()
+}

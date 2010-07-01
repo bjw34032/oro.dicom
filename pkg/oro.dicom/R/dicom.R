@@ -362,15 +362,16 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                         reslice=TRUE, DIM=3, descrip="SeriesDescription",
                         aux.file=NULL, ...) {
   switch(as.character(DIM),
-         "2" = stop("The function create2D() is not available."), 
+         "2" = { img <- create3D(dcm, ...) },
          "3" = { img <- create3D(dcm, ...) },
          "4" = { img <- create4D(dcm, ...) },
          stop("Dimension parameter \"DIM\" incorrectly specified."))
+  if (DIM %in% 3:4 && reslice) {
   if (reslice && DIM == 3) {
     img <- swapDimension(img, dcm)
   }
   require("oro.nifti")
-  nim <- oro.nifti::nifti(img, datatype=datatype)
+  nim <-  nifti(img, datatype=datatype) # oro.nifti::nifti(img, datatype=datatype)
   if (is.null(attr(img,"pixdim"))) {
     ## (x,y) pixel dimensions
     pixelSpacing <- extractHeader(dcm$hdr, "PixelSpacing", FALSE)

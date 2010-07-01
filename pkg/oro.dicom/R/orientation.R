@@ -97,7 +97,10 @@ swapDimension <- function(img, dcm) {
     z.index <- order(imagePositionPatient[,3])
     ## x <- do.call("[<-", c(list(x), dimnames(y), list(y)))
     img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
-    imagePositionPatient <<- imagePositionPatient[z.index,]
+    switch(as.character(length(dim(img))),
+           "3" = { img <- img[,,z.index] },
+           "4" = { img <- img[,,Z:1,] },
+           stop("Dimension parameter \"DIM\" incorrectly specified."))
   }
   if (is.coronal(imageOrientationPatient)) {
     if (first.row %in% c("H","F")) {
@@ -123,6 +126,12 @@ swapDimension <- function(img, dcm) {
                   stop("Dimension parameter \"DIM\" incorrectly specified."))
     imagePositionPatient <<- imagePositionPatient[z.index,]
     ##
+    z.index <- order(imagePositionPatient[,3])
+    switch(as.character(length(dim(img))),
+           "3" = { img <- img[,,z.index] },
+           "4" = { img <- img[,,z.index,] },
+           stop("Dimension parameter \"DIM\" incorrectly specified."))
+    ## img <- img[,,z.index]
     index <- c(1,3,2)
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index]
@@ -148,13 +157,21 @@ swapDimension <- function(img, dcm) {
                   stop("Dimension parameter \"DIM\" incorrectly specified."))
     imagePositionPatient <<- imagePositionPatient[z.index,]
     ## 
+    z.index <- order(imagePositionPatient[,3])
+    switch(as.character(length(dim(img))),
+           "3" = { img <- img[,,z.index] },
+           "4" = { img <- img[,,z.index,] },
+           stop("Dimension parameter \"DIM\" incorrectly specified."))
+    ## img <- img[,,z.index]
     index <- c(3,1,2)
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index]
   }
+  imagePositionPatient <<- imagePositionPatient[z.index,]
   if (any(is.na(imagePositionPatient))) {
     stop("Missing values are present in ImagePositionPatient.")
   }
+  attr(img,"ipp") <- imagePositionPatient
   attr(img,"pixdim") <- pixdim
   return(img)
 }

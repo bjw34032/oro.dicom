@@ -91,7 +91,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     movingDimensions <- apply(imagePositionPatient, 2,
                               function(j) any(diff(j) != 0))
     if (sum(movingDimensions) != 1) {
-      warning("ImagePositionPatient indicates oblique slices.")
+      warning("ImagePositionPatient is moving in more than one dimension.")
     }
     ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
     ## iop.order <- order(imagePositionPatient[,movingDimensions])
