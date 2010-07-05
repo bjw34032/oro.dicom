@@ -82,15 +82,21 @@ swapDimension <- function(img, dcm) {
   W <- dim(img)[4]
   ld <- length(dim(img))
   if (is.axial(imageOrientationPatient)) {
-    if (first.row %in% c("A","P")) {
-      index <- c(2,1,3)
+    if (unlist(strsplit(first.row,""))[1] %in% c("A","P")) {
+      if (identical(ld, 3)) {
+        index <- c(2,1,3)
+      }
+      if (identical(ld, 4)) {
+        index <- c(2,1,3,4)
+      }
       img <- aperm(img, index)
-      pixdim <- pixdim[index]
+      pixdim <- pixdim[index[1:3]]
     }
-    if (first.row == "R") {
-      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,])
+    if (identical(unlist(strsplit(first.row,""))[1], "R")) {
+      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
+                    stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (first.col == "A") {
+    if (identical(unlist(strsplit(first.col,""))[1], "A")) {
       img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The z-axis is increasing toward the HEAD of the patient.
@@ -99,51 +105,71 @@ swapDimension <- function(img, dcm) {
     img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
   }
   if (is.coronal(imageOrientationPatient)) {
-    if (first.row %in% c("H","F")) {
-      index <- c(2,1,3)
+    if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
+      if (identical(ld, 3)) {
+        index <- c(2,1,3)
+      }
+      if (identical(ld, 4)) {
+        index <- c(2,1,3,4)
+      }
       img <- aperm(img, index)
-      pixdim <- pixdim[index]
+      pixdim <- pixdim[index[1:3]]
     }
-    if (first.row == "R") {
+    if (identical(unlist(strsplit(first.row,""))[1], "R")) {
       img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
-                    stop("Dimension parameter \"DIM\" incorrectly specified."))
+                    stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (first.col == "H") {
-      img <- img[,Y:1,]
+    if (identical(unlist(strsplit(first.col,""))[1], "H")) {
+      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The y-axis is increasing to the posterior side of the patient.
     z.index <- order(imagePositionPatient[,2])
     ## img <- img[,,z.index]
-    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,],
-                  stop("Dimension parameter \"DIM\" incorrectly specified."))
-    imagePositionPatient <<- imagePositionPatient[z.index,]
+    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
+    ## imagePositionPatient <<- imagePositionPatient[z.index,]
     ##
-    index <- c(1,3,2)
+    if (identical(ld, 3)) {
+      index <- c(1,3,2)
+    }
+    if (identical(ld, 4)) {
+      index <- c(1,3,2,4)
+    }
     img <- aperm(img, index) # re-organize orthogonal views
-    pixdim <- pixdim[index]
+    pixdim <- pixdim[index[1:3]]
   }
   if (is.sagittal(imageOrientationPatient)) {
-    if (first.row %in% c("H","F")) {
-      index <- c(2,1,3)
+    if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
+      if (identical(ld, 3)) {
+        index <- c(2,1,3)
+      }
+      if (identical(ld, 4)) {
+        index <- c(2,1,3,4)
+      }
       img <- aperm(img, index)
-      pixdim <- pixdim[index]
+      pixdim <- pixdim[index[1:3]]
     }
-    if (first.row == "P") {
-      img <- img[X:1,,]
+    if (identical(unlist(strsplit(first.row,""))[1], "P")) {
+      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
+                    stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (first.col == "H") {
-      img <- img[,Y:1,]
+    if (identical(unlist(strsplit(first.col,""))[1], "H")) {
+      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The x-axis is increasing to the left hand side of the patient.
     z.index <- order(imagePositionPatient[,1])
     ## img <- img[,,z.index]
     img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,],
                   stop("Dimension parameter \"DIM\" incorrectly specified."))
-    imagePositionPatient <<- imagePositionPatient[z.index,]
+    ## imagePositionPatient <<- imagePositionPatient[z.index,]
     ## 
-    index <- c(3,1,2)
+    if (identical(ld, 3)) {
+      index <- c(3,1,2)
+    }
+    if (identical(ld, 4)) {
+      index <- c(3,1,2,4)
+    }
     img <- aperm(img, index) # re-organize orthogonal views
-    pixdim <- pixdim[index]
+    pixdim <- pixdim[index[1:3]]
   }
   imagePositionPatient <<- imagePositionPatient[z.index,]
   if (any(is.na(imagePositionPatient))) {

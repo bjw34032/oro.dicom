@@ -139,14 +139,24 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   if (length(Y) != 1) {
     stop("Column lengths are not identical.")
   }
+  ## Check if the DICOM list has length > 1
+  imagePositionPatient <-
+    header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
+  if (any(is.na(imagePositionPatient))) {
+    stop("Missing values detected in ImagePositionPatient.")
+  }
   if (mosaic) {
     if (is.null(mosaicXY)) {
       acquisitionMatrix <-
         header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
       x <- acquisitionMatrix[1,1]
       y <- acquisitionMatrix[1,4]
-      if (is.na(x) || x == 0 || is.na(y) || y == 0)
+      if (is.na(x) || identical(x,0) || is.na(y) || identical(y,0)) {
         stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
+      }
+      if (! all(identical(trunc(X/x), X/x), identical(trunc(Y/y), Y/y))) {
+        stop("AcquisitionMatrix does not make sense, please specify \"mosaicXY\"")
+      }
     } else {
       x <- mosaicXY[1]
       y <- mosaicXY[2]
@@ -154,28 +164,35 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     z <- (X/x) * (Y/y)
     ntimes <- length(dcm$hdr)
     img <- array(0, c(x,y,z,ntimes))
-    for (w in 1:ntimes) {
-      k <- 1
-      for (i in (X/x):1) {
-        for (j in 1:(Y/y)) {
-          img[,,k,w] <- dcm$img[[w]][((i-1)*x)+1:x, ((j-1)*y)+1:y]
-          k <- k+1
+    storage.mode(img) <- mode
+    if (pixelData) {
+      for (w in 1:ntimes) {
+        k <- 1
+        for (i in (X/x):1) {
+          for (j in 1:(Y/y)) {
+            img[,,k,w] <- dcm$img[[w]][((i-1)*x)+1:x, ((j-1)*y)+1:y]
+            k <- k+1
+          }
+        }
+      }
+    } else {
+      for (w in 1:ntimes) {
+        k <- 1
+        dicomInfoImage <- dicomInfo(names(dcm$hdr)[w])$img
+        for (i in (X/x):1) {
+          for (j in 1:(Y/y)) {
+            img[,,k,w] <- dicomInfoImage[((i-1)*x)+1:x, ((j-1)*y)+1:y]
+            k <- k+1
+          }
         }
       }
     }
-    storage.mode(img) <- mode
   } else {
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
     if (Z == 1) {
       warning(paste("Number of DICOM images is", Z, ".", sep=""))
     }
     ## cat("## X =", X, "Y =", Y, "Z =", Z, fill=TRUE)
-    ## Check if the DICOM list has length > 1
-    imagePositionPatient <-
-      header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
-    if (any(is.na(imagePositionPatient))) {
-      stop("Missing values detected in ImagePositionPatient.")
-    }
     movingDimensions <- apply(imagePositionPatient, 2,
                               function(j) any(diff(j) != 0))
     if (sum(movingDimensions) > 1) {
