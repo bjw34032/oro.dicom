@@ -199,7 +199,7 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       warning("ImagePositionPatient indicates oblique slices, assuming transverse acquisition.")
       movingDimensions <- c(FALSE, FALSE, TRUE)
     }
-    print(movingDimensions)
+    ## print(movingDimensions)
     ## Guess number of slices
     if (is.null(nslices)) {
       nslices <- length(unique(imagePositionPatient[,movingDimensions]))
