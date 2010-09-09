@@ -63,6 +63,9 @@ getOrientation <- function(xyz, delta=0.0001) {
 swapDimension <- function(img, dcm) {
   imagePositionPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
+  if (nrow(imagePositionPatient) != nsli(img)) {
+    imagePositionPatient <- attributes(img)$ipp
+  }
   imageOrientationPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
   ## Ensure all rows of imageOrientationPatient are identical!

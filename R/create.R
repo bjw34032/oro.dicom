@@ -78,6 +78,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       }
     }
     storage.mode(img) <- mode
+    imagePositionPatient <- cbind(X,Y,1:z)
   } else {
     ## Check if the DICOM list has length > 1
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
