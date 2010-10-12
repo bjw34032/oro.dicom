@@ -19,7 +19,7 @@
 floating.header(VR, implicit, fid, endian)
 other.header(fid, implicit, endian)
 signed.header(VR, implicit, fid, endian)
-sequence.header(group, element, fid, implicit, endian, skipSQ=TRUE)
+sequence.header(group, element, fid, implicit, endian, skipSQ, SQ, EOS)
 unknown.header(VR, implicit, fid, endian)
 unsigned.header(VR, implicit, fid, endian)
 }
@@ -31,6 +31,8 @@ unsigned.header(VR, implicit, fid, endian)
   \item{group}{...}
   \item{element}{...}
   \item{skipSQ}{...}
+  \item{SQ}{...}
+  \item{EOS}{...}
 }
 %\details{}
 \value{
