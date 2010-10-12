@@ -12,7 +12,8 @@
 }
 \usage{
 dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
-          DICM = TRUE, pixelData = TRUE, warn=-1, debug = FALSE)
+          DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
+          warn = -1, debug = FALSE)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -23,6 +24,8 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     the file (default = \code{TRUE}).}
   \item{DICM}{is a logical variable to read in the four bytes "DICM"
     (default = \code{TRUE}).}
+  \item{skipSequence}{is a logical variable to skip all content
+    contained in SequenceItem tags (default = \code{TRUE}).}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) on
     whether or not the PixelData should be read from the DICOM files.}
   \item{warn}{is a number to regulate the display of warnings (default =
