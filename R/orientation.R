@@ -87,52 +87,58 @@ swapDimension <- function(img, dcm) {
   ## AXIAL
   if (is.axial(imageOrientationPatient)) {
     if (unlist(strsplit(first.row,""))[1] %in% c("A","P")) {
-      if (identical(ld, 3)) {
+      if (ld == 3) {
         index <- c(2,1,3)
       }
-      if (identical(ld, 4)) {
+      if (ld == 4) {
         index <- c(2,1,3,4)
       }
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (identical(unlist(strsplit(first.row,""))[1], "R")) {
+    if (unlist(strsplit(first.row,""))[1] == "R") {
       img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (identical(unlist(strsplit(first.col,""))[1], "A")) {
+    if (unlist(strsplit(first.col,""))[1] == "A") {
       img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The z-axis is increasing toward the HEAD of the patient.
     z.index <- order(imagePositionPatient[,3])
-    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
+    if (ld == 3) {
+      img <- img[,,z.index]
+    }
+    if (ld == 4) {
+      img <- img[,,Z:1,]
+    }
   }
   ## CORONAL
   if (is.coronal(imageOrientationPatient)) {
     if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
-      if (identical(ld, 3)) {
+      if (ld == 3) {
         index <- c(2,1,3)
       }
-      if (identical(ld, 4)) {
+      if (ld == 4) {
         index <- c(2,1,3,4)
       }
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (identical(unlist(strsplit(first.row,""))[1], "R")) {
+    if (unlist(strsplit(first.row,""))[1] == "R") {
       img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (identical(unlist(strsplit(first.col,""))[1], "H")) {
+    if (unlist(strsplit(first.col,""))[1] == "H") {
       img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The y-axis is increasing to the posterior side of the patient.
     z.index <- order(imagePositionPatient[,2])
-    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,])
-    if (identical(ld, 3)) {
+    if (ld == 3) {
+      img <- img[,,z.index]
       index <- c(1,3,2)
     }
-    if (identical(ld, 4)) {
+    if (ld == 4) {
+      img <- img[,,Z:1,]
       index <- c(1,3,2,4)
     }
     img <- aperm(img, index) # re-organize orthogonal views
@@ -141,36 +147,36 @@ swapDimension <- function(img, dcm) {
   ## SAGITTAL
   if (is.sagittal(imageOrientationPatient)) {
     if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
-      if (identical(ld, 3)) {
+      if (ld == 3) {
         index <- c(2,1,3)
       }
-      if (identical(ld, 4)) {
+      if (ld == 4) {
         index <- c(2,1,3,4)
       }
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (identical(unlist(strsplit(first.row,""))[1], "P")) {
+    if (unlist(strsplit(first.row,""))[1] == "P") {
       img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (identical(unlist(strsplit(first.col,""))[1], "H")) {
+    if (unlist(strsplit(first.col,""))[1] == "H") {
       img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
     }
     ## The x-axis is increasing to the left hand side of the patient.
     z.index <- order(imagePositionPatient[,1])
-    img <- switch(as.character(ld), "3" = img[,,z.index], "4" = img[,,Z:1,],
-                  stop("Dimension parameter \"DIM\" incorrectly specified."))
-    if (identical(ld, 3)) {
+    if (ld == 3) {
+      img <- img[,,z.index]
       index <- c(3,1,2)
     }
-    if (identical(ld, 4)) {
+    if (ld == 4) {
+      img <- img[,,Z:1,]
       index <- c(3,1,2,4)
     }
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index[1:3]]
   }
-  imagePositionPatient <<- imagePositionPatient[z.index,]
+  imagePositionPatient <- imagePositionPatient[z.index,]
   if (any(is.na(imagePositionPatient))) {
     stop("Missing values are present in ImagePositionPatient.")
   }
