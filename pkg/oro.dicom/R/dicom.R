@@ -221,12 +221,12 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         skip <- readBin(fid, integer(), size=2, endian=endian)
         length <- readBin(fid, integer(), size=4, endian=endian)
       }
+      M <- which(hdr[, 3] == "Rows")[1]
+      M <- as.numeric(hdr[M, 6])
+      N <- which(hdr[, 3] == "Columns")[1]
+      N <- as.numeric(hdr[N, 6])
       ## If the length is not provided, calculate from DICOM headers
       if (length < 0) {
-        M <- which(hdr[, 3] == "Rows")[1]
-        M <- as.numeric(hdr[M, 6])
-        N <- which(hdr[, 3] == "Columns")[1]
-        N <- as.numeric(hdr[N, 6])
         length <- M * N
       }
       bitsAllocated <- which(hdr[, 3] == "BitsAllocated")[1]
@@ -302,9 +302,26 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   if (pixel.data && pixelData) {
     nr <- as.numeric(hdr$value[hdr$name == "Rows"])
     nc <- as.numeric(hdr$value[hdr$name == "Columns"])
-    img <- t(matrix(img[1:(nc*nr)], nc, nr))
-    if (flipud) {
-      img <- img[nr:1,]
+    length <- as.numeric(hdr$length[hdr$name == "PixelData"])
+    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated"]) / 8
+    total.bytes <- nr*nc*bytes
+    if (total.bytes != length) {
+      k <- length / total.bytes
+      if (k == trunc(k)) {
+        warning("3D DICOM file detected!")
+        img <- array(img[1:(nc*nr*k)], c(nc,nr,k))
+        img <- aperm(img, c(2,1,3))
+        if (flipud) {
+          img <- img[nr:1,,]
+        }
+      } else {
+        stop("Number of bytes in PixelData does not match dimensions")
+      }
+    } else {
+      img <- t(matrix(img[1:(nc*nr)], nc, nr))
+      if (flipud) {
+        img <- img[nr:1,]
+      }
     }
   } else {
     img <- NULL
