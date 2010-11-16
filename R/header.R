@@ -69,20 +69,25 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
   return(csv)
 }
 
-extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE) {
+extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,
+                          inSequence=TRUE) {
   if (is.data.frame(hdrs)) {
     hdrs <- list(hdrs)
   }
   out.list <- lapply(hdrs,
-                     function(hdr) {
-                       index <- which(hdr$name %in% string &
-                                      hdr$sequence == "")
-                       if(sum(index) > 0) {
+                     function(hdr, string, inSequence) {
+                       if (inSequence) {
+                         sequence <- FALSE
+                       } else {
+                         sequence <- nchar(hdr$sequence) > 0
+                       }
+                       index <- which(hdr$name %in% string & !sequence)
+                       if (sum(index) > 0) {
                          hdr$value[index]
                        } else {
                          NA
                        }
-                     })
+                     }, string=string, inSequence=inSequence)
   out.names <- names(out.list)
   out.vec <- unlist(out.list)
   if (numeric) {
