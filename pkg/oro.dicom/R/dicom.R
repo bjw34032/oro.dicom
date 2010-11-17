@@ -162,7 +162,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   ## |<Group-->|<Element>|<Length----------->|<Value->
 
   ## Warnings?
-  oldwarn <- options()$warn
+  oldwarn <- getOption("warn")
   options(warn=warn)
   ## Some shortcuts...
   data("dicom.dic")
@@ -191,7 +191,9 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
     element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
-    pixel.data <- group == "7FE0" && element == "0010"
+    ## Check for PixelData (group,element) and _NOT_ a SequenceItem
+    pixel.data <- (group == "7FE0" && element == "0010" &&
+                   (is.null(SQ) || nchar(SQ) == 0))
     index <- which(dcm.group == group & dcm.element == element)
     name <- ifelse(any(index), dicom.dic$name[index], "Missing")
     vrstr <- .readCharWithEmbeddedNuls(fid, n=2)
@@ -229,7 +231,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       if (length < 0) {
         length <- M * N
       }
-      bitsAllocated <- which(hdr[, 3] == "BitsAllocated")[1]
+      bitsAllocated <- which(hdr[, 3] == "BitsAllocated" & nchar(hdr[, 7]) == 0)[1]
       bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
       ## Assuming only integer() data are being provided
       img <- readBin(fid, integer(), length, size=bytes, endian=endian)
@@ -272,9 +274,6 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       group, element, out$length, file.size))
     }
     if (name == "SequenceDelimitationItem" && ! is.null(SQ)) {
-      ## sSQ <- unlist(strsplit(SQ, "\\)\\(")) # separate (group,element) doublets
-      ## if ((lSQ <- length(sSQ)) > 1) {
-      ##  SQ <- paste(sSQ[-lSQ], ")", sep="") # remove the last (group,element) doublet
       if ((lSQ <- length(SQ)) > 1) {
         SQ <- SQ[-lSQ] # remove the last (group,element) doublet
       } else {
@@ -293,17 +292,15 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   close(fid)
 
   hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
-  names(hdr) <- c("group", "element", "name", "code", "length", "value",
-                  "sequence")
-  hdr$name <- as.character(hdr$name)
+  names(hdr) <- c("group", "element", "name", "code", "length",
+                  "value", "sequence")
   hdr$length <- as.numeric(hdr$length)
-  hdr$value <- as.character(hdr$value)
-
+  is.sequence <- nchar(hdr$sequence) > 0
   if (pixel.data && pixelData) {
-    nr <- as.numeric(hdr$value[hdr$name == "Rows"])
-    nc <- as.numeric(hdr$value[hdr$name == "Columns"])
-    length <- as.numeric(hdr$length[hdr$name == "PixelData"])
-    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated"]) / 8
+    nr <- as.numeric(hdr$value[hdr$name == "Rows" & ! is.sequence])
+    nc <- as.numeric(hdr$value[hdr$name == "Columns" & ! is.sequence])
+    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
+    length <- as.numeric(hdr$length[hdr$name == "PixelData" & ! is.sequence])
     total.bytes <- nr*nc*bytes
     if (total.bytes != length) {
       k <- length / total.bytes
