@@ -13,7 +13,7 @@
 }
 \usage{
 create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL)
+         mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
 create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, nslices = NULL, ntimes = NULL)
 }
@@ -39,6 +39,9 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
   \item{mosaicXY}{is a vector of length two that provides the (x,y)
     dimensions of the individual images.  Default behavior is to use the
     AcquisitonMatrix to determine the (x,y) values.}
+  \item{sequence}{is a logical variable (default = \code{FALSE}) on
+    whether to look in SequenceItem entries for DICOM header
+    information.}
 %  \item{\ldots}{\ldots}
 }
 \value{
