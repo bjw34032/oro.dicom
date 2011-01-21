@@ -60,7 +60,7 @@ getOrientation <- function(xyz, delta=0.0001) {
   return(orientation)
 }
 
-swapDimension <- function(img, dcm) {
+swapDimension <- function(img, dcm, digits=4) {
   imagePositionPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
   if (nrow(imagePositionPatient) != nsli(img)) {
@@ -74,8 +74,9 @@ swapDimension <- function(img, dcm) {
   ## Ensure all rows of pixelSpacing are identical!
   sliceThickness <- extractHeader(dcm$hdr, "SliceThickness")
   pixdim <- c(unique(pixelSpacing), unique(sliceThickness))
-  first.row <- getOrientation(unique(imageOrientationPatient)[1:3])
-  first.col <- getOrientation(unique(imageOrientationPatient)[4:6])
+  iop.signif <- signif(imageOrientationPatient, digits)
+  first.row <- getOrientation(unique(iop.signif)[1:3])
+  first.col <- getOrientation(unique(iop.signif)[4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     warning("Oblique acquisition in ImageOrientationPatient (hope for the best).")
   }
