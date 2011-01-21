@@ -10,24 +10,27 @@
   that orthographic viewing is standardized.
 }
 \usage{
-swapDimension(img, dcm)
+swapDimension(img, dcm, digits=4)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{img}{Multidimensional array (assumed to be three-dimensional only).}
+  \item{img}{Multidimensional array (assumed to be three-dimensional
+    only).}
   \item{dcm}{DICOM header/image object associated with the
     multidimensional array.}
+  \item{digits}{Number of significant digits used to test the
+    \code{unique}-ness of the DICOM header field(s).}
 }
 %\details{}
 \value{
   Multidimensional array with (potentially) permuted dimensions because
   of the reslicing operation.  An additional attribute
   \dQuote{\code{pixdim}} is provided in order to facilitate conversion
-  from DICOM to NIFTI/Analyze.
+  from DICOM to NIFTI/ANALYZE.
 }
 %\references{}
 \author{
-Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>
+Brandon Whitcher \email{bjw34032@users.sourceforge.net}
 }
 %\note{}
 \seealso{
