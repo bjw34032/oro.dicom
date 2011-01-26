@@ -75,5 +75,5 @@ str2date(dd, format.in, format.out)
   \code{\link{dicomInfo}}
 }
 %\examples{}
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{misc}

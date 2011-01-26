@@ -11,7 +11,8 @@
   format.
 }
 \usage{
-dicom2analyze(dcm, reslice = TRUE, descrip = "SeriesDescription", ...)
+dicom2analyze(dcm, reslice = TRUE, descrip = "SeriesDescription",
+              ...)
 }
 \arguments{
   \item{dcm}{DICOM object containing both header and image information.}
@@ -46,5 +47,5 @@ image(dcmAnlz)
 orthographic(dcmAnlz)
 }
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}

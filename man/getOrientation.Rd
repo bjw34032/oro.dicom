@@ -41,8 +41,10 @@ getOrientation(xyz, delta = 0.0001)
 \references{
   \url{http://www.dclunie.com/medical-image-faq/html/part2.html}
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
-%\seealso{}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\seealso{
+  \code{\link{swapDimension}}
+}
 %\examples{}
 %\keyword{}
 

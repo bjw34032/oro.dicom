@@ -15,7 +15,8 @@
 create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
 create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-         mosaic = FALSE, mosaicXY = NULL, nslices = NULL, ntimes = NULL)
+         mosaic = FALSE, mosaicXY = NULL, nslices = NULL,
+         ntimes = NULL)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
@@ -82,5 +83,5 @@ dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
 image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
       xlab="", ylab="")
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 %\keyword{}

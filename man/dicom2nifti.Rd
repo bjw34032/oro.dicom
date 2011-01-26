@@ -55,5 +55,5 @@ image(dcmNifti)
 orthographic(dcmNifti)
 }
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}

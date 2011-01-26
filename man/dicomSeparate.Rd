@@ -24,12 +24,13 @@ dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
   \item{...}{Arguments to be passed to \code{dicomInfo}.}
 }
 \details{
-  ...
+  A \code{for} loop is used to process each DICOM file contained in the
+  directory(ies).
 }
 \value{
   A list structure with two major components:
-  \item{img}{All images associated with the DICOM directory.}
-  \item{hdr}{All header files associated with the DICOM directory.}
+  \item{img}{All images associated with the DICOM directory(ies).}
+  \item{hdr}{All header files associated with the DICOM directory(ies).}
 }
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -39,5 +40,5 @@ dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
   \code{\link{dicomInfo}}
 }
 %\examples{}
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}

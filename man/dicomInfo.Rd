@@ -33,9 +33,19 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   \item{debug}{is a logical variable (default = \code{FALSE}) that
     regulates to display of intermediate processing steps.}
 }
-%\details{}
+\details{
+  A \code{while} loop is used to traverse the unknown number of DICOM
+  header fields contained in a single file.  Information contained in
+  \dQuote{sequences} may be included/excluded according to the logical
+  variable \code{skipSequence} (default = \code{TRUE}).  
+}
 \value{
-  List.
+  A list containing two elements:
+  \describe{
+    \item{hdr}{all DICOM header fields (with or without
+      \dQuote{sequence} information).}
+    \item{img}{the \sQuote{image} information.}
+  }
 }
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -52,5 +62,5 @@ graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}
