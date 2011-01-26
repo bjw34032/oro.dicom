@@ -6,6 +6,7 @@
 \name{DICOM Headers}
 \alias{floating.header}
 \alias{other.header}
+\alias{pixeldata.header}
 \alias{sequence.header}
 \alias{signed.header}
 \alias{unknown.header}
@@ -18,6 +19,7 @@
 \usage{
 floating.header(VR, implicit, fid, endian)
 other.header(fid, implicit, endian)
+pixeldata.header(hdr, implicit, fid, endian)
 signed.header(VR, implicit, fid, endian)
 sequence.header(group, element, fid, implicit, endian, skipSQ, SQ, EOS)
 unknown.header(VR, implicit, fid, endian)
@@ -28,6 +30,7 @@ unsigned.header(VR, implicit, fid, endian)
   \item{implicit}{...}
   \item{fid}{...}
   \item{endian}{...}
+  \item{hdr}{...}
   \item{group}{...}
   \item{element}{...}
   \item{skipSQ}{...}

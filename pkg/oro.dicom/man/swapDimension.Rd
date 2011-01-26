@@ -10,7 +10,7 @@
   that orthographic viewing is standardized.
 }
 \usage{
-swapDimension(img, dcm, digits=4)
+swapDimension(img, dcm, digits=2)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,8 +18,8 @@ swapDimension(img, dcm, digits=4)
     only).}
   \item{dcm}{DICOM header/image object associated with the
     multidimensional array.}
-  \item{digits}{Number of significant digits used to test the
-    \code{unique}-ness of the DICOM header field(s).}
+  \item{digits}{Number of significant digits used in testing
+    \code{unique}-ness of values in DICOM header fields.}
 }
 %\details{}
 \value{
