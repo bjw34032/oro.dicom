@@ -7,7 +7,8 @@
 \alias{matchHeader}
 \title{Match String to DICOM Header Field}
 \description{
-  ...
+  A convenient wrapper function that utilizes internal functions to
+  match character strings with the DICOM header information.
 }
 \usage{
 matchHeader(hdr, string)
@@ -18,9 +19,7 @@ matchHeader(hdr, string)
   \item{string}{is a character string to be matched with the DICOM
     header.}
 }
-\details{
-  ...
-}
+%\details{}
 \value{
   A logical vector of length \code{length(hdr)}.
 }
@@ -36,5 +35,5 @@ x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 modality <- extractHeader(x$hdr, "Modality", numeric=FALSE)
 matchHeader(modality, "mr") # case insensitive by default
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 %\keyword{file}

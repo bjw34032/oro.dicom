@@ -1,5 +1,5 @@
 
-R version 2.12.0 (2010-10-15)
+R version 2.12.1 (2010-12-16)
 Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
@@ -79,8 +79,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.8)
 > 
 > ### ** Examples
 > 
-> x <- dec2base(23, 2)
-> print(x) 
+> (x <- dec2base(23, 2))
 [1] "10111"
 > 
 > 
@@ -166,11 +165,9 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.8)
 > ### ** Examples
 > 
 > x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
-> print(seriesDescription)
+> (seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE))
 [1] "Liver/SpleeT2W/UTSE/RC$ COR    TSE   2000      100    90"
-> IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
-> print(IOP)
+> (IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
 [1] "1.000000 0.000000 0.000000 0.000000 0.000000 -1.000000"
 > 
 > 
@@ -184,6 +181,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.8)
 > ### Name: header2matrix
 > ### Title: Converts DICOM Header Field to a Matrix
 > ### Aliases: header2matrix
+> ### Keywords: misc
 > 
 > ### ** Examples
 > 
@@ -258,7 +256,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  24.51 0.23 24.788 0 0 
+Time elapsed:  24.4 0.26 24.803 0 0 
 > grDevices::dev.off()
 null device 
           1 

@@ -40,5 +40,5 @@ pSmat <- header2matrix(pixelSpacing, ncol=2)
 IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 IOPmat <- header2matrix(IOP, ncol=6)
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
-%\keyword{file}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\keyword{misc}

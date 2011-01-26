@@ -11,7 +11,8 @@
   headers.
 }
 \usage{
-extractHeader(hdrs, string, numeric = TRUE, names = FALSE, inSequence = TRUE)
+extractHeader(hdrs, string, numeric = TRUE, names = FALSE,
+              inSequence = TRUE)
 }
 \arguments{
   \item{hdrs}{List object of DICOM headers.}
@@ -39,10 +40,8 @@ extractHeader(hdrs, string, numeric = TRUE, names = FALSE, inSequence = TRUE)
 }
 \examples{
 x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
-print(seriesDescription)
-IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
-print(IOP)
+(seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE))
+(IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{misc}

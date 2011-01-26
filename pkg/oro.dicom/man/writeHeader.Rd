@@ -31,5 +31,5 @@ writeHeader(dtable, filename, ...)
   \code{\link{write.table}}
 }
 %\examples{}
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}

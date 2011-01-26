@@ -24,15 +24,14 @@ dec2hex(n, len=0)
 }
 \details{
   This function converts the nonnegative integer \code{n} to the
-  specified base.  \code{n} must be a nonnegative integer smaller than
-  $2^52$, \code{base} must be an integer between 2 and 36 and \code{len}
-  suggests the length of the character string.
+  specified base, where \code{n} must be a nonnegative integer smaller
+  than \eqn{2^52}, \code{base} must be an integer between 2 and 36 and
+  \code{len} suggests the length of the character string.
 }
 %\references{}
 %\seealso{}
 \examples{
-x <- dec2base(23, 2)
-print(x) 
+(x <- dec2base(23, 2))
 }
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{misc}

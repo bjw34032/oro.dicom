@@ -8,10 +8,12 @@
 \title{Check String Against DICOM Header Field to Produce Error Message
   or NEXT}
 \description{
-  ...
+  A function designed to \code{break} out of loops given information (or
+  the lackthereof) contained in the DICOM header.
 }
 \usage{
-nextHeader(dcm, string, reference, str.warning, htmlfile = NULL, heading = 3, numeric = FALSE)
+nextHeader(dcm, string, reference, str.warning, htmlfile = NULL,
+           heading = 3, numeric = FALSE)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure.}
@@ -25,11 +27,9 @@ nextHeader(dcm, string, reference, str.warning, htmlfile = NULL, heading = 3, nu
   \item{heading}{is the HTML tag <H?> (default = \code{3}).}
   \item{numeric}{is the argument to be passed to \code{matchHeader}.}
 }
-\details{
-  ...
-}
+%\details{}
 \value{
-  An expression to be evaluated.
+  An expression to be evaluated and HTML content.
 }
 \references{
   Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -39,5 +39,5 @@ nextHeader(dcm, string, reference, str.warning, htmlfile = NULL, heading = 3, nu
   \code{\link{extractHeader}}, \code{\link{matchHeader}}
 }
 %\examples{}
-\author{Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>}
+\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 %\keyword{file}
