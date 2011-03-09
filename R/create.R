@@ -119,7 +119,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
 
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
-                     ntimes=NULL) {
+                     ntimes=NULL, instance=TRUE) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -211,7 +211,7 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     }
     ## Guess the slice order
     instanceNumber <- extractHeader(dcm$hdr, "InstanceNumber")
-    if (length(unique(instanceNumber))) {
+    if (instance && length(unique(instanceNumber)) == length(dcm$hdr)) {
       index <- order(instanceNumber)
     } else {
       warning("No unique slice ordering found in InstanceNumber.")
