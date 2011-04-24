@@ -22,7 +22,7 @@ other.header(fid, implicit, endian)
 pixeldata.header(hdr, implicit, fid, endian)
 signed.header(VR, implicit, fid, endian)
 sequence.header(group, element, fid, implicit, endian, skipSQ, SQ, EOS)
-unknown.header(VR, implicit, fid, endian)
+unknown.header(VR, implicit, fid, endian, skipSQ)
 unsigned.header(VR, implicit, fid, endian)
 }
 \arguments{

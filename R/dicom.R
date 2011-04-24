@@ -108,7 +108,7 @@ sequence.header <- function(group, element, fid, implicit, endian,
   list(length=length, value="sequence", SQ=SQ, EOS=EOS)
 }
 
-unknown.header <- function(VR, implicit, fid, endian) {
+unknown.header <- function(VR, implicit, fid, endian, skipSQ) {
   ## Unknown header!
   if (VR$bytes > 0) {
     length <- ifelse(implicit,
@@ -124,8 +124,12 @@ unknown.header <- function(VR, implicit, fid, endian) {
       skip <- readBin(fid, integer(), size=2, endian=endian)
       length <- readBin(fid, integer(), size=4, endian=endian)
     }
-    skip <- readBin(fid, integer(), max(0,length), size=1, endian=endian)
-    value <- "skip"
+    if (skipSQ) {
+      skip <- readBin(fid, integer(), max(0,length), size=1, endian=endian)
+      value <- "skip"
+    } else {
+      value <- ""
+    }
   }
   list(length=length, value=value)
 }
@@ -261,7 +265,8 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                  SQ <- out$SQ
                  EOS <- out$EOS
                },
-               { out <- unknown.header(VR, implicit, fid, endian) })
+               { out <- unknown.header(VR, implicit, fid, endian,
+                                       skipSequence) })
       }
     }
     if (is.null(SQ)) {
