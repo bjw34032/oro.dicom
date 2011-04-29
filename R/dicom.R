@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010, Brandon Whitcher
+## Copyright (c) 2010-2011, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -353,7 +353,8 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
     filenames <- list.files(path, full.names=TRUE)
   }
   if (! is.null(exclude)) {
-    filenames <- grep(exclude, filenames, value=TRUE, invert=TRUE)
+    filenames <- grep(exclude, filenames, ignore.case=TRUE, value=TRUE,
+                      invert=TRUE)
   }
   nfiles <- length(filenames)
   if (verbose) {
