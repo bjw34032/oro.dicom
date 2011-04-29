@@ -32,7 +32,8 @@
 ## $Id: $
 ##
 
-dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
+dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
+                       debug=FALSE) {
   ## Use first record to establish data.frame
   csv <- data.frame(matrix(hdrs[[1]]$value, 1, nrow(hdrs[[1]])),
                     stringsAsFactors=stringsAsFactors)
@@ -43,6 +44,9 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-") {
   ## Loop through all records and "merge" them
   if (length(hdrs) > 1) {
     for (l in 2:length(hdrs)) {
+      if (debug) {
+        cat("  l =", l, fill=TRUE)
+      }
       temp <- data.frame(matrix(hdrs[[l]]$value, 1, nrow(hdrs[[l]])),
                          stringsAsFactors=stringsAsFactors)
       names(temp) <-
