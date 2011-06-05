@@ -425,8 +425,9 @@ dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
 }
 
 dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
-                        reslice=TRUE, DIM=3, descrip="SeriesDescription",
-                        aux.file=NULL, ...) {
+                        reslice=TRUE, sform=TRUE, DIM=3,
+                        descrip="SeriesDescription", aux.file=NULL, ...) {
+  require("oro.nifti")
   switch(as.character(DIM),
          "2" = { img <- create3D(dcm, ...) },
          "3" = { img <- create3D(dcm, ...) },
@@ -435,7 +436,6 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
   if (DIM %in% 3:4 && reslice) {
     img <- swapDimension(img, dcm)
   }
-  require("oro.nifti")
   nim <- nifti(img, datatype=datatype)
   if (is.null(attr(img,"pixdim"))) {
     ## (x,y) pixel dimensions
@@ -474,6 +474,13 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     nim@"xyzt_units" <- space.time2xyzt(units[1], units[2])
   } else {
     stop("units must be a length = 2 vector")
+  }
+  ## sform
+  if (sform) {
+    nim@"sform_code" <- 1
+    nim@"srow_x" <- c(-1,0,0,0)
+    nim@"srow_y" <- c(0,1,0,0)
+    nim@"srow_z" <- c(0,0,1,0)
   }
   ## rescale
   if (rescale) {
