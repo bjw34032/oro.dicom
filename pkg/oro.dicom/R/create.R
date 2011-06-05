@@ -119,7 +119,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
 
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
-                     ntimes=NULL, instance=TRUE) {
+                     ntimes=NULL, instance=TRUE, sequence=FALSE) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -132,11 +132,11 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       dcm <- list(hdr=dcm, img=NULL) # Only a list of headers as input
     }
   }
-  X <- unique(extractHeader(dcm$hdr, "Rows"))
+  X <- unique(extractHeader(dcm$hdr, "Rows", inSequence=sequence))
   if (length(X) != 1) {
     stop("Row lengths are not identical.")
   }
-  Y <- unique(extractHeader(dcm$hdr, "Columns"))
+  Y <- unique(extractHeader(dcm$hdr, "Columns", inSequence=sequence))
   if (length(Y) != 1) {
     stop("Column lengths are not identical.")
   }
@@ -152,11 +152,17 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
         header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
       x <- acquisitionMatrix[1,1]
       y <- acquisitionMatrix[1,4]
-      if (is.na(x) || identical(x,0) || is.na(y) || identical(y,0)) {
-        stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
+      if (is.na(x) || x == 0 || is.na(y) || y == 0) {
+        stop("Missing AcquisitionMatrix, please specify \"mosaicXY\".")
       }
-      if (! all(identical(trunc(X/x), X/x), identical(trunc(Y/y), Y/y))) {
-        stop("AcquisitionMatrix does not make sense, please specify \"mosaicXY\"")
+      if (! all(trunc(X/x) == X/x, trunc(Y/y) == Y/y)) {
+        if (! all(trunc(X/y) == X/y, trunc(Y/x) == Y/x)) {
+          y <- acquisitionMatrix[1,1]
+          x <- acquisitionMatrix[1,4]
+          warning("AcquisitionMatrix has been transposed.")
+        } else {
+          stop("AcquisitionMatrix does not make sense, please specify \"mosaicXY\".")
+        }
       }
     } else {
       x <- mosaicXY[1]

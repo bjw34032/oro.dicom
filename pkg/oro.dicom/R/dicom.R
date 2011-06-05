@@ -357,6 +357,7 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
                       invert=TRUE)
   }
   nfiles <- length(filenames)
+  nch <- nchar(as.character(nfiles))
   if (verbose) {
     cat("  ", nfiles, "files to be processed!", fill=TRUE)
   }
@@ -364,7 +365,8 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   names(images) <- names(headers) <- filenames
   for (i in 1:nfiles) {
     if (verbose && (i %% counter == 0)) {
-      cat("  ", i, "files processed...", fill=TRUE)
+      cat("  ", sprintf(paste("% ", nch, "d", sep=""), i),
+          "files processed...", fill=TRUE)
     }
     dcm <- dicomInfo(filenames[i], ...)
     if (! is.null(dcm$img)) {
