@@ -16,7 +16,7 @@ create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
 create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, nslices = NULL,
-         ntimes = NULL, instance = TRUE)
+         ntimes = NULL, instance = TRUE, sequence = FALSE)
 }
 \arguments{
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =

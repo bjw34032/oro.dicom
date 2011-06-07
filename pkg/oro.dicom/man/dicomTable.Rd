@@ -11,7 +11,8 @@
   user.
 }
 \usage{
-dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", debug = FALSE)
+dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort = TRUE,
+           debug = FALSE)
 }
 \arguments{
   \item{hdrs}{List object of DICOM headers.}
@@ -19,6 +20,8 @@ dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", debug = FALSE)
     \code{data.frame}.}
   \item{collapse}{Character string used to \code{paste} DICOM group,
     element and value fields.}
+  \item{colSort}{Logical variable (default = \code{TRUE}) to sort column
+    names in the table.}
   \item{debug}{Logical variable (default = \code{FALSE}) that regulates
     to display of intermediate processing steps.}
 }

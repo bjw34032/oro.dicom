@@ -1,6 +1,6 @@
 Package: oro.dicom
-Version: 0.2.9
-Date: 2011-04-26
+Version: 0.3.0
+Date: 2011-06-06
 Title: Rigorous - DICOM Input / Output
 Author: Brandon Whitcher
 Maintainer: Brandon Whitcher <bjw34032@users.sourceforge.net>

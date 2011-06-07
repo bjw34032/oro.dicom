@@ -17,7 +17,9 @@ dicom2nifti(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
 }
 \arguments{
   \item{dcm}{DICOM object containing both header and image information.}
-  \item{datatype}{...}
+  \item{datatype}{is an integer that denotes the type of data contained
+    in each voxel.  See \code{convert.datatype} or the NIfTI
+    documentation for more details.}
   \item{units}{Spatial and temporal units for \code{xyzt}}
   \item{rescale}{Should slope and intercept parameters be extracted from
     the DICOM headers and saved?}
@@ -30,7 +32,7 @@ dicom2nifti(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     \code{descrip} slot for the \code{nifti} class object.}
   \item{aux.file}{Character string to be included in the \code{aux_file}
     slot for the \code{nifti} class object.}
-  \item{...}{Arguments to be passed to \code{nifti}}
+  \item{\dots}{Arguments to be passed to \code{nifti}}
 }
 \value{
   An object of class \code{nifti}.
@@ -46,7 +48,8 @@ dicom2nifti(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
   \url{http://nifti.nimh.nih.gov/nifti-1}
 }
 \seealso{
-  \code{\link{dicom2analyze}}, \code{\link[oro.nifti]{nifti}}
+  \code{\link[oro.nifti]{convert.datatype}}, \code{\link{dicom2analyze}},
+  \code{\link[oro.nifti]{nifti}}
 }
 \examples{
 \dontrun{

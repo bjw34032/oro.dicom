@@ -379,14 +379,14 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   list(hdr=headers, img=images)
 }
 
-dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
-                          ...) {
+dicom2analyze <- function(dcm, datatype=8, reslice=TRUE, DIM=3,
+                          descrip="SeriesDescription", ...) {
+  require("oro.nifti")
   img <- create3D(dcm, ...)
-  if (reslice) {
+  if (DIM %in% 3:4 && reslice) {
     img <- swapDimension(img, dcm)
   }
-  require("oro.nifti")
-  aim <- anlz(img, ...)
+  aim <- anlz(img, datatype=datatype)
   if (is.null(attr(img,"pixdim"))) {
     ## (x,y) pixel dimensions
     aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(dcm$hdr, "PixelSpacing", FALSE)[1], " ")))
@@ -413,10 +413,10 @@ dicom2analyze <- function(dcm, reslice=TRUE, descrip="SeriesDescription",
     aim@"descrip" <- descrip.string
   }
   ## originator
-  aim$"originator" <- substring(extractHeader(dcm$hdr, "RequestingPhysician")[1],
-                                1, 10)
+  aim@"originator" <- substring(extractHeader(dcm$hdr,
+                                              "RequestingPhysician")[1], 1, 10)
   ## scannum
-  aim@"scannum" <- substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10)
+  aim@"scannum" <- unlist(substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10))
   ## patient_id
   aim@"patient_id" <- substring(extractHeader(dcm$hdr, "PatientID")[1], 1, 10)
   ## exp_date
