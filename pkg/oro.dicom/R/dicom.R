@@ -412,9 +412,6 @@ dicom2analyze <- function(dcm, datatype=8, reslice=TRUE, DIM=3,
   } else {
     aim@"descrip" <- descrip.string
   }
-  ## originator
-  aim@"originator" <- substring(extractHeader(dcm$hdr,
-                                              "RequestingPhysician")[1], 1, 10)
   ## scannum
   aim@"scannum" <- unlist(substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10))
   ## patient_id
