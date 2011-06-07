@@ -379,10 +379,14 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
   list(hdr=headers, img=images)
 }
 
-dicom2analyze <- function(dcm, datatype=8, reslice=TRUE, DIM=3,
+dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
                           descrip="SeriesDescription", ...) {
   require("oro.nifti")
-  img <- create3D(dcm, ...)
+  switch(as.character(DIM),
+         "2" = { img <- create3D(dcm, ...) },
+         "3" = { img <- create3D(dcm, ...) },
+         "4" = { img <- create4D(dcm, ...) },
+         stop("Dimension parameter \"DIM\" incorrectly specified."))
   if (DIM %in% 3:4 && reslice) {
     img <- swapDimension(img, dcm)
   }

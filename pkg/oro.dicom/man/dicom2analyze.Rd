@@ -11,7 +11,7 @@
   format.
 }
 \usage{
-dicom2analyze(dcm, datatype = 8, reslice = TRUE, DIM = 3,
+dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3,
               descrip = "SeriesDescription", ...)
 }
 \arguments{

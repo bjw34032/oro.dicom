@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.2.9)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -256,7 +256,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  30.93 0.28 31.275 0 0 
+Time elapsed:  28.34 0.25 57.253 0 0 
 > grDevices::dev.off()
 null device 
           1 
