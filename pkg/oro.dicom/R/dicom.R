@@ -204,7 +204,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   }
   ## Next four bytes spell "DICM"
   if (DICM) {
-    if (readChar(fid, n=4) != "DICM") {
+    if (readChar(fid, nchars=4) != "DICM") {
       stop("DICM != DICM")
     }
   }
