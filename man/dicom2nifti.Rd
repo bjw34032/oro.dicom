@@ -56,6 +56,8 @@ dicom2nifti(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
 dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
 require("oro.nifti")
 dcmNifti <- dicom2nifti(dcmList, datatype=4, mode="integer")
+qform(dcmNifti)
+sform(dcmNifti)
 image(dcmNifti)
 orthographic(dcmNifti)
 }

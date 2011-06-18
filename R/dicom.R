@@ -428,7 +428,7 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
 }
 
 dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
-                        reslice=TRUE, sform=TRUE, DIM=3,
+                        reslice=TRUE, qform=TRUE, sform=TRUE, DIM=3,
                         descrip="SeriesDescription", aux.file=NULL, ...) {
   require("oro.nifti")
   switch(as.character(DIM),
@@ -478,12 +478,20 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
   } else {
     stop("units must be a length = 2 vector")
   }
+  ## qform
+  if (qform) { # Basic LAS convention corresponds to the xform matrix
+    nim@"qform_code" <- 2
+    nim@"quatern_b" <- 0
+    nim@"quatern_c" <- 1
+    nim@"quatern_d" <- 0
+    nim@"pixdim"[1] <- -1.0 # qfac
+  }
   ## sform
-  if (sform) {
-    nim@"sform_code" <- 1
-    nim@"srow_x" <- c(-1,0,0,0)
-    nim@"srow_y" <- c(0,1,0,0)
-    nim@"srow_z" <- c(0,0,1,0)
+  if (sform) { # Basic LAS convention corresponds to the xform matrix
+    nim@"sform_code" <- 2
+    nim@"srow_x" <- pixdim(nim)[2] * c(-1,0,0,0)
+    nim@"srow_y" <- pixdim(nim)[3] * c(0,1,0,0)
+    nim@"srow_z" <- pixdim(nim)[4] * c(0,0,1,0)
   }
   ## rescale
   if (rescale) {
