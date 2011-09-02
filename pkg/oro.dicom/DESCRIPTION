@@ -11,6 +11,6 @@ Description: Data input/output functions for data that conform to the
   of the Rigorous Analytics bundle.
 License: BSD
 URL: http://rigorousanalytics.blogspot.com, http://rig.oro.us.com
-LazyLoad: no
+LazyLoad: yes
 LazyData: no
 ZipData: no
