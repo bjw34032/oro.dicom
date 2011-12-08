@@ -35,6 +35,10 @@
 dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
                        colSort=TRUE, debug=FALSE) {
   myMerge <- function(df1, df2) {
+    if (anyDuplicated(names(df1)) != 0) {
+      warning("Duplicated group-element tags have been removed!")
+      df1 <- df1[, ! duplicated(names(df1))]
+    }
     if (! all(names(df2) %in% names(df1))) {
       newCols <- names(df2)[! names(df2) %in% names(df1)]
       ## newcols <- setdiff(names(df2), names(df1)) # removes duplicates!
@@ -42,6 +46,10 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
                                     x = nrow(df1)))
       names(newDf) <- newCols
       df1 <- cbind(df1, newDf)
+    }
+    if (anyDuplicated(names(df2)) != 0) {
+      warning("Duplicated group-element tags have been removed!")
+      df2 <- df2[, ! duplicated(names(df2))]
     }
     if (! all(names(df1) %in% names(df2))) {
       newCols <- names(df1)[! names(df1) %in% names(df2)]
