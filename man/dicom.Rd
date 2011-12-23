@@ -24,6 +24,6 @@ data(dicom.VR)
   \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
 }
 \seealso{
-  \code{\link{dicomInfo}}, \code{\link{dicomSeparate}}.
+  \code{\link{readDICOM}}, \code{\link{readDICOMFile}}.
 }
 \keyword{datasets}

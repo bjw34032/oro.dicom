@@ -3,17 +3,17 @@
 %
 % $Id: $
 
-\name{dicomInfo}
-\alias{dicomInfo}
+\name{readDICOMFile}
+\alias{readDICOMFile}
 \title{Read Single DICOM File}
 \description{
   All information, both header and image, is read into a list structure
   from a DICOM file.
 }
 \usage{
-dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
-          DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
-          warn = -1, debug = FALSE)
+readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
+              DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
+              warn = -1, debug = FALSE)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -53,13 +53,13 @@ dicomInfo(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
 }
 \seealso{
-  \code{\link{dicomSeparate}}
+  \code{\link{readDICOM}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 
-x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}

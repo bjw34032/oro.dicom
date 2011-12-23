@@ -1,6 +1,6 @@
 Package: oro.dicom
-Version: 0.3.1
-Date: 2011-10-17
+Version: 0.3.2
+Date: 2011-12-20
 Title: Rigorous - DICOM Input / Output
 Author: Brandon Whitcher
 Maintainer: Brandon Whitcher <bjw34032@users.sourceforge.net>
@@ -11,5 +11,5 @@ Description: Data input/output functions for data that conform to the
   of the Rigorous Analytics bundle.
 License: BSD
 URL: http://rigorousanalytics.blogspot.com, http://rig.oro.us.com
-LazyData: no
+LazyData: yes
 ZipData: no

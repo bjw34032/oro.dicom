@@ -31,7 +31,7 @@ matchHeader(hdr, string)
   \code{\link{extractHeader}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 modality <- extractHeader(x$hdr, "Modality", numeric=FALSE)
 matchHeader(modality, "mr") # case insensitive by default
 }

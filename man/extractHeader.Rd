@@ -36,11 +36,12 @@ extractHeader(hdrs, string, numeric = TRUE, names = FALSE,
   \url{http://medical.nema.org}
 }
 \seealso{
-  \code{\link{dicomInfo}}
+  \code{\link{readDICOM}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-(seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE))
+x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+(seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
+                                    numeric=FALSE))
 (IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
