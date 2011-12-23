@@ -5,6 +5,7 @@
 
 \name{readDICOM}
 \alias{readDICOM}
+\alias{dicomSeparate}
 \title{Read All DICOM Files in a Directory}
 \description{
   All DICOM files are imported and a text file summarizing their content

@@ -5,6 +5,7 @@
 
 \name{readDICOMFile}
 \alias{readDICOMFile}
+\alias{dicomInfo}
 \title{Read Single DICOM File}
 \description{
   All information, both header and image, is read into a list structure
