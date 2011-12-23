@@ -156,6 +156,14 @@
   list(img=img, length=length, value="")
 }
 
+dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
+                      DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
+                      warn=-1, debug=FALSE) {
+  readDICOMFile(fname, endian=endian, flipud=flipud, skip128=skip128,
+                DICM=DICM, skipSequence=skipSequence,
+                pixelData=pixelData, warn=warn, debug=debug)
+}
+
 readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                           DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
                           warn=-1, debug=FALSE) {
@@ -191,10 +199,10 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   oldwarn <- getOption("warn")
   options(warn=warn)
   ## Some shortcuts...
-  data("dicom.dic")
+  ## data("dicom.dic")
   dcm.group <- dicom.dic$group # [, "group"]
   dcm.element <- dicom.dic$element # [, "element"]
-  data("dicom.VR")
+  ## data("dicom.VR")
   VRcode <- dicom.VR$code # [, "code"]
   ## Open connection
   fid <- file(fname, "rb")
@@ -212,7 +220,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   hdr <- NULL
   pixel.data <- FALSE
   file.size <- file.info(fname)$size
-  while (!pixel.data && !(seek(fid) >= file.size)) {
+  while (! pixel.data && ! (seek(fid) >= file.size)) {
     seek.old <- seek(fid)
     implicit <- FALSE
     group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
@@ -245,28 +253,27 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       }
       out <- .pixeldata.header(hdr, implicit, fid, endian)
     } else {
-      if (!is.null(SQ) && skipSequence &&
+      if (! is.null(SQ) && skipSequence &&
           (group == "FFFE" && element == "E000")) {
         out <- list(length=4, value="item")
         seek(fid, where=seek(fid) + out$length)
       } else {
-        switch(VR$code,
-               UL = ,
-               US = { out <- .unsigned.header(VR, implicit, fid, endian) },
-               SL = ,
-               SS = { out <- .signed.header(VR, implicit, fid, endian) },
-               FS = ,
-               FD = { out <- .floating.header(VR, implicit, fid, endian) },
-               OB = ,
-               OW = { out <- .other.header(fid, implicit, endian) },
-               SQ = {
-                 out <- .sequence.header(group, element, fid, implicit,
-                                         endian, skipSequence, SQ, EOS)
-                 SQ <- out$SQ
-                 EOS <- out$EOS
-               },
-               { out <- .unknown.header(VR, implicit, fid, endian,
-                                        skipSequence) })
+        out <- switch(VR$code,
+                      UL = ,
+                      US = .unsigned.header(VR, implicit, fid, endian),
+                      SL = ,
+                      SS = .signed.header(VR, implicit, fid, endian),
+                      FS = ,
+                      FD = .floating.header(VR, implicit, fid, endian),
+                      OB = ,
+                      OW = .other.header(fid, implicit, endian),
+                      SQ = .sequence.header(group, element, fid, implicit,
+                        endian, skipSequence, SQ, EOS),
+                      .unknown.header(VR, implicit, fid, endian, skipSequence))
+        if (VR$code == "SQ") {
+          SQ <- out$SQ
+          EOS <- out$EOS
+        }
       }
     }
     if (is.null(SQ)) {
@@ -276,7 +283,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         cat("", seek.old, hdr[nrow(hdr), ], sep="\t", fill=TRUE)
       }
     } else {
-      if (!skipSequence) {
+      if (! skipSequence) {
         hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
                             paste(out$value, collapse=" "),
                             ifelse(is.null(SQ), "", paste(SQ, collapse=" "))))
@@ -296,7 +303,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         SQ <- NULL # set SQ to NULL
       }
     }
-    if (!is.null(SQ)) {
+    if (! is.null(SQ)) {
       if (any(seek(fid) == EOS)) {
         SQ <- SQ[-which(seek(fid) == EOS)] # remove sequence(s)
         SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ)) # set SQ to NULL
@@ -343,6 +350,11 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   ## Warnings?
   options(warn=oldwarn)
   list(hdr=hdr, img=img)
+}
+
+dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
+                          exclude=NULL, ...) {
+  readDICOM(path, ...)
 }
 
 readDICOM <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
