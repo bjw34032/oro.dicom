@@ -1,5 +1,5 @@
 
-R version 2.13.0 (2011-04-13)
+R version 2.14.1 (2011-12-22)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
@@ -23,8 +23,8 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
-
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.2)
+TRUE
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > cleanEx()
@@ -41,7 +41,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > 
 > ## pixelData = TRUE
 > ## The DICOM image data are read from dicomSeparate()
-> dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+> dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
 > dcmImage <- create3D(dcmList)
 > image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > imagePositionPatient <- attributes(dcmImage)$ipp
@@ -52,14 +52,14 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > ## pixelData = FALSE
 > ## The DICOM image data are read from create3D()
 > ## This may save on memory for large batches of DICOM data
-> dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
-+                          pixelData=FALSE)
+> dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
++                      pixelData=FALSE)
 > dcmImage <- create3D(dcmList, pixelData=FALSE)
 > image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > 
 > ## mosaic = TRUE
-> dcm <- dicomInfo(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
-+                              package="oro.dicom"))
+> dcm <- readDICOMFile(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
++                      package="oro.dicom"))
 > dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
 > image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
 +       xlab="", ylab="")
@@ -124,30 +124,11 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > ##D dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
 > ##D require("oro.nifti")
 > ##D dcmNifti <- dicom2nifti(dcmList, datatype=4, mode="integer")
+> ##D qform(dcmNifti)
+> ##D sform(dcmNifti)
 > ##D image(dcmNifti)
 > ##D orthographic(dcmNifti)
 > ## End(Not run)
-> 
-> 
-> 
-> cleanEx()
-> nameEx("dicomInfo")
-> ### * dicomInfo
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: dicomInfo
-> ### Title: Read Single DICOM File
-> ### Aliases: dicomInfo
-> ### Keywords: file
-> 
-> ### ** Examples
-> 
-> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
-> 
-> x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 > 
 > 
 > 
@@ -164,8 +145,9 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > 
 > ### ** Examples
 > 
-> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> (seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE))
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> (seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
++                                     numeric=FALSE))
 [1] "Liver/SpleeT2W/UTSE/RC$ COR    TSE   2000      100    90"
 > (IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
 [1] "1.000000 0.000000 0.000000 0.000000 0.000000 -1.000000"
@@ -185,7 +167,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > 
 > ### ** Examples
 > 
-> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > pixelSpacing <- extractHeader(x$hdr, "PixelSpacing", numeric=FALSE)
 > pSmat <- header2matrix(pixelSpacing, ncol=2)
 > IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
@@ -205,7 +187,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > 
 > ### ** Examples
 > 
-> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > modality <- extractHeader(x$hdr, "Modality", numeric=FALSE)
 > matchHeader(modality, "mr") # case insensitive by default
 [1] TRUE
@@ -225,7 +207,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > 
 > ### ** Examples
 > 
-> x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > iop <-
 +   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 > is.axial(iop)
@@ -235,7 +217,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.0)
 > is.sagittal(iop)
 [1] FALSE
 > 
-> x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 > iop <-
 +   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 > is.axial(iop)
@@ -253,10 +235,31 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> cleanEx()
+> nameEx("readDICOMFile")
+> ### * readDICOMFile
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: readDICOMFile
+> ### Title: Read Single DICOM File
+> ### Aliases: readDICOMFile
+> ### Keywords: file
+> 
+> ### ** Examples
+> 
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> 
+> x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  28.34 0.25 57.253 0 0 
+Time elapsed:  15.51 0.18 15.71 0 0 
 > grDevices::dev.off()
 null device 
           1 
