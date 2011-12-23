@@ -30,14 +30,14 @@ is.sagittal(imageOrientationPatient, sagittal = c("A","P","H","F"))
   \code{\link{getOrientation}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 iop <-
   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 is.axial(iop)
 is.coronal(iop)
 is.sagittal(iop)
 
-x <- dicomInfo(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 iop <-
   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 is.axial(iop)

@@ -56,13 +56,13 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
   \url{http://medical.nema.org}
 }
 \seealso{
-  \code{\link{array}}, \code{\link{dicomInfo}},
+  \code{\link{array}}, \code{\link{readDICOM}},
   \code{\link{storage.mode}}
 }
 \examples{
 ## pixelData = TRUE
 ## The DICOM image data are read from dicomSeparate()
-dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
 dcmImage <- create3D(dcmList)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 imagePositionPatient <- attributes(dcmImage)$ipp
@@ -73,14 +73,14 @@ plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 ## pixelData = FALSE
 ## The DICOM image data are read from create3D()
 ## This may save on memory for large batches of DICOM data
-dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"),
-                         pixelData=FALSE)
+dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
+                     pixelData=FALSE)
 dcmImage <- create3D(dcmList, pixelData=FALSE)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 
 ## mosaic = TRUE
-dcm <- dicomInfo(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
-                             package="oro.dicom"))
+dcm <- readDICOMFile(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
+                     package="oro.dicom"))
 dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
 image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
       xlab="", ylab="")

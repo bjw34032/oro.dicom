@@ -34,7 +34,7 @@ header2matrix(hdr, ncol, sep = " ", byrow = TRUE)
   \code{\link{extractHeader}}, \code{\link{matrix}}
 }
 \examples{
-x <- dicomInfo(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 pixelSpacing <- extractHeader(x$hdr, "PixelSpacing", numeric=FALSE)
 pSmat <- header2matrix(pixelSpacing, ncol=2)
 IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)

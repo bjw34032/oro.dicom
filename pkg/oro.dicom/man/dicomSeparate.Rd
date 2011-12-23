@@ -3,16 +3,16 @@
 %
 % $Id: $
 
-\name{dicomSeparate}
-\alias{dicomSeparate}
+\name{readDICOM}
+\alias{readDICOM}
 \title{Read All DICOM Files in a Directory}
 \description{
   All DICOM files are imported and a text file summarizing their content
   recorded.
 }
 \usage{
-dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
-              exclude = NULL, ...)
+readDICOM(path, verbose = FALSE, counter = 100, recursive = TRUE,
+          exclude = NULL, ...)
 }
 \arguments{
   \item{path}{Path name to the DICOM directory.}
@@ -21,7 +21,7 @@ dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
     file processing.}
   \item{recursive}{Search recursively down from the given path name.}
   \item{exclude}{Exclude file names containing this character string.}
-  \item{...}{Arguments to be passed to \code{dicomInfo}.}
+  \item{...}{Arguments to be passed to \code{readDICOMFile}.}
 }
 \details{
   A \code{for} loop is used to process each DICOM file contained in the
@@ -37,7 +37,7 @@ dicomSeparate(path, verbose = FALSE, counter = 100, recursive = TRUE,
   \url{http://medical.nema.org}
 }
 \seealso{
-  \code{\link{dicomInfo}}
+  \code{\link{readDICOMFile}}
 }
 %\examples{}
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}

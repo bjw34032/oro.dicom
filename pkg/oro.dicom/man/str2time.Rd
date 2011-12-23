@@ -72,7 +72,7 @@ str2date(dd, format.in, format.out)
   \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
 }
 \seealso{
-  \code{\link{dicomInfo}}
+  \code{\link{readDICOM}}
 }
 %\examples{}
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}

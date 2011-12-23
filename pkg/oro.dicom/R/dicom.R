@@ -38,7 +38,7 @@
   iconv(rawToChar(txt[txt != as.raw(0)]), to=to)
 }
 
-unsigned.header <- function(VR, implicit, fid, endian) {
+.unsigned.header <- function(VR, implicit, fid, endian) {
   ## "Unsigned Long" and "Unsigned Short"
   length <- ifelse(implicit,
                    readBin(fid, integer(), size=4, endian=endian),
@@ -48,7 +48,7 @@ unsigned.header <- function(VR, implicit, fid, endian) {
   list(length=length, value=paste(value, collapse=" "))
 }
 
-signed.header <- function(VR, implicit, fid, endian) {
+.signed.header <- function(VR, implicit, fid, endian) {
   ## "Signed Long" and "Signed Short"
   length <- ifelse(implicit,
                    readBin(fid, integer(), size=4, endian=endian),
@@ -58,7 +58,7 @@ signed.header <- function(VR, implicit, fid, endian) {
   list(length=length, value=paste(value, collapse=" "))
 }
 
-floating.header <- function(VR, implicit, fid, endian) {
+.floating.header <- function(VR, implicit, fid, endian) {
   ## "Floating Point Single" and "Floating Point Double"
   length <- ifelse(implicit,
                    readBin(fid, integer(), size=4, endian=endian),
@@ -68,7 +68,7 @@ floating.header <- function(VR, implicit, fid, endian) {
   list(length=length, value=value)
 }
 
-other.header <- function(fid, implicit, endian) {
+.other.header <- function(fid, implicit, endian) {
   ## "OtherByteString" or "OtherWordString"
   if (implicit) {
     length <- readBin(fid, integer(), size=4, endian=endian)
@@ -80,7 +80,7 @@ other.header <- function(fid, implicit, endian) {
   list(length=length, value="skipped")
 }
 
-sequence.header <- function(group, element, fid, implicit, endian,
+.sequence.header <- function(group, element, fid, implicit, endian,
                             skipSQ, SQ, EOS) {
   ## "Sequence of Items" with bytes = 0
   if (implicit) {
@@ -108,7 +108,7 @@ sequence.header <- function(group, element, fid, implicit, endian,
   list(length=length, value="sequence", SQ=SQ, EOS=EOS)
 }
 
-unknown.header <- function(VR, implicit, fid, endian, skipSQ) {
+.unknown.header <- function(VR, implicit, fid, endian, skipSQ) {
   ## Unknown header!
   if (VR$bytes > 0) {
     length <- ifelse(implicit,
@@ -134,7 +134,7 @@ unknown.header <- function(VR, implicit, fid, endian, skipSQ) {
   list(length=length, value=value)
 }
 
-pixeldata.header <- function(hdr, implicit, fid, endian) {
+.pixeldata.header <- function(hdr, implicit, fid, endian) {
   if (implicit) {
     length <- readBin(fid, integer(), size=4, endian=endian)
   } else {
@@ -156,9 +156,9 @@ pixeldata.header <- function(hdr, implicit, fid, endian) {
   list(img=img, length=length, value="")
 }
 
-dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
-                      warn=-1, debug=FALSE) {
+readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
+                          DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
+                          warn=-1, debug=FALSE) {
   ##
   ## "The default DICOM Transfer Syntax, which shall be supported by
   ## all AEs, uses Little Endian encoding and is specified in Annex
@@ -243,7 +243,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       if (debug) {
         cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
       }
-      out <- pixeldata.header(hdr, implicit, fid, endian)
+      out <- .pixeldata.header(hdr, implicit, fid, endian)
     } else {
       if (!is.null(SQ) && skipSequence &&
           (group == "FFFE" && element == "E000")) {
@@ -252,21 +252,21 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       } else {
         switch(VR$code,
                UL = ,
-               US = { out <- unsigned.header(VR, implicit, fid, endian) },
+               US = { out <- .unsigned.header(VR, implicit, fid, endian) },
                SL = ,
-               SS = { out <- signed.header(VR, implicit, fid, endian) },
+               SS = { out <- .signed.header(VR, implicit, fid, endian) },
                FS = ,
-               FD = { out <- floating.header(VR, implicit, fid, endian) },
+               FD = { out <- .floating.header(VR, implicit, fid, endian) },
                OB = ,
-               OW = { out <- other.header(fid, implicit, endian) },
+               OW = { out <- .other.header(fid, implicit, endian) },
                SQ = {
-                 out <- sequence.header(group, element, fid, implicit,
-                                        endian, skipSequence, SQ, EOS)
+                 out <- .sequence.header(group, element, fid, implicit,
+                                         endian, skipSequence, SQ, EOS)
                  SQ <- out$SQ
                  EOS <- out$EOS
                },
-               { out <- unknown.header(VR, implicit, fid, endian,
-                                       skipSequence) })
+               { out <- .unknown.header(VR, implicit, fid, endian,
+                                        skipSequence) })
       }
     }
     if (is.null(SQ)) {
@@ -345,8 +345,8 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   list(hdr=hdr, img=img)
 }
 
-dicomSeparate <- function(path, verbose=FALSE, counter=100,
-                          recursive=TRUE, exclude=NULL, ...) {
+readDICOM <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
+                      exclude=NULL, ...) {
   if (recursive) {
     filenames <- list.files(path, full.names=TRUE, recursive=TRUE)
   } else {
@@ -368,7 +368,7 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100,
       cat("  ", sprintf(paste("% ", nch, "d", sep=""), i),
           "files processed...", fill=TRUE)
     }
-    dcm <- dicomInfo(filenames[i], ...)
+    dcm <- readDICOMFile(filenames[i], ...)
     if (! is.null(dcm$img)) {
       images[[i]] <- dcm$img
     }

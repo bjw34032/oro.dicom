@@ -54,7 +54,7 @@ unsigned.header(VR, implicit, fid, endian)
   \url{http://medical.nema.org}
 }
 \seealso{
-    \code{\link{dicomInfo}}, \code{\link{dicomSeparate}}
+    \code{\link{readDICOM}}, \code{\link{readDICOMFile}}
 }
 % \examples{}
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
