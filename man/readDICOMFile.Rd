@@ -14,7 +14,7 @@
 \usage{
 readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
               DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
-              warn = -1, debug = FALSE)
+              warn = -1, debug = FALSE, rowBuffer = 10000)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -33,6 +33,8 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     -1).  See \code{options} for more details.}
   \item{debug}{is a logical variable (default = \code{FALSE}) that
     regulates to display of intermediate processing steps.}
+  \item{rowBuffer}{is the maximum number of DICOM header fields allowed
+    to be read in (adjust when necessary).}
 }
 \details{
   A \code{while} loop is used to traverse the unknown number of DICOM

@@ -24,7 +24,7 @@ Type 'q()' to quit R.
 > library('oro.dicom')
 
 oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.2)
-TRUE
+
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
 > cleanEx()
@@ -243,7 +243,7 @@ Warning in is.sagittal(iop) :
 > 
 > ### Name: readDICOMFile
 > ### Title: Read Single DICOM File
-> ### Aliases: readDICOMFile
+> ### Aliases: readDICOMFile dicomInfo
 > ### Keywords: file
 > 
 > ### ** Examples
@@ -259,7 +259,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.51 0.18 15.71 0 0 
+Time elapsed:  15.4 0.11 15.516 0 0 
 > grDevices::dev.off()
 null device 
           1 

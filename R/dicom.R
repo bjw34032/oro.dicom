@@ -38,94 +38,77 @@
   iconv(rawToChar(txt[txt != as.raw(0)]), to=to)
 }
 
-.unsigned.header <- function(VR, implicit, fid, endian) {
+.unsignedHeader <- function(bytes, implicit, fid, endian) {
   ## "Unsigned Long" and "Unsigned Short"
-  length <- ifelse(implicit,
-                   readBin(fid, integer(), size=4, endian=endian),
-                   readBin(fid, integer(), size=2, endian=endian))
-  value <- readBin(fid, integer(), n=length/VR$bytes,
-                   size=VR$bytes, signed=FALSE, endian=endian)
+  length <- readBin(fid, "integer", size=ifelse(implicit, 4, 2), endian=endian)
+  value <- readBin(fid, "integer", n=length / bytes, size=bytes,
+                   signed=FALSE, endian=endian)
   list(length=length, value=paste(value, collapse=" "))
 }
 
-.signed.header <- function(VR, implicit, fid, endian) {
+.signedHeader <- function(bytes, implicit, fid, endian) {
   ## "Signed Long" and "Signed Short"
-  length <- ifelse(implicit,
-                   readBin(fid, integer(), size=4, endian=endian),
-                   readBin(fid, integer(), size=2, endian=endian))
-  value <- readBin(fid, integer(), n=length/VR$bytes,
-                   size=VR$bytes, signed=TRUE, endian=endian)
+  length <- readBin(fid, "integer", size=ifelse(implicit, 4, 2), endian=endian)
+  value <- readBin(fid, "integer", n=length / bytes, size=bytes,
+                   signed=TRUE, endian=endian)
   list(length=length, value=paste(value, collapse=" "))
 }
 
-.floating.header <- function(VR, implicit, fid, endian) {
+.floatingHeader <- function(bytes, implicit, fid, endian) {
   ## "Floating Point Single" and "Floating Point Double"
-  length <- ifelse(implicit,
-                   readBin(fid, integer(), size=4, endian=endian),
-                   readBin(fid, integer(), size=2, endian=endian))
-  value <- readBin(fid, numeric(), n=length/VR$bytes,
-                   size=VR$bytes, signed=TRUE, endian=endian)
+  length <- readBin(fid, "integer", size=ifelse(implicit, 4, 2), endian=endian)
+  value <- readBin(fid, "numeric", n=length / bytes, size=bytes,
+                   signed=TRUE, endian=endian)
   list(length=length, value=value)
 }
 
-.other.header <- function(fid, implicit, endian) {
+.otherHeader <- function(implicit, fid, endian) {
   ## "OtherByteString" or "OtherWordString"
-  if (implicit) {
-    length <- readBin(fid, integer(), size=4, endian=endian)
-  } else {
-    skip <- readBin(fid, integer(), size=2, endian=endian)
-    length <- readBin(fid, integer(), size=4, endian=endian)
+  if (! implicit) {
+    skip <- readBin(fid, "integer", size=2, endian=endian)
   }
+  length <- readBin(fid, "integer", size=4, endian=endian)
   seek(fid, where=seek(fid) + length) # skip over this field
   list(length=length, value="skipped")
 }
 
-.sequence.header <- function(group, element, fid, implicit, endian,
+.sequenceHeader <- function(groupelement, implicit, fid, endian,
                             skipSQ, SQ, EOS) {
   ## "Sequence of Items" with bytes = 0
-  if (implicit) {
-    length <- readBin(fid, integer(), size=4, endian=endian)
-  } else {
-    skip <- readBin(fid, integer(), size=2, endian=endian)
-    length <- readBin(fid, integer(), size=4, endian=endian)
+  if (! implicit) {
+    skip <- readBin(fid, "integer", size=2, endian=endian)
   }
-  ## skip <- readBin(fid, integer(), size=2, endian=endian)
-  ## length <- readBin(fid, integer(), size=4, endian=endian)
+  length <- readBin(fid, "integer", size=4, endian=endian)
   if (length < 0) {
     ## Append (group,element) doublets for nested SequenceItem tags
-    ## SQ <- paste(SQ, "(", group, ",", element, ")", sep="")
-    SQ <- c(SQ, paste("(", group, ",", element, ")", sep=""))
+    SQ <- c(SQ, groupelement)
   } else {
     if (skipSQ) {
       ## skip over all sequence items
       seek(fid, where=seek(fid) + max(0,length))
     } else {
-      ## SQ <- paste(SQ, "(", group, ",", element, ")", sep="")
-      SQ <- c(SQ, paste("(", group, ",", element, ")", sep=""))
+      SQ <- c(SQ, groupelement)
       EOS <- c(EOS, seek(fid) + max(0,length))
     }
   }
   list(length=length, value="sequence", SQ=SQ, EOS=EOS)
 }
 
-.unknown.header <- function(VR, implicit, fid, endian, skipSQ) {
+.unknownHeader <- function(bytes, implicit, fid, endian, skipSQ) {
   ## Unknown header!
-  if (VR$bytes > 0) {
-    length <- ifelse(implicit,
-                     readBin(fid, integer(), size=4, endian=endian),
-                     readBin(fid, integer(), size=2, endian=endian))
+  if (bytes > 0) {
+    length <- readBin(fid, "integer", size=ifelse(implicit, 4, 2),
+                      endian=endian)
     value <- .readCharWithEmbeddedNuls(fid, length)
     value <- sub(" +$", "", value) # remove white space at end
     value <- gsub("[\\]", " ", value) # remove "\\"s
   } else {
-    if (implicit) {
-      length <- readBin(fid, integer(), size=4, endian=endian)
-    } else {
-      skip <- readBin(fid, integer(), size=2, endian=endian)
-      length <- readBin(fid, integer(), size=4, endian=endian)
+    if (! implicit) {
+      skip <- readBin(fid, "integer", size=2, endian=endian)
     }
+    length <- readBin(fid, "integer", size=4, endian=endian)
     if (skipSQ) {
-      skip <- readBin(fid, integer(), max(0,length), size=1, endian=endian)
+      skip <- readBin(fid, "integer", max(0, length), size=1, endian=endian)
       value <- "skip"
     } else {
       value <- ""
@@ -134,13 +117,11 @@
   list(length=length, value=value)
 }
 
-.pixeldata.header <- function(hdr, implicit, fid, endian) {
-  if (implicit) {
-    length <- readBin(fid, integer(), size=4, endian=endian)
-  } else {
-    skip <- readBin(fid, integer(), size=2, endian=endian)
-    length <- readBin(fid, integer(), size=4, endian=endian)
+.pixelDataHeader <- function(hdr, implicit, fid, endian) {
+  if (! implicit) {
+    skip <- readBin(fid, "integer", size=2, endian=endian)
   }
+  length <- readBin(fid, "integer", size=4, endian=endian)
   M <- which(hdr[, 3] == "Rows")[1]
   M <- as.numeric(hdr[M, 6])
   N <- which(hdr[, 3] == "Columns")[1]
@@ -151,22 +132,23 @@
   }
   bitsAllocated <- which(hdr[, 3] == "BitsAllocated" & nchar(hdr[, 7]) == 0)[1]
   bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
-  ## Assuming only integer() data are being provided
-  img <- readBin(fid, integer(), length, size=bytes, endian=endian)
+  ## Assuming only "integer" data are being provided
+  img <- readBin(fid, "integer", length, size=bytes, endian=endian)
   list(img=img, length=length, value="")
 }
 
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
-                      warn=-1, debug=FALSE) {
+                      warn=-1, debug=FALSE, rowBuffer=10000) {
   readDICOMFile(fname, endian=endian, flipud=flipud, skip128=skip128,
                 DICM=DICM, skipSequence=skipSequence,
-                pixelData=pixelData, warn=warn, debug=debug)
+                pixelData=pixelData, warn=warn, debug=debug,
+                rowBuffer=rowBuffer)
 }
 
 readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                           DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
-                          warn=-1, debug=FALSE) {
+                          warn=-1, debug=FALSE, rowBuffer=10000) {
   ##
   ## "The default DICOM Transfer Syntax, which shall be supported by
   ## all AEs, uses Little Endian encoding and is specified in Annex
@@ -199,11 +181,13 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   oldwarn <- getOption("warn")
   options(warn=warn)
   ## Some shortcuts...
-  ## data("dicom.dic")
-  dcm.group <- dicom.dic$group # [, "group"]
-  dcm.element <- dicom.dic$element # [, "element"]
-  ## data("dicom.VR")
-  VRcode <- dicom.VR$code # [, "code"]
+  dicomGroup <- dicom.dic[, "group"]
+  dicomElement <- dicom.dic[, "element"]
+  dicomName <- dicom.dic[, "name"]
+  dicomCode <- dicom.dic[, "code"]
+  vrCode <- dicom.VR[, "code"]
+  file.size <- file.info(fname)$size
+  littleEndian <- ifelse(endian == "little", TRUE, FALSE)
   ## Open connection
   fid <- file(fname, "rb")
   ## First 128 bytes are not used
@@ -217,32 +201,48 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     }
   }
   SQ <- EOS <- NULL
-  hdr <- NULL
+  hdr <- matrix(NA, rowBuffer, 7)
   pixel.data <- FALSE
-  file.size <- file.info(fname)$size
+  rowIndex <- 0
   while (! pixel.data && ! (seek(fid) >= file.size)) {
+    rowIndex <- rowIndex + 1
     seek.old <- seek(fid)
     implicit <- FALSE
-    group <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
-    element <- dec2hex(readBin(fid, integer(), size=2, endian=endian), 4)
-    index <- which(dcm.group == group & dcm.element == element)
-    name <- ifelse(any(index), dicom.dic$name[index], "Missing")
-    vrstr <- .readCharWithEmbeddedNuls(fid, n=2)
-    if (debug && length(index) < 1) {
-      warning(sprintf("DICOM tag (%s,%s) is not in current dictionary.",
-                      group, element))
+    group <- readBin(fid, "raw", n=2L, endian=endian)
+    element <- readBin(fid, "raw", n=2L, endian=endian)
+    ## Convert "raw" bytes to hexadecimal string of four characters
+    if (littleEndian) {
+      group <- toupper(paste(rev(group), collapse=""))
+      element <- toupper(paste(rev(element), collapse=""))
+    } else {
+      group <- toupper(paste(group, collapse=""))
+      element <- toupper(paste(element, collapse=""))
     }
-    if (! vrstr %in% VRcode) {
+    dictionaryIndex <- group == dicomGroup & element == dicomElement
+    if (sum(dictionaryIndex) < 1) {
+      name <- "Missing"
+      if (debug) {
+        warning(sprintf("DICOM tag (%s,%s) is not in current dictionary.",
+                        group, element))
+      }
+    } else {
+      name <- unique(dicomName[dictionaryIndex])
+    }
+    vrString <- .readCharWithEmbeddedNuls(fid, n=2L)
+    if (! vrString %in% vrCode) { 
       ## Implicit VR (see diagram above)
       implicit <- TRUE
       seek(fid, where=seek(fid) - 2) # go back two bytes
-      vrstr <- dicom.dic$code[index] # VR string from (group,element)
+      vrString <- dicomCode[dictionaryIndex] # VR string from (group,element)
     }
-    if (any(VRindex <- VRcode == vrstr)) {
-      VR <- dicom.VR[VRindex, ]
+    vrIndex <- vrString == vrCode
+    if (any(vrIndex)) {
+      VR <- dicom.VR[vrIndex, ]
     } else {
-      VR <- dicom.VR[VRcode == "UN", ]
+      VR <- dicom.VR[vrCode == "UN", ]
     }
+    vrBytes <- VR$bytes
+    VRcode <- VR$code
     ## Check for PixelData (group,element) and _NOT_ a SequenceItem
     pixel.data <- (group == "7FE0" && element == "0010" &&
                    (is.null(SQ) || nchar(SQ) == 0))
@@ -251,79 +251,80 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       if (debug) {
         cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
       }
-      out <- .pixeldata.header(hdr, implicit, fid, endian)
+      out <- .pixelDataHeader(hdr, implicit, fid, endian)
     } else {
       if (! is.null(SQ) && skipSequence &&
           (group == "FFFE" && element == "E000")) {
         out <- list(length=4, value="item")
         seek(fid, where=seek(fid) + out$length)
       } else {
-        out <- switch(VR$code,
+        out <- switch(VRcode,
                       UL = ,
-                      US = .unsigned.header(VR, implicit, fid, endian),
+                      US = .unsignedHeader(vrBytes, implicit, fid, endian),
                       SL = ,
-                      SS = .signed.header(VR, implicit, fid, endian),
+                      SS = .signedHeader(vrBytes, implicit, fid, endian),
                       FS = ,
-                      FD = .floating.header(VR, implicit, fid, endian),
+                      FD = .floatingHeader(vrBytes, implicit, fid, endian),
                       OB = ,
-                      OW = .other.header(fid, implicit, endian),
-                      SQ = .sequence.header(group, element, fid, implicit,
-                        endian, skipSequence, SQ, EOS),
-                      .unknown.header(VR, implicit, fid, endian, skipSequence))
-        if (VR$code == "SQ") {
+                      OW = .otherHeader(implicit, fid, endian),
+                      SQ = {
+                        groupelement <- paste("(", group, ",", element, ")",
+                                              sep="")
+                        .sequenceHeader(groupelement, implicit, fid,
+                                         endian, skipSequence, SQ, EOS)
+                        },
+                      .unknownHeader(vrBytes, implicit, fid, endian,
+                                     skipSequence)
+                      )
+        if (VRcode == "SQ") {
           SQ <- out$SQ
           EOS <- out$EOS
         }
       }
     }
-    if (is.null(SQ)) {
-      hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
-                          paste(out$value, collapse=" "), ""))
-      if (debug) {
-        cat("", seek.old, hdr[nrow(hdr), ], sep="\t", fill=TRUE)
-      }
-    } else {
-      if (! skipSequence) {
-        hdr <- rbind(hdr, c(group, element, name, VR$code, out$length,
-                            paste(out$value, collapse=" "),
-                            ifelse(is.null(SQ), "", paste(SQ, collapse=" "))))
-        if (debug) {
-          cat("", seek.old, hdr[nrow(hdr), ], sep="\t", fill=TRUE)
-        }
-      }
-    }
-    if (out$length > file.size) {
+    outLength <- out$length
+    if (outLength > file.size) {
       warning(sprintf("DICOM tag (%s,%s) has length %d bytes which is greater than the file size (%d bytes).",
-                      group, element, out$length, file.size))
+                      group, element, outLength, file.size))
     }
-    if (name == "SequenceDelimitationItem" && !is.null(SQ)) {
-      if ((lSQ <- length(SQ)) > 1) {
-        SQ <- SQ[-lSQ] # remove the last (group,element) doublet
-      } else {
-        SQ <- NULL # set SQ to NULL
-      }
+    hdr[rowIndex, ] <- c(group, element, name, VRcode, outLength,
+                         paste(out$value, collapse=" "),
+                         ifelse(skipSequence && is.null(SQ), "",
+                                paste(SQ, collapse=" ")))
+    if (debug) {
+      cat("", seek.old, hdr[rowIndex, ], sep="\t", fill=TRUE) # hdr[nrow(hdr), ], sep="\t", fill=TRUE)
     }
     if (! is.null(SQ)) {
-      if (any(seek(fid) == EOS)) {
-        SQ <- SQ[-which(seek(fid) == EOS)] # remove sequence(s)
+      if (name == "SequenceDelimitationItem") {
+        if ((lSQ <- length(SQ)) > 1) {
+          SQ <- SQ[-lSQ] # remove the last (group,element) doublet
+        } else {
+          SQ <- NULL # set SQ to NULL
+        }
+      }
+      sequenceIndex <- seek(fid) == EOS
+      if (any(sequenceIndex)) {
+        SQ <- SQ[-which(sequenceIndex)] # remove sequence(s)
         SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ)) # set SQ to NULL
-        EOS <- EOS[-which(seek(fid) == EOS)] # remove endOfSequence(s)
+        EOS <- EOS[-which(sequenceIndex)] # remove endOfSequence(s)
         EOS <- eval(ifelse(length(EOS) < 1, expression(NULL), EOS)) # set EOS to NULL
       }
     }
   }
   close(fid)
 
-  hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
+  hdr <- as.data.frame(hdr[!is.na(hdr[,1]),], stringsAsFactors=FALSE)
   names(hdr) <- c("group", "element", "name", "code", "length",
                   "value", "sequence")
   hdr$length <- as.numeric(hdr$length)
   is.sequence <- nchar(hdr$sequence) > 0
+  hdrValue <- hdr$value
+  hdrName <- hdr$name
   if (pixel.data && pixelData) {
-    nr <- as.numeric(hdr$value[hdr$name == "Rows" & ! is.sequence])
-    nc <- as.numeric(hdr$value[hdr$name == "Columns" & ! is.sequence])
-    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
-    length <- as.numeric(hdr$length[hdr$name == "PixelData" & ! is.sequence])
+    nr <- as.numeric(hdrValue[hdrName == "Rows" & ! is.sequence])
+    nc <- as.numeric(hdrValue[hdrName == "Columns" & ! is.sequence])
+    bytes <- as.numeric(hdrValue[hdrName == "BitsAllocated" & ! is.sequence]) / 8
+    length <- as.numeric(hdr$length[hdrName == "PixelData" & ! is.sequence])
     total.bytes <- nr*nc*bytes
     if (total.bytes != length) {
       k <- length / total.bytes
@@ -381,12 +382,8 @@ readDICOM <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
           "files processed...", fill=TRUE)
     }
     dcm <- readDICOMFile(filenames[i], ...)
-    if (! is.null(dcm$img)) {
-      images[[i]] <- dcm$img
-    }
-    if (! is.null(dcm$hdr)) {
-      headers[[i]] <- dcm$hdr
-    }
+    images[[i]] <- dcm$img
+    headers[[i]] <- dcm$hdr
   }
   list(hdr=headers, img=images)
 }
@@ -512,4 +509,3 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
   }
   return(nim)
 }
-
