@@ -360,10 +360,14 @@ dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
 
 readDICOM <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
                       exclude=NULL, ...) {
-  if (recursive) {
-    filenames <- list.files(path, full.names=TRUE, recursive=TRUE)
+  if (length(list.files(path)) == 0 && file.exists(path)) {
+    filenames <- path
   } else {
-    filenames <- list.files(path, full.names=TRUE)
+    if (recursive) {
+      filenames <- list.files(path, full.names=TRUE, recursive=TRUE)
+    } else {
+      filenames <- list.files(path, full.names=TRUE)
+    }
   }
   if (! is.null(exclude)) {
     filenames <- grep(exclude, filenames, ignore.case=TRUE, value=TRUE,
