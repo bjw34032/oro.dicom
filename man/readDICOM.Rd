@@ -26,7 +26,8 @@ readDICOM(path, verbose = FALSE, counter = 100, recursive = TRUE,
 }
 \details{
   A \code{for} loop is used to process each DICOM file contained in the
-  directory(ies).
+  directory(ies).  If only a single file is specified in the path,
+  \code{readDICOM} will read that file only.
 }
 \value{
   A list structure with two major components:
