@@ -12,7 +12,7 @@
 }
 \usage{
 dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort = TRUE,
-           debug = FALSE)
+           verbose = FALSE, debug = FALSE)
 }
 \arguments{
   \item{hdrs}{List object of DICOM headers.}
@@ -22,6 +22,8 @@ dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort = TRUE,
     element and value fields.}
   \item{colSort}{Logical variable (default = \code{TRUE}) to sort column
     names in the table.}
+  \item{verbose}{Flag to provide text-based progress bar (default =
+    \code{FALSE}).}
   \item{debug}{Logical variable (default = \code{FALSE}) that regulates
     to display of intermediate processing steps.}
 }
@@ -32,6 +34,11 @@ dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort = TRUE,
   list.
 }
 \references{
+  Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with the
+  DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
+    Software}, \bold{44} (6), 1--28.
+  \url{http://www.jstatsoft.org/v44/i06}
+
   Digital Imaging and Communications in Medicine (DICOM)\cr
   \url{http://medical.nema.org}
 }

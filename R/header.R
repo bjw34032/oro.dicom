@@ -33,7 +33,7 @@
 ##
 
 dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
-                       colSort=TRUE, debug=FALSE) {
+                       colSort=TRUE, verbose=FALSE, debug=FALSE) {
   myMerge <- function(df1, df2) {
     if (anyDuplicated(names(df1)) != 0) {
       warning("Duplicated group-element tags have been removed!")
@@ -69,10 +69,17 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
           as.vector(apply(hdrs[[1]][,1:3], 1, paste, collapse=collapse)),
           sep="")
   ## Loop through all records and "merge" them
-  if (length(hdrs) > 1) {
-    for (l in 2:length(hdrs)) {
+  if ((nhdrs <- length(hdrs)) > 1) {
+    if (verbose) {
+      cat(" ", nhdrs, "files to be processed by dicomTable()", fill=TRUE)
+      tpb <- txtProgressBar(min=0, max=nhdrs, style=3)
+    }
+    for (l in 2:nhdrs) {
       if (debug) {
         cat("  l =", l, fill=TRUE)
+      }
+      if (verbose) {
+        setTxtProgressBar(tpb, l)
       }
       temp <- data.frame(matrix(hdrs[[l]]$value, 1, nrow(hdrs[[l]])),
                          stringsAsFactors=stringsAsFactors)
@@ -82,19 +89,13 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
               sep="")
       old.nrow <- nrow(csv)
       csv <- myMerge(csv, temp)
-      ##if (length(names(csv)) == length(names(temp))) {
-      ##  if (all(names(csv) == names(temp))) {
-      ##    csv <- rbind(csv, temp)
-      ##  } else {
-      ##    csv <- merge(csv, temp, all=TRUE, sort=FALSE)
-      ##  }
-      ##} else {
-      ##  csv <- merge(csv, temp, all=TRUE, sort=FALSE)
-      ##}
       if (nrow(csv) == old.nrow) {
         warning("Duplicate row was _not_ inserted in data.frame (csv)")
         csv <- rbind(csv, NA)
       }
+    }
+    if (verbose) {
+      close(tpb)
     }
     row.names(csv) <- names(hdrs)
   }

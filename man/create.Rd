@@ -12,9 +12,9 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
+create3D(dcm, mode = "integer", transpose = FALSE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
-create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
+create4D(dcm, mode = "integer", transpose = FALSE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, nslices = NULL,
          ntimes = NULL, instance = TRUE, sequence = FALSE)
 }
@@ -27,8 +27,8 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
 %  \item{patientPosition}{is a character string denoting the patient
 %    position in the scanner.}
   \item{mode}{is a valid character string for \code{storage.mode}.}
-  \item{transpose}{is necessary to switch the definition of rows and
-    columns from DICOM to R.}
+  \item{transpose}{is available in order to switch the definition of
+    rows and columns from DICOM.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
   \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
@@ -64,7 +64,8 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
 ## The DICOM image data are read from dicomSeparate()
 dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
 dcmImage <- create3D(dcmList)
-image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+      main=paste("First Slice from HK-40"))
 imagePositionPatient <- attributes(dcmImage)$ipp
 dSL <- abs(diff(imagePositionPatient[,3]))
 plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
@@ -76,14 +77,18 @@ plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
                      pixelData=FALSE)
 dcmImage <- create3D(dcmList, pixelData=FALSE)
-image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+      main=paste("First Slice from HK-40 (again)"))
 
 ## mosaic = TRUE
-dcm <- readDICOMFile(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
-                     package="oro.dicom"))
+mosaicFile <- system.file("dcm/MR-sonata-3D-as-Tile.dcm", package="oro.dicom")
+dcm <- readDICOMFile(mosaicFile)
+image(dcm$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+      main="Siemens MOSAIC")
 dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
-image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
-      xlab="", ylab="")
+z <- trunc(dim(dcmImage)[3] / 2)
+image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+      main=paste("Slice", z, "from Siemens MOSAIC"))
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 %\keyword{}

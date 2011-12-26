@@ -32,7 +32,7 @@
 ## $Id: $
 ##
 
-create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
+create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, sequence=FALSE) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
@@ -68,13 +68,13 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       x <- mosaicXY[1]
       y <- mosaicXY[2]
     }
-    z <- (X/x) * (Y/y)
+    z <- (X / x) * (Y / y)
     img <- array(0, c(x,y,z))
     k <- 1
-    for (i in (X/x):1) {
-      for (j in 1:(Y/y)) {
-        img[,,k] <- dcm$img[((i-1)*x)+1:x, ((j-1)*y)+1:y]
-        k <- k+1
+    for (j in (Y/y):1) {
+      for (i in 1:(X/x)) {
+        img[,,k] <- dcm$img[((i-1) * x) + 1:x, ((j-1) * y) + 1:y]
+        k <- k + 1
       }
     }
     storage.mode(img) <- mode
@@ -117,7 +117,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 
-create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
+create4D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL, instance=TRUE, sequence=FALSE) {
   if (pixelData) {
