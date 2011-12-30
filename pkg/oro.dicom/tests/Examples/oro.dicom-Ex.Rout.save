@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.2)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.4)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -43,7 +43,8 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.2)
 > ## The DICOM image data are read from dicomSeparate()
 > dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
 > dcmImage <- create3D(dcmList)
-> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++       main=paste("First Slice from HK-40"))
 > imagePositionPatient <- attributes(dcmImage)$ipp
 > dSL <- abs(diff(imagePositionPatient[,3]))
 > plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
@@ -55,14 +56,18 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.2)
 > dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
 +                      pixelData=FALSE)
 > dcmImage <- create3D(dcmList, pixelData=FALSE)
-> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++       main=paste("First Slice from HK-40 (again)"))
 > 
 > ## mosaic = TRUE
-> dcm <- readDICOMFile(system.file("dcm/MR-sonata-3D-as-Tile.dcm",
-+                      package="oro.dicom"))
+> mosaicFile <- system.file("dcm/MR-sonata-3D-as-Tile.dcm", package="oro.dicom")
+> dcm <- readDICOMFile(mosaicFile)
+> image(dcm$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++       main="Siemens MOSAIC")
 > dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
-> image(dcmImage[,,dim(dcmImage)[3]/2], col=grey(0:64/64), axes=FALSE,
-+       xlab="", ylab="")
+> z <- trunc(dim(dcmImage)[3] / 2)
+> image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++       main=paste("Slice", z, "from Siemens MOSAIC"))
 > 
 > 
 > 
@@ -236,6 +241,26 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > cleanEx()
+> nameEx("readDICOM")
+> ### * readDICOM
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: readDICOM
+> ### Title: Read All DICOM Files in a Directory
+> ### Aliases: readDICOM dicomSeparate
+> ### Keywords: file
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D dcmImage <- readDICOM(system.file("hk-40", package="oro.dicom"),
+> ##D                       verbose=TRUE)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
 > nameEx("readDICOMFile")
 > ### * readDICOMFile
 > 
@@ -249,17 +274,19 @@ Warning in is.sagittal(iop) :
 > ### ** Examples
 > 
 > x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++                 main="Abdo.dcm")
 > 
 > x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
++                 main="Spine1.dcm")
 > 
 > 
 > 
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.4 0.11 15.516 0 0 
+Time elapsed:  14.97 0.11 15.111 0 0 
 > grDevices::dev.off()
 null device 
           1 
