@@ -319,18 +319,18 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       k <- length / total.bytes
       if (k == trunc(k)) {
         warning("3D DICOM file detected!")
-        img <- array(out$img[1:(nr * nc * k)], c(nr, nc, k))
-        ## img <- aperm(img, c(2,1,3))
+        img <- array(out$img[1:(nc * nr * k)], c(nc, nr, k))
+        img <- aperm(img, c(2,1,3))
         if (flipud) {
-          img <- img[, nc:1, ]
+          img <- img[nr:1, , ]
         }
       } else {
         stop("Number of bytes in PixelData does not match dimensions")
       }
     } else {
-      img <- matrix(out$img[1:(nr * nc)], nr, nc) # t(matrix(out$img[1:(nc * nr)], nc, nr))
+      img <-  t(matrix(out$img[1:(nc * nr)], nc, nr))
       if (flipud) {
-        img <- img[, nc:1]
+        img <- img[nr:1, ]
       }
     }
   } else {

@@ -62,7 +62,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.4)
 > ## mosaic = TRUE
 > mosaicFile <- system.file("dcm/MR-sonata-3D-as-Tile.dcm", package="oro.dicom")
 > dcm <- readDICOMFile(mosaicFile)
-> image(dcm$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+> image(t(dcm$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +       main="Siemens MOSAIC")
 > dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
 > z <- trunc(dim(dcmImage)[3] / 2)
@@ -274,11 +274,11 @@ Warning in is.sagittal(iop) :
 > ### ** Examples
 > 
 > x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Abdo.dcm")
 > 
 > x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-> graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+> graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Spine1.dcm")
 > 
 > 
@@ -286,7 +286,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  14.97 0.11 15.111 0 0 
+Time elapsed:  15.03 0.04 15.075 0 0 
 > grDevices::dev.off()
 null device 
           1 

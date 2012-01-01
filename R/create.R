@@ -32,7 +32,7 @@
 ## $Id: $
 ##
 
-create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
+create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, sequence=FALSE) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
@@ -55,15 +55,17 @@ create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
     stop("Column lengths are not identical.")
   }
   if (mosaic) {
-    if (is.null(dim(dcm$img)))
+    if (is.null(dim(dcm$img))) {
       stop("Multiple MOSAIC files detected, please use create4D()")
+    }
     if (is.null(mosaicXY)) {
       acquisitionMatrix <-
         header2matrix(extractHeader(dcm$hdr, "AcquisitionMatrix", FALSE), 4)
       x <- acquisitionMatrix[1,1]
       y <- acquisitionMatrix[1,4]
-      if (is.na(x) || is.na(y))
+      if (is.na(x) || is.na(y)) {
         stop("Missing AcquisitionMatrix, please specify \"mosaicXY\"")
+      }
     } else {
       x <- mosaicXY[1]
       y <- mosaicXY[2]
@@ -71,8 +73,8 @@ create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
     z <- (X / x) * (Y / y)
     img <- array(0, c(x,y,z))
     k <- 1
-    for (j in (Y/y):1) {
-      for (i in 1:(X/x)) {
+    for (i in (X/x):1) {
+      for (j in 1:(Y/y)) {
         img[,,k] <- dcm$img[((i-1) * x) + 1:x, ((j-1) * y) + 1:y]
         k <- k + 1
       }
@@ -94,16 +96,12 @@ create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
     if (sum(movingDimensions) != 1) {
       warning("ImagePositionPatient is moving in more than one dimension.")
     }
-    ## sliceLocation <- extractHeader(dcm$hdr, "SliceLocation")
-    ## iop.order <- order(imagePositionPatient[,movingDimensions])
     if (pixelData) {
       for (z in 1:Z) {
-        ## img[,,z] <- dcm$img[[iop.order[z]]]
         img[,,z] <- dcm$img[[z]]
       }
     } else {
       for (z in 1:Z) {
-        ## img[,,z] <- readDICOMFile(names(dcm$hdr)[iop.order[z]])$img
         img[,,z] <- readDICOMFile(names(dcm$hdr)[z])$img
       }
     }
@@ -113,11 +111,11 @@ create3D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
-  attr(img,"ipp") <- imagePositionPatient
+  attr(img, "ipp") <- imagePositionPatient
   return(img)
 }
 
-create4D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
+create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL, instance=TRUE, sequence=FALSE) {
   if (pixelData) {
@@ -254,6 +252,6 @@ create4D <- function(dcm, mode="integer", transpose=FALSE, pixelData=TRUE,
   ##     sliceLocation <<- sliceLocation[order(sliceLocation)]
   ##   }
   ## }
-  attr(img,"ipp") <- imagePositionPatient
+  attr(img, "ipp") <- imagePositionPatient
   return(img)
 }

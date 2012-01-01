@@ -65,11 +65,11 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
 }
 \examples{
 x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Abdo.dcm")
 
 x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-graphics::image(x$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Spine1.dcm")
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}

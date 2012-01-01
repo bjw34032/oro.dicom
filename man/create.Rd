@@ -12,9 +12,9 @@
   representing a single acquisition of medical imaging data.
 }
 \usage{
-create3D(dcm, mode = "integer", transpose = FALSE, pixelData = TRUE,
+create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
-create4D(dcm, mode = "integer", transpose = FALSE, pixelData = TRUE,
+create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
          mosaic = FALSE, mosaicXY = NULL, nslices = NULL,
          ntimes = NULL, instance = TRUE, sequence = FALSE)
 }
@@ -22,13 +22,9 @@ create4D(dcm, mode = "integer", transpose = FALSE, pixelData = TRUE,
   \item{dcm}{is the DICOM list structure (if \code{pixelData} =
     \code{TRUE}) or the DICOM header information (if \code{pixelData} =
     \code{FALSE}).}
-%  \item{X,Y,Z}{are the dimensions of the array.}
-%  \item{sliceLocation}{is a vector of slice locations from the DICOM header.}
-%  \item{patientPosition}{is a character string denoting the patient
-%    position in the scanner.}
   \item{mode}{is a valid character string for \code{storage.mode}.}
   \item{transpose}{is available in order to switch the definition of
-    rows and columns from DICOM.}
+    rows and columns from DICOM (default = \code{TRUE}.}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) that is
     associated with the DICOM image data being pre-loaded.}
   \item{mosaic}{is a logical variable (default = \code{FALSE}) to denote
@@ -83,7 +79,7 @@ image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 ## mosaic = TRUE
 mosaicFile <- system.file("dcm/MR-sonata-3D-as-Tile.dcm", package="oro.dicom")
 dcm <- readDICOMFile(mosaicFile)
-image(dcm$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+image(t(dcm$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main="Siemens MOSAIC")
 dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
 z <- trunc(dim(dcmImage)[3] / 2)
