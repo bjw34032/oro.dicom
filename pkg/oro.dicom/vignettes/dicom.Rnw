@@ -112,7 +112,7 @@ accommodate data analysis and image processing.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table}[tbp]
   \begin{center}
-    \begin{tabular}{p{0.525\textwidth}p{0.475\textwidth}}
+    \begin{tabular}{p{0.525\textwidth}p{0.425\textwidth}}
       \hline
       \multicolumn{2}{c}{\pkg{oro.dicom}}\\
       \hline
@@ -165,18 +165,6 @@ fixed number of bytes for a DICOM header.  The final (group,element)
 tag should be the ``pixel data'' tag (7FE0,0010), such that all
 subsequent information is related to the image(s).
 
-All attributes in the DICOM standard require different data types for
-correct representation.  These are known as value representations
-(VRs) in DICOM, which may be encoded explicitly or implicitly.  There
-are 27 explicit VRs defined in the DICOM standard.  Detailed
-explanations of these data types are provided in the Section~6.2
-(part~5) of the DICOM standard (\url{http://medical.nema.org}).
-Internal functions have been written to manipulate each of the value
-representations and are beyond the scope of this article.  The
-functions \code{str2date} and \code{str2time} are useful for
-converting from the DICOM \code{Datetime} and \code{Time} value
-representations to \proglang{R} date and time objects, respectively.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[tbp]
 \begin{verbatim}
@@ -208,6 +196,18 @@ Data element with implicit VR:
 \label{fig:group-element}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+All attributes in the DICOM standard require different data types for
+correct representation.  These are known as value representations
+(VRs) in DICOM, which may be encoded explicitly or implicitly.  There
+are 27 explicit VRs defined in the DICOM standard.  Detailed
+explanations of these data types are provided in the Section~6.2
+(part~5) of the DICOM standard (\url{http://medical.nema.org}).
+Internal functions have been written to manipulate each of the value
+representations and are beyond the scope of this article.  The
+functions \code{str2date} and \code{str2time} are useful for
+converting from the DICOM \code{Datetime} and \code{Time} value
+representations to \proglang{R} date and time objects, respectively.
 
 \subsection{The DICOM header}
 \label{sec:dicom-header}
@@ -346,7 +346,7 @@ png(filename="dicom_abdo.png", width=2*480, height=2*480, bg="black")
 par(mar=rep(0,4))
 @ 
 <<abdo-image>>=
-image(abdo$img, col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+image(t(abdo$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
 @ 
 <<abdo-dev.off,echo=FALSE,results=hide>>=
 dev.off()
@@ -412,7 +412,7 @@ dim(dcmImage)
 <<DICOM Siemens 02,echo=FALSE,results=hide>>=
 dcmNifti <- dicom2nifti(dcm, mosaic=TRUE)
 png(filename="dcmImage.png", width=2*480, height=2*480, bg="black")
-image(dcm$img, col=grey(0:64/64), zlim=c(16, 1024), axes=FALSE, 
+image(t(dcm$img), col=grey(0:64/64), zlim=c(16, 1024), axes=FALSE, 
       xlab="", ylab="")
 dev.off()
 png(filename="dcmNifti.png", width=2*480, height=2*480, bg="black")
