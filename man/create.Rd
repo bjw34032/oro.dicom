@@ -57,8 +57,12 @@ create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
 }
 \examples{
 ## pixelData = TRUE
-## The DICOM image data are read from dicomSeparate()
+## The DICOM image data are read from readDICOM()
+\dontrun{
 dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
+}
+load(system.file("hk-40/hk40.RData", package="oro.dicom"))
+dcmList <- hk40
 dcmImage <- create3D(dcmList)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main=paste("First Slice from HK-40"))
@@ -70,8 +74,12 @@ plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 ## pixelData = FALSE
 ## The DICOM image data are read from create3D()
 ## This may save on memory for large batches of DICOM data
+\dontrun{
 dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
                      pixelData=FALSE)
+}
+load(system.file("hk-40/hk40.RData", package="oro.dicom"))
+dcmList <- hk40
 dcmImage <- create3D(dcmList, pixelData=FALSE)
 image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main=paste("First Slice from HK-40 (again)"))
@@ -82,7 +90,7 @@ dcm <- readDICOMFile(mosaicFile)
 image(t(dcm$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main="Siemens MOSAIC")
 dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
-z <- trunc(dim(dcmImage)[3] / 2)
+z <- trunc(dim(dcmImage)[3]/2)
 image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main=paste("Slice", z, "from Siemens MOSAIC"))
 }

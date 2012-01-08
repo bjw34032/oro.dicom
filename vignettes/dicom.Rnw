@@ -281,9 +281,14 @@ When multiple DICOM files are located in a single directory, or spread
 across multiple directories, one may use the function
 \code{readDICOM} (applied here to the directory \code{hk-40}).
 
-<<DICOM HK40 01>>=
+<<DICOM HK40 00,echo=FALSE>>=
+load(system.file("hk-40/hk40.RData", package="oro.dicom"))
+@ 
+<<DICOM HK40 01,eval=FALSE>>=
 fname <- system.file("hk-40", package="oro.dicom")
 hk40 <- readDICOM(fname)
+@ 
+<<DICOM HK40 01.1>>=
 unlist(lapply(hk40, length))
 @ 
 
