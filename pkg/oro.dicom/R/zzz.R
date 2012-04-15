@@ -34,13 +34,9 @@
 .onAttach <- function(lib, pkg) {
   txt <- paste("\n",
                pkg,": Rigorous - DICOM Input / Output (version = ",
-               as.character(sessionInfo()$otherPkgs$oro.dicom["Version"]),
+               packageDescription(pkg, lib)[["Version"]],
                ")\n",
                sep="")
   packageStartupMessage(txt)
 }
-
-##.onLoad <- function(lib, pkg) {
-##  data("dicom.dic")
-##}
 
