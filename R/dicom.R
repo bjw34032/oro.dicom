@@ -123,6 +123,23 @@
   list(img=img, length=length, value="")
 }
 
+.spectroscopyDataHeader <- function(hdr, readLWS, fid, endian) {
+  length <- readLWS(fid, endian)
+  M <- which(hdr[, 3] == "DataPointRows")[1]
+  M <- as.numeric(hdr[M, 6])
+  N <- which(hdr[, 3] == "DataPointColumns")[1]
+  N <- as.numeric(hdr[N, 6])
+  NOF <- which(hdr[, 3] == "NumberOfFrames")[1]
+  NOF <- as.numeric(hdr[NOF, 6])
+  ## If the length is not provided, calculate from DICOM headers
+  if (length < 0) {
+    length <- M * N * NOF
+  }
+  ## Assuming only "integer" data are being provided
+  img <- readBin(fid, "numeric", length, size=4, endian=endian)
+  list(img=img, length=length, value="")
+}
+
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
                       warn=-1, debug=FALSE) {
@@ -172,18 +189,6 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   dicomCode <- dicom.dic$code
   vrCode <- dicom.VR$code
   file.size <- file.info(fname)$size
-  ## Open connection
-  fid <- file(fname, "rb")
-  ## First 128 bytes are not used
-  if (skip128) {
-    seek(fid, where=128)
-  }
-  ## Next four bytes spell "DICM"
-  if (DICM) {
-    if (readChar(fid, nchars=4) != "DICM") {
-      stop("DICM != DICM")
-    }
-  }
   ##
   if (endian == "little") {
     readGroup <- readElement <- function(con, endian) {
@@ -196,11 +201,22 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       toupper(paste(bytes, collapse=""))
     }
   }
-  ##
+  ## Open connection
+  fid <- file(fname, "rb")
+  ## First 128 bytes are not used
+  if (skip128) {
+    seek(fid, where=128)
+  }
+  ## Next four bytes spell "DICM"
+  if (DICM) {
+    if (readChar(fid, nchars=4) != "DICM") {
+      stop("DICM != DICM")
+    }
+  }
   SQ <- EOS <- NULL
   hdr <- NULL
-  pixel.data <- FALSE
-  while (! pixel.data && ! (seek(fid) >= file.size)) {
+  pixel.data <- spectroscopy.data <- FALSE
+  while (! (pixel.data || spectroscopy.data) && ! (seek(fid) >= file.size)) {
     seek.old <- seek(fid)
     group <- readGroup(fid, endian)
     element <- readElement(fid, endian)
@@ -240,15 +256,24 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
     ## Check for PixelData (group,element) and _NOT_ a SequenceItem
     sequenceItem <- ! is.null(SQ) && nchar(SQ) > 0
     pixel.data <- (group == "7FE0" && element == "0010" && ! sequenceItem)
-    if (pixel.data && pixelData) {
+    spectroscopy.data <- (group == "5600" && element == "0020" &&
+                          ! sequenceItem)
+    if ((pixel.data || spectroscopy.data) && pixelData) {
       ## Read in the image data
-      if (debug) {
-        cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
+      if (pixel.data) {
+        if (debug) {
+          cat("##### Reading PixelData (7FE0,0010)", fill=TRUE)
+        }
+        out <- .pixelDataHeader(hdr, readLengthWithSkip, fid, endian)
       }
-      out <- .pixelDataHeader(hdr, readLengthWithSkip, fid, endian)
+      if (spectroscopy.data) {
+        if (debug) {
+          cat("##### Reading SpectroscopyData (5600,0020)", fill=TRUE)
+        }
+        out <- .spectroscopyDataHeader(hdr, readLengthWithSkip, fid, endian)
+      }
     } else {
-      if (sequenceItem && skipSequence &&
-          (group == "FFFE" && element == "E000")) {
+      if (sequenceItem && skipSequence && (group == "FFFE" && element == "E000")) {
         out <- list(length=4, value="item")
         seek(fid, where=seek(fid) + out$length)
       } else {
@@ -257,8 +282,8 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       US = .unsignedHeader(VR$bytes, readLength, fid, endian),
                       SL = ,
                       SS = .signedHeader(VR$bytes, readLength, fid, endian),
-                      FS = ,
-                      FD = .floatingHeader(VR$bytes, readLength, fid, endian),
+                      FD = ,
+                      FL = .floatingHeader(VR$bytes, readLength, fid, endian),
                       OB = ,
                       OW = .otherHeader(readLengthWithSkip, fid, endian),
                       SQ = {
@@ -334,7 +359,31 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       }
     }
   } else {
-    img <- NULL
+    if (spectroscopy.data && pixelData) {
+      numberOfFrames <-
+        as.numeric(hdr$value[hdr$name == "NumberOfFrames" & ! is.sequence])
+      rows <- as.numeric(hdr$value[hdr$name == "Rows" & ! is.sequence])
+      columns <- as.numeric(hdr$value[hdr$name == "Columns" & ! is.sequence])
+      dataPointRows <-
+        as.numeric(hdr$value[hdr$name == "DataPointRows" & ! is.sequence])
+      dataPointColumns <-
+        as.numeric(hdr$value[hdr$name == "DataPointColumns" & ! is.sequence])
+      dataRepresentation <-
+        hdr$value[hdr$name == "DataRepresentation" & ! is.sequence]
+      nComponents <- ifelse(dataRepresentation == "COMPLEX", 2, 1)
+      whichComponent <-
+        ifelse(nComponents > 1 && dataRepresentation == "IMAGINARY", 2, 1)
+      valuesPerFrame <- columns * rows * dataPointRows * dataPointColumns
+      length <-
+        as.numeric(hdr$length[hdr$name == "SpectroscopyData" & ! is.sequence])
+      bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
+      total.bytes <- dataPointRows * dataPointColumns * bytes
+      odd <- seq(1, 2*valuesPerFrame, by=2)
+      even <- seq(2, 2*valuesPerFrame, by=2)
+      img <- complex(real=out$img[odd], imaginary=out$img[even])
+    } else {
+      img <- NULL
+    }
   }
   ## Warnings?
   options(warn=oldwarn)
