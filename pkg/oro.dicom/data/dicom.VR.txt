@@ -12,6 +12,7 @@ IS,IntegerString,12,0
 LO,LongStrong,64,0
 LT,LongText,10240,0
 OB,OtherByteString,0,0
+OF,OtherFloatString,0,0
 OW,OtherWordString,0,0
 PN,PersonName,64,0
 SH,ShortString,16,0
