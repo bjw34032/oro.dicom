@@ -1,9 +1,9 @@
 Package: oro.dicom
-Version: 0.3.5
-Date: 2012-04-15
+Version: 0.3.6
+Date: 2012-05-17
 Title: Rigorous - DICOM Input / Output
 Author: Brandon Whitcher
-Maintainer: Brandon Whitcher <bjw34032@users.sourceforge.net>
+Maintainer: Brandon Whitcher <bwhitcher@gmail.com>
 Depends: R (>= 2.13.0), utils
 Suggests: hwriter, oro.nifti (>= 0.2.9)
 Description: Data input/output functions for data that conform to the 
