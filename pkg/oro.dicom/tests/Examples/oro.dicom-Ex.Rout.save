@@ -1,6 +1,6 @@
 
-R version 2.14.1 (2011-12-22)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -23,7 +23,7 @@ Type 'q()' to quit R.
 > options(warn = 1)
 > library('oro.dicom')
 
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.4)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.6)
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -40,8 +40,12 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.4)
 > ### ** Examples
 > 
 > ## pixelData = TRUE
-> ## The DICOM image data are read from dicomSeparate()
-> dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
+> ## The DICOM image data are read from readDICOM()
+> ## Not run: 
+> ##D dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
+> ## End(Not run)
+> load(system.file("hk-40/hk40.RData", package="oro.dicom"))
+> dcmList <- hk40
 > dcmImage <- create3D(dcmList)
 > image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +       main=paste("First Slice from HK-40"))
@@ -50,22 +54,23 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.4)
 > plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 +      main="Difference in Slice Location")
 > 
-> ## pixelData = FALSE
-> ## The DICOM image data are read from create3D()
-> ## This may save on memory for large batches of DICOM data
-> dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
-+                      pixelData=FALSE)
-> dcmImage <- create3D(dcmList, pixelData=FALSE)
-> image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
-+       main=paste("First Slice from HK-40 (again)"))
-> 
+> ## Not run: 
+> ##D ## pixelData = FALSE
+> ##D ## The DICOM image data are read from create3D()
+> ##D ## This may save on memory for large batches of DICOM data
+> ##D dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"),
+> ##D                      pixelData=FALSE)
+> ##D dcmImage <- create3D(dcmList, pixelData=FALSE)
+> ##D image(dcmImage[,,1], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+> ##D       main=paste("First Slice from HK-40 (again)"))
+> ## End(Not run)
 > ## mosaic = TRUE
 > mosaicFile <- system.file("dcm/MR-sonata-3D-as-Tile.dcm", package="oro.dicom")
 > dcm <- readDICOMFile(mosaicFile)
 > image(t(dcm$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +       main="Siemens MOSAIC")
 > dcmImage <- create3D(dcm, mode="integer", mosaic=TRUE)
-> z <- trunc(dim(dcmImage)[3] / 2)
+> z <- trunc(dim(dcmImage)[3]/2)
 > image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +       main=paste("Slice", z, "from Siemens MOSAIC"))
 > 
@@ -286,7 +291,7 @@ Warning in is.sagittal(iop) :
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  15.03 0.04 15.075 0 0 
+Time elapsed:  1.56 0.07 1.643 0 0 
 > grDevices::dev.off()
 null device 
           1 
