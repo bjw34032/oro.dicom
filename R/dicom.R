@@ -1,22 +1,22 @@
 ##
 ## Copyright (c) 2010-2011, Brandon Whitcher
 ## All rights reserved.
-## 
+##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions are
 ## met:
-## 
+##
 ##     * Redistributions of source code must retain the above copyright
-##       notice, this list of conditions and the following disclaimer. 
+##       notice, this list of conditions and the following disclaimer.
 ##     * Redistributions in binary form must reproduce the above
 ##       copyright notice, this list of conditions and the following
 ##       disclaimer in the documentation and/or other materials provided
 ##       with the distribution.
 ##     * Neither the name of Rigorous Analytics Ltd. nor the names of
-##       its contributors may be used to endorse or promote products 
-##       derived from this software without specific prior written 
+##       its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written
 ##       permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -419,15 +419,31 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
     cat(" ", nfiles, "files to be processed by readDICOM()", fill=TRUE)
     tpb <- txtProgressBar(min=0, max=nfiles, style=3)
   }
+  isDICOM <- rep(NA, nfiles)
+  names(isDICOM) <- filenames
   for (i in 1:nfiles) {
     if (verbose) {
       setTxtProgressBar(tpb, i)
     }
-    dcm <- readDICOMFile(filenames[i], ...)
-    images[[i]] <- dcm$img
-    headers[[i]] <- dcm$hdr
+    dcm <- try(readDICOMFile(filenames[i], ...))
+    if(class(dcm)=='try-error'){
+      isDICOM[i] <- FALSE
+    } else {
+      isDICOM[i] <- TRUE
+      images[[i]] <- dcm$img
+      headers[[i]] <- dcm$hdr
+    }
   }
+  notDICOM <- filenames[!isDICOM]
+  images <- images[isDICOM]
+  headers <- headers[isDICOM]
   if (verbose) {
+    if((nNot <- sum(!isDICOM))>0){
+        n10 <- min(nNot, 10)
+        cat('Found', nNot, 'files that were not DICOM; ignoring.',
+            ' The first', n10, 'are:\n')
+        print(notDICOM[1:n10])
+    }
     close(tpb)
   }
   list(hdr=headers, img=images)
