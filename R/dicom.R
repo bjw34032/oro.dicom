@@ -140,6 +140,32 @@
   list(img=img, length=length, value="")
 }
 
+.jpegDataHeader <- function(hdr, readLWS, fid, endian) {
+  length <- readLWS(fid, endian)
+# M <- pixel: "Rows";  spectroscopy:  "DataPointRows"
+  M <- which(hdr[, 3]  == "Rows")[1] #???
+#
+  M <- as.numeric(hdr[M, 6])
+# N <- pixel:  "Columns";  spectroscopy:  "DataPointColumns"
+  N <- which(hdr[N, 3]  == "Columns")[1] #???
+#
+  N <- as.numeric(hdr[N, 6])
+# NOF obtained in spectroscopy but not pixel
+#  NOF <- which(hdr[, 3] == "NumberOfFrames"])[1]
+#  NOF <- as.numeric(hdr[NOF, 6])
+  NOF <- 1 #???
+#
+  if(length<0) {
+      length <- M * N * NOF
+  }
+# 2nd argument:  pixel: 'integer';  spectroscopy: 'numeric'
+# size = pixel:  bytes;  spectroscopy:  4
+  img <- readBin(fid, "integer", length, size=bytes, , endian=endian)
+#      ????
+#
+  list(img=img, length=length, value="")
+}
+
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
                       warn=-1, debug=FALSE) {
