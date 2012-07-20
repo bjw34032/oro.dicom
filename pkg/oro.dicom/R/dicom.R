@@ -116,7 +116,8 @@
   if (length < 0) {
     length <- M * N
   }
-  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" & nchar(hdr[, 7]) == 0)[1]
+  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" &
+                         nchar(hdr[, 7]) == 0)[1]
   bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
   ## Assuming only "integer" data are being provided
   img <- readBin(fid, "integer", length, size=bytes, endian=endian)
@@ -160,6 +161,10 @@
   }
 # 2nd argument:  pixel: 'integer';  spectroscopy: 'numeric'
 # size = pixel:  bytes;  spectroscopy:  4
+  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" &
+                         nchar(hdr[, 7]) == 0)[1]
+  bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
+# ????
   img <- readBin(fid, "integer", length, size=bytes, , endian=endian)
 #      ????
 #
@@ -299,7 +304,8 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         out <- .spectroscopyDataHeader(hdr, readLengthWithSkip, fid, endian)
       }
     } else {
-      if (sequenceItem && skipSequence && (group == "FFFE" && element == "E000")) {
+      if (sequenceItem && skipSequence &&
+          (group == "FFFE" && element == "E000")) {
         out <- list(length=4, value="item")
         seek(fid, where=seek(fid) + out$length)
       } else {
@@ -348,9 +354,11 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       sequenceIndex <- seek(fid) == EOS
       if (any(sequenceIndex)) {
         SQ <- SQ[-which(sequenceIndex)] # remove sequence(s)
-        SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ)) # set SQ to NULL
+        SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ))
+                                        # set SQ to NULL
         EOS <- EOS[-which(sequenceIndex)] # remove endOfSequence(s)
-        EOS <- eval(ifelse(length(EOS) < 1, expression(NULL), EOS)) # set EOS to NULL
+        EOS <- eval(ifelse(length(EOS) < 1, expression(NULL), EOS))
+                                        # set EOS to NULL
       }
     }
   }
@@ -363,7 +371,8 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   if (pixel.data && pixelData) {
     nr <- as.numeric(hdr$value[hdr$name == "Rows" & ! is.sequence])
     nc <- as.numeric(hdr$value[hdr$name == "Columns" & ! is.sequence])
-    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
+    bytes <- as.numeric(
+             hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
     length <- as.numeric(hdr$length[hdr$name == "PixelData" & ! is.sequence])
     total.bytes <- nr * nc * bytes
     if (total.bytes != length) {
@@ -402,7 +411,8 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       valuesPerFrame <- columns * rows * dataPointRows * dataPointColumns
       length <-
         as.numeric(hdr$length[hdr$name == "SpectroscopyData" & ! is.sequence])
-      bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
+      bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" &
+                                    ! is.sequence]) / 8
       total.bytes <- dataPointRows * dataPointColumns * bytes
       odd <- seq(1, 2*valuesPerFrame, by=2)
       even <- seq(2, 2*valuesPerFrame, by=2)
