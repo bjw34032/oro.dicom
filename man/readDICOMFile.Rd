@@ -40,7 +40,7 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   A \code{while} loop is used to traverse the unknown number of DICOM
   header fields contained in a single file.  Information contained in
   \dQuote{sequences} may be included/excluded according to the logical
-  variable \code{skipSequence} (default = \code{TRUE}).  
+  variable \code{skipSequence} (default = \code{TRUE}).
 }
 \value{
   A list containing two elements:
@@ -71,6 +71,11 @@ graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Spine1.dcm")
+
+\dontrun{ # not yet 2012.07.24;  still debugging
+x.jpeg <- readDICOMFile(system.file('jepg/cervicalKyphosis.dcm',
+                        package='oro.dicom'))
+}
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}

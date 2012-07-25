@@ -41,7 +41,16 @@
 .unsignedHeader <- function(bytes, readLen, fid, endian) {
   ## "Unsigned Long" and "Unsigned Short"
   length <- readLen(fid, endian)
-  value <- readBin(fid, "integer", n=length / bytes, size=bytes,
+  n <- length/bytes
+  n. <- as.integer(n)
+  if(n != n.)
+    warning('length = ' , length, '; bytes = ', bytes,
+         '; length/bytes is not an integer;  truncating to ', n.)
+  if(bytes>2)
+    warning('request to read ', n., ' unsigned integers, each of ',
+         bytes, ' bytes; readBin only support unsigned integers ',
+         'with 1 or 2 bytes.')
+  value <- readBin(fid, "integer", n=n., size=bytes,
                    signed=FALSE, endian=endian)
   list(length=length, value=paste(value, collapse=" "))
 }
