@@ -72,10 +72,9 @@ x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Spine1.dcm")
 
-\dontrun{ # not yet 2012.07.24;  still debugging
-x.jpeg <- readDICOMFile(system.file('jepg/cervicalKyphosis.dcm',
-                        package='oro.dicom'))
-}
+cK <- system.file('jpeg/cervicalKyphosis.dcm', package='oro.dicom')
+x.jpeg <- readDICOMFile(cK)
+
 }
 \author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
 \keyword{file}
