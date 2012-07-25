@@ -371,7 +371,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       }
     }
   }
-  close(fid)
+#  close(fid)
   ##
   hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
   names(hdr) <- c("group", "element", "name", "code", "length", "value",
@@ -394,7 +394,23 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
           img <- img[nr:1, , ]
         }
       } else {
-        stop("Number of bytes in PixelData does not match dimensions")
+#        stop("Number of bytes in PixelData does not match dimensions")
+        warning('Number of bytes in PixelData = ', length,
+                ' != dimensions (nr=', nr, ', nc=', nc, ', bytes=', bytes,
+                ') = ', total.bytes, '.  Returning raw')
+        pd <- (hdr$name=='PixelData')
+        npd <- sum(pd)
+        if(npd<1)
+            stop('"PixelData" not found in headers, ',
+                 ', and the number of bytes in PixelData does not match ',
+                 'expectations')
+        if(npd>1)
+            stop('"PixelData" found ', npd, ' times in headers')
+        pdi <- which(pd)
+        len <- as.numeric(hdr$length)
+        hdrBytes <- sum(len[1:(pdi-1)])
+        seek(fid, hdrBytes+1)
+        img <- readBin(fid, 'raw', file.size)
       }
     } else {
       img <-  t(matrix(out$img[1:(nc * nr)], nc, nr))
@@ -430,6 +446,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       img <- NULL
     }
   }
+  close(fid)
   ## Warnings?
   options(warn=oldwarn)
   list(hdr=hdr, img=img)
