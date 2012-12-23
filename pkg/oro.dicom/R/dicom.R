@@ -584,19 +584,21 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     nim@"pixdim"[2:4] <- attr(img,"pixdim")
   }
   ## description
-  for (i in 1:length(descrip)) {
-    if (i == 1) {
-      descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
-    } else {
-      descrip.string <- paste(descrip.string,
-                              extractHeader(dcm$hdr, descrip[i], FALSE)[1],
-                              sep="; ")
+  if (! is.null(descrip)) {
+    for (i in 1:length(descrip)) {
+      if (i == 1) {
+        descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
+      } else {
+        descrip.string <- paste(descrip.string,
+                                extractHeader(dcm$hdr, descrip[i], FALSE)[1],
+                                sep="; ")
+      }
     }
+    if (nchar(descrip.string) > 80) {
+      warning("Description is greater than 80 characters and will be truncated")
+    }
+    nim@"descrip" <- descrip.string
   }
-  if (nchar(descrip.string) > 80) {
-    warning("Description is greater than 80 characters and will be truncated")
-  }
-  nim@"descrip" <- descrip.string
   ## aux_file
   if (! is.null(aux.file)) {
     if (nchar(descrip.string) > 24) {
