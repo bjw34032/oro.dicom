@@ -84,6 +84,7 @@ using the capabilities of \pkg{oro.dicom} and \pkg{oro.nifti}.
 
 <<preliminaries,echo=FALSE,results=hide>>=
 require("oro.dicom")
+require("oro.nifti")
 options(prompt = "R> ", continue = "+  ", width = 70, useFancyQuotes = FALSE)
 @
 
