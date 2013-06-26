@@ -1,10 +1,10 @@
 Package: oro.dicom
-Version: 0.3.7
-Date: 2012-09-23
+Version: 0.3.8
+Date: 2013-06-25
 Title: Rigorous - DICOM Input / Output
 Author: Brandon Whitcher
 Maintainer: Brandon Whitcher <bwhitcher@gmail.com>
-Depends: oro.nifti (>= 0.3.0), R (>= 2.13.0), utils
+Depends: oro.nifti (>= 0.3.2), R (>= 2.14.0), utils
 Suggests: hwriter
 Description: Data input/output functions for data that conform to the 
   Digital Imaging and Communications in Medicine (DICOM) standard, part
