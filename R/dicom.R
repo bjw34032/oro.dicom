@@ -1,22 +1,22 @@
 ##
 ## Copyright (c) 2010-2011, Brandon Whitcher
 ## All rights reserved.
-##
+## 
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions are
 ## met:
-##
+## 
 ##     * Redistributions of source code must retain the above copyright
-##       notice, this list of conditions and the following disclaimer.
+##       notice, this list of conditions and the following disclaimer. 
 ##     * Redistributions in binary form must reproduce the above
 ##       copyright notice, this list of conditions and the following
 ##       disclaimer in the documentation and/or other materials provided
 ##       with the distribution.
 ##     * Neither the name of Rigorous Analytics Ltd. nor the names of
-##       its contributors may be used to endorse or promote products
-##       derived from this software without specific prior written
+##       its contributors may be used to endorse or promote products 
+##       derived from this software without specific prior written 
 ##       permission.
-##
+## 
 ## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -41,16 +41,7 @@
 .unsignedHeader <- function(bytes, readLen, fid, endian) {
   ## "Unsigned Long" and "Unsigned Short"
   length <- readLen(fid, endian)
-  n <- length/bytes
-  n. <- as.integer(n)
-  if(n != n.)
-    warning('length = ' , length, '; bytes = ', bytes,
-         '; length/bytes is not an integer;  truncating to ', n.)
-  if(bytes>2)
-    warning('request to read ', n., ' unsigned integers, each of ',
-         bytes, ' bytes; readBin only support unsigned integers ',
-         'with 1 or 2 bytes.')
-  value <- readBin(fid, "integer", n=n., size=bytes,
+  value <- readBin(fid, "integer", n=length / bytes, size=bytes,
                    signed=FALSE, endian=endian)
   list(length=length, value=paste(value, collapse=" "))
 }
@@ -125,8 +116,7 @@
   if (length < 0) {
     length <- M * N
   }
-  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" &
-                         nchar(hdr[, 7]) == 0)[1]
+  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" & nchar(hdr[, 7]) == 0)[1]
   bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
   ## Assuming only "integer" data are being provided
   img <- readBin(fid, "integer", length, size=bytes, endian=endian)
@@ -147,36 +137,6 @@
   }
   ## Assuming only "integer" data are being provided
   img <- readBin(fid, "numeric", length, size=4, endian=endian)
-  list(img=img, length=length, value="")
-}
-
-.jpegDataHeader <- function(hdr, readLWS, fid, endian) {
-  length <- readLWS(fid, endian)
-# M <- pixel: "Rows";  spectroscopy:  "DataPointRows"
-  M <- which(hdr[, 3]  == "Rows")[1] #???
-#
-  M <- as.numeric(hdr[M, 6])
-# N <- pixel:  "Columns";  spectroscopy:  "DataPointColumns"
-  N <- which(hdr[N, 3]  == "Columns")[1] #???
-#
-  N <- as.numeric(hdr[N, 6])
-# NOF obtained in spectroscopy but not pixel
-#  NOF <- which(hdr[, 3] == "NumberOfFrames"])[1]
-#  NOF <- as.numeric(hdr[NOF, 6])
-  NOF <- 1 #???
-#
-  if(length<0) {
-      length <- M * N * NOF
-  }
-# 2nd argument:  pixel: 'integer';  spectroscopy: 'numeric'
-# size = pixel:  bytes;  spectroscopy:  4
-  bitsAllocated <- which(hdr[, 3] == "BitsAllocated" &
-                         nchar(hdr[, 7]) == 0)[1]
-  bytes <- as.numeric(hdr[bitsAllocated, 6]) / 8
-# ????
-  img <- readBin(fid, "integer", length, size=bytes, , endian=endian)
-#      ????
-#
   list(img=img, length=length, value="")
 }
 
@@ -313,8 +273,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
         out <- .spectroscopyDataHeader(hdr, readLengthWithSkip, fid, endian)
       }
     } else {
-      if (sequenceItem && skipSequence &&
-          (group == "FFFE" && element == "E000")) {
+      if (sequenceItem && skipSequence && (group == "FFFE" && element == "E000")) {
         out <- list(length=4, value="item")
         seek(fid, where=seek(fid) + out$length)
       } else {
@@ -363,15 +322,13 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       sequenceIndex <- seek(fid) == EOS
       if (any(sequenceIndex)) {
         SQ <- SQ[-which(sequenceIndex)] # remove sequence(s)
-        SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ))
-                                        # set SQ to NULL
+        SQ <- eval(ifelse(length(SQ) < 1, expression(NULL), SQ)) # set SQ to NULL
         EOS <- EOS[-which(sequenceIndex)] # remove endOfSequence(s)
-        EOS <- eval(ifelse(length(EOS) < 1, expression(NULL), EOS))
-                                        # set EOS to NULL
+        EOS <- eval(ifelse(length(EOS) < 1, expression(NULL), EOS)) # set EOS to NULL
       }
     }
   }
-#  close(fid)
+  close(fid)
   ##
   hdr <- as.data.frame(hdr, stringsAsFactors=FALSE)
   names(hdr) <- c("group", "element", "name", "code", "length", "value",
@@ -380,8 +337,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   if (pixel.data && pixelData) {
     nr <- as.numeric(hdr$value[hdr$name == "Rows" & ! is.sequence])
     nc <- as.numeric(hdr$value[hdr$name == "Columns" & ! is.sequence])
-    bytes <- as.numeric(
-             hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
+    bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
     length <- as.numeric(hdr$length[hdr$name == "PixelData" & ! is.sequence])
     total.bytes <- nr * nc * bytes
     if (total.bytes != length) {
@@ -394,23 +350,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
           img <- img[nr:1, , ]
         }
       } else {
-#        stop("Number of bytes in PixelData does not match dimensions")
-        warning('Number of bytes in PixelData = ', length,
-                ' != dimensions (nr=', nr, ', nc=', nc, ', bytes=', bytes,
-                ') = ', total.bytes, '.  Returning raw')
-        pd <- (hdr$name=='PixelData')
-        npd <- sum(pd)
-        if(npd<1)
-            stop('"PixelData" not found in headers, ',
-                 ', and the number of bytes in PixelData does not match ',
-                 'expectations')
-        if(npd>1)
-            stop('"PixelData" found ', npd, ' times in headers')
-        pdi <- which(pd)
-        len <- as.numeric(hdr$length)
-        hdrBytes <- sum(len[1:(pdi-1)])
-        seek(fid, hdrBytes+1)
-        img <- readBin(fid, 'raw', file.size)
+        stop("Number of bytes in PixelData does not match dimensions")
       }
     } else {
       img <-  t(matrix(out$img[1:(nc * nr)], nc, nr))
@@ -436,8 +376,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       valuesPerFrame <- columns * rows * dataPointRows * dataPointColumns
       length <-
         as.numeric(hdr$length[hdr$name == "SpectroscopyData" & ! is.sequence])
-      bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" &
-                                    ! is.sequence]) / 8
+      bytes <- as.numeric(hdr$value[hdr$name == "BitsAllocated" & ! is.sequence]) / 8
       total.bytes <- dataPointRows * dataPointColumns * bytes
       odd <- seq(1, 2*valuesPerFrame, by=2)
       even <- seq(2, 2*valuesPerFrame, by=2)
@@ -446,7 +385,6 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
       img <- NULL
     }
   }
-  close(fid)
   ## Warnings?
   options(warn=oldwarn)
   list(hdr=hdr, img=img)
@@ -481,31 +419,15 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
     cat(" ", nfiles, "files to be processed by readDICOM()", fill=TRUE)
     tpb <- txtProgressBar(min=0, max=nfiles, style=3)
   }
-  isDICOM <- rep(NA, nfiles)
-  names(isDICOM) <- filenames
   for (i in 1:nfiles) {
     if (verbose) {
       setTxtProgressBar(tpb, i)
     }
-    dcm <- try(readDICOMFile(filenames[i], ...))
-    if(class(dcm)=='try-error'){
-      isDICOM[i] <- FALSE
-    } else {
-      isDICOM[i] <- TRUE
-      images[[i]] <- dcm$img
-      headers[[i]] <- dcm$hdr
-    }
+    dcm <- readDICOMFile(filenames[i], ...)
+    images[[i]] <- dcm$img
+    headers[[i]] <- dcm$hdr
   }
-  notDICOM <- filenames[!isDICOM]
-  images <- images[isDICOM]
-  headers <- headers[isDICOM]
   if (verbose) {
-    if((nNot <- sum(!isDICOM))>0){
-        n10 <- min(nNot, 10)
-        cat('Found', nNot, 'files that were not DICOM; ignoring.',
-            ' The first', n10, 'are:\n')
-        print(notDICOM[1:n10])
-    }
     close(tpb)
   }
   list(hdr=headers, img=images)
@@ -584,21 +506,25 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     nim@"pixdim"[2:4] <- attr(img,"pixdim")
   }
   ## description
+
   if (! is.null(descrip)) {
-    for (i in 1:length(descrip)) {
-      if (i == 1) {
-        descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
-      } else {
-        descrip.string <- paste(descrip.string,
-                                extractHeader(dcm$hdr, descrip[i], FALSE)[1],
-                                sep="; ")
-      }
+    
+  for (i in 1:length(descrip)) {
+    if (i == 1) {
+      descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
+    } else {
+      descrip.string <- paste(descrip.string,
+                              extractHeader(dcm$hdr, descrip[i], FALSE)[1],
+                              sep="; ")
     }
-    if (nchar(descrip.string) > 80) {
-      warning("Description is greater than 80 characters and will be truncated")
-    }
-    nim@"descrip" <- descrip.string
   }
+  if (nchar(descrip.string) > 80) {
+    warning("Description is greater than 80 characters and will be truncated")
+  }
+  nim@"descrip" <- descrip.string
+
+  }
+
   ## aux_file
   if (! is.null(aux.file)) {
     if (nchar(descrip.string) > 24) {
