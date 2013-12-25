@@ -63,7 +63,7 @@ getOrientation <- function(xyz, delta=0.0001) {
 swapDimension <- function(img, dcm, digits=2) {
   imagePositionPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImagePositionPatient", FALSE), 3)
-  if (nrow(imagePositionPatient) != nsli(img)) {
+  if (nrow(imagePositionPatient) != oro.nifti::nsli(img)) {
     imagePositionPatient <- attributes(img)$ipp
   }
   imageOrientationPatient <-

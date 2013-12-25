@@ -32,41 +32,44 @@
 ## $Id: $
 ##
 
-rereadDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                            DICM=TRUE, skipSequence=FALSE, readPixelData=TRUE,
-                            warn=-1, debug=FALSE) {
+rereadDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
+                            skipSequence=FALSE, readPixelData=TRUE, warn=-1,
+                            debug=FALSE) {
     ## Warnings?
     oldwarn <- getOption("warn")
     options(warn = warn)
     ##
     fsize <- file.info(fname)$size
     fraw <- readBin(fname, "raw", n=as.integer(fsize), endian=endian)
+    skip128 <- fraw[1:128]
+    if (debug) {
+        cat("#", "First 128 bytes of DICOM header =", fill=TRUE)
+        print(skip128)
+    }
     if (DICM) {
         if (rawToChar(fraw[129:132]) != "DICM") {
             stop("DICM != DICM")
         }
     }
-    sraw <- fraw[133:fsize]
     dicomHeader <- sequence <- NULL
-    pixel.data <<- spectroscopy.data <<- FALSE
     seq.txt <- ""
-    fseek <- 0
     ## Call parseDICOMHeader() to recursively parse the DICOM header
-    hdr <- as.data.frame(parseDICOMHeader(sraw, seq.txt, endian=endian, verbose=debug), stringsAsFactors = FALSE)
+    dcm <- parseDICOMHeader(fraw[133:fsize], seq.txt, endian=endian, verbose=debug)
+    hdr <- as.data.frame(dcm$header, stringsAsFactors=FALSE)
     row.names(hdr) <- NULL
     names(hdr) <- c("group", "element", "name", "code", "length", "value", "sequence")
     ##
-    if (pixel.data && readPixelData) {
+    if (dcm$pixel.data && readPixelData) {
         if (debug) {
             cat("##### Reading PixelData (7FE0,0010) #####", fill=TRUE)
         }
-        img <- parsePixelData(sraw[fseek:fsize], hdr, endian, flipud)
+        img <- parsePixelData(fraw[(132 + dcm$data.seek + 1):fsize], hdr, endian, flipud)
     } else { 
-        if (spectroscopy.data && readPixelData) {
+        if (dcm$spectroscopy.data && readPixelData) {
             if (debug) {
                 cat("##### Reading SpectroscopyData (5600,0020) #####", fill=TRUE)
             }
-            img <- parseSpectroscopyData(sraw[fseek:fsize], hdr, endian)
+            img <- parseSpectroscopyData(fraw[(132 + dcm$data.seek + 1):fsize], hdr, endian)
         } else {
             img <- NULL
         }
@@ -116,9 +119,10 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
     is.item <- function (group, element) {
         group == "FFFE" && element %in% c("E000","E00D","E0DD")
     }
-    strseek <- 0
+    strseek <- dseek <- 0
     dicomHeader <- NULL
-    while (! (pixel.data || spectroscopy.data) && strseek < length(rawString)) { ##
+    pixelData <- spectroscopyData <- FALSE
+    while (! (pixelData || spectroscopyData) && strseek < length(rawString)) { ##
         rm(group, element, dictionaryIndex, dic, rawValue, VR, vr, value, length)
         group <- rawToHex(rawString[strseek + 1:2])
         element <- rawToHex(rawString[strseek + 3:4])
@@ -140,7 +144,8 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
             }
             vr <- b56
         } else {
-            if (b56 %in% c("AE","AS","AT","CS","DA","DS","DT","FL","FD","IS","LO","LT","OF","PN","SH","SL","SS","ST","TM","UI","UL","US")
+            if (b56 %in% c("AE","AS","AT","CS","DA","DS","DT","FL","FD","IS","LO",
+                           "LT","OF","PN","SH","SL","SS","ST","TM","UI","UL","US")
                 && ! is.item(group, element)) {
                 ## Explicit VR
                 length <- b78
@@ -174,13 +179,13 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         }
         if (group == "7FE0" && element == "0010" && sq.txt == "") { # PixelData
             value <- "PixelData"
-            pixel.data <<- TRUE
-            fseek <<- strseek
+            pixelData <- TRUE
+            dseek <- strseek
         } else {
             if (group == "5600" && element == "0020" && sq.txt == "") { # SpectroscopyData
                 value <- "SpectroscopyData"
-                spectroscopy.data <<- TRUE
-                fseek <<- strseek
+                spectroscopyData <- TRUE
+                dseek <- strseek
             } else {
                 value <- switch(VR$code,
                                 UL = ,
@@ -195,7 +200,7 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
                                 {
                                     if (length > 0) {
                                         tmpString <- .rawToCharWithEmbeddedNuls(rawValue)
-                                        tmpString <- sub(" +$", "", tmpString) # remove white space at end
+                                        tmpString <- sub(" +$", "", tmpString)     # remove white space at end
                                         tmpString <- gsub("[\\/]", " ", tmpString) # remove "/"s
                                         tmpString <- gsub("[\\^]", " ", tmpString) # remove "^"s
                                     } else {
@@ -212,14 +217,14 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         dicomHeader <- rbind(dicomHeader, dicomHeaderRow)
         if (dic$code == "SQ" && length > 0) {
             groupElement <- paste("(", group, ",", element, ")", sep="")
-            dicomHeader <- rbind(dicomHeader, 
-                                 parseDICOMHeader(rawString[strseek + 1:length], 
-                                                  paste(sq.txt, groupElement), 
-                                                  verbose=verbose))
+            dcm <- parseDICOMHeader(rawString[strseek + 1:length], paste(sq.txt, groupElement), 
+                                    verbose=verbose)
+            dicomHeader <- rbind(dicomHeader, dcm$header)
         }
         strseek <- strseek + length
     } ##
-    return(dicomHeader)
+    list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
+         spectroscopy.data = spectroscopyData)
 }
 
 parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
@@ -227,19 +232,19 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
     bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
     length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
-    total.bytes <- rows * columns * bytes
-    imageData <- readBin(rawString[fseek + 1:length], "integer", n=length, size=bytes, endian=endian)
-    if (total.bytes == length) { # 2D PixelData
+    imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
+                         endian=endian)
+    if (length == rows * columns * bytes) { # 2D PixelData
         imageData <-  t(matrix(imageData[1:(columns * rows)], columns, rows))
         if (flipupdown) {
             imageData <- imageData[rows:1, ]
         }
     } else { # 3D PixelData
-        k <- length / total.bytes
+        k <- length / rows / columns / bytes
         if (k == trunc(k)) {
             warning("3D DICOM file detected!")
             imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
-            imageData <- aperm(img, c(2,1,3))
+            imageData <- aperm(imageData, c(2,1,3))
             if (flipupdown) {
                 imageData <- imageData[rows:1, , ]
             }
@@ -258,7 +263,7 @@ parseSpectroscopyData <- function(rawString, hdr, endian="little") {
         length <- rows * columns * numberOfFrames
     }
     ## Assuming only "integer" data are being provided
-    imageData <- readBin(rawString[fseek + 1:length], "numeric", n=length, size=4, endian=endian)
+    imageData <- readBin(rawString[1:length], "numeric", n=length, size=4, endian=endian)
     ##
     dataPointRows <- as.numeric(with(hdr, value[name == "DataPointRows" & sequence == ""]))
     dataPointColumns <- as.numeric(with(hdr, value[name == "DataPointColumns" & sequence == ""]))
