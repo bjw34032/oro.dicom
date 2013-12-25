@@ -141,11 +141,14 @@
 }
 
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, skipSequence=TRUE, pixelData=TRUE,
+                      DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
                       warn=-1, debug=FALSE) {
-  readDICOMFile(fname, endian=endian, flipud=flipud, skip128=skip128,
-                DICM=DICM, skipSequence=skipSequence,
-                pixelData=pixelData, warn=warn, debug=debug)
+##  readDICOMFile(fname, endian=endian, flipud=flipud, skip128=skip128,
+##                DICM=DICM, skipSequence=skipSequence,
+##                pixelData=pixelData, warn=warn, debug=debug)
+    rereadDICOMFile(fname, endian=endian, flipud=flipud, DICM=DICM,
+                    skipSequence=skipSequence, readPixelData=pixelData,
+                    warn=warn, debug=debug)
 }
 
 readDICOMFile <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
@@ -423,7 +426,7 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
     if (verbose) {
       setTxtProgressBar(tpb, i)
     }
-    dcm <- readDICOMFile(filenames[i], ...)
+    dcm <- rereadDICOMFile(filenames[i], ...)
     images[[i]] <- dcm$img
     headers[[i]] <- dcm$hdr
   }

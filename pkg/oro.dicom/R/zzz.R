@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2011 Brandon Whitcher
+## Copyright (c) 2010-2013 Brandon Whitcher
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@
 .onAttach <- function(lib, pkg) {
   txt <- paste("\n",
                pkg,": Rigorous - DICOM Input / Output (version = ",
-               packageDescription(pkg, lib)[["Version"]],
+               utils::packageDescription(pkg, lib)[["Version"]],
                ")\n",
                sep="")
   packageStartupMessage(txt)

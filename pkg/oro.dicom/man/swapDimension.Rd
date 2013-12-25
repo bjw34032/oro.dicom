@@ -1,3 +1,8 @@
+% Part of the oro.dicom package for R
+% Distributed under the BSD license: see oro.dicom/COPYING
+%
+% $Id: $
+
 \name{swapDimension}
 \alias{swapDimension}
 %- Also NEED an '\alias' for EACH other topic documented here.

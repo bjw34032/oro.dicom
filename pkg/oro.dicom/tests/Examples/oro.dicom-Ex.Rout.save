@@ -1,7 +1,7 @@
 
-R version 3.0.1 (2013-05-16) -- "Good Sport"
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
 Copyright (C) 2013 The R Foundation for Statistical Computing
-Platform: x86_64-unknown-linux-gnu (64-bit)
+Platform: x86_64-apple-darwin10.8.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -21,13 +21,8 @@ Type 'q()' to quit R.
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
 > library('oro.dicom')
-Loading required package: oro.nifti
-Loading required package: bitops
 
-oro.nifti: Rigorous - NIfTI+ANALYZE+AFNI Input / Output (version = 0.3.9)
-
-
-oro.dicom: Rigorous - DICOM Input / Output (version = 0.3.8)
+oro.dicom: Rigorous - DICOM Input / Output (version = 0.4.0)
 
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
@@ -277,16 +272,16 @@ Warning in is.sagittal(iop) :
 > 
 > ### Name: readDICOMFile
 > ### Title: Read Single DICOM File
-> ### Aliases: readDICOMFile dicomInfo
+> ### Aliases: parseDICOMHeader rereadDICOMFile readDICOMFile dicomInfo
 > ### Keywords: file
 > 
 > ### ** Examples
 > 
-> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> x <- rereadDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Abdo.dcm")
 > 
-> x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> x <- rereadDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 > graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Spine1.dcm")
 > 
@@ -296,7 +291,7 @@ Warning in is.sagittal(iop) :
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.008 0.06 3.073 0 0 
+Time elapsed:  1.941 0.096 2.069 0 0 
 > grDevices::dev.off()
 null device 
           1 

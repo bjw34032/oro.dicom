@@ -4,6 +4,8 @@
 % $Id: $
 
 \name{readDICOMFile}
+\alias{parseDICOMHeader}
+\alias{rereadDICOMFile}
 \alias{readDICOMFile}
 \alias{dicomInfo}
 \title{Read Single DICOM File}
@@ -15,6 +17,11 @@
 readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
               DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
               warn = -1, debug = FALSE)
+rereadDICOMFile(fname, endian = "little", flipud = TRUE, DICM = TRUE, 
+                skipSequence = FALSE, readPixelData = TRUE,
+                warn = -1, debug = FALSE)
+parseDICOMHeader(rawString, sq.txt = "", endian = "little", 
+                 verbose = FALSE)
 }
 \arguments{
   \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -23,24 +30,33 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
     (default is \code{TRUE}).}
   \item{skip128}{is a logical variable to skip the first 128 bytes in
     the file (default = \code{TRUE}).}
-  \item{DICM}{is a logical variable to read in the four bytes "DICM"
+  \item{DICM}{is a logical variable to read in the four bytes \dQuote{DICM}
     (default = \code{TRUE}).}
   \item{skipSequence}{is a logical variable to skip all content
     contained in SequenceItem tags (default = \code{TRUE}).}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) on
     whether or not the PixelData should be read from the DICOM files.}
+  \item{readPixelData}{is a logical variable (default = \code{TRUE}) on
+    whether or not the PixelData should be read from the DICOM files.}
   \item{warn}{is a number to regulate the display of warnings (default =
     -1).  See \code{options} for more details.}
   \item{debug}{is a logical variable (default = \code{FALSE}) that
     regulates to display of intermediate processing steps.}
-  %\item{rowBuffer}{is the maximum number of DICOM header fields allowed
-  %  to be read in (adjust when necessary).}
+  \item{verbose}{is a logical variable (default = \code{FALSE}) that
+    regulates to display of intermediate processing steps.}
+  \item{rawString}{is a vector of \code{raw} values taken directly from
+    the DICOM file.}
+  \item{sq.txt}{is an character string (default = \dQuote{}) that indicates
+    if the DICOM header field is embedded within a sequence.}
 }
 \details{
   A \code{while} loop is used to traverse the unknown number of DICOM
   header fields contained in a single file.  Information contained in
   \dQuote{sequences} may be included/excluded according to the logical
   variable \code{skipSequence} (default = \code{TRUE}).
+
+  A resursive implementation of the code breaks the DICOM file into 
+  segments and calls itself to parse each segment.  
 }
 \value{
   A list containing two elements:
@@ -64,13 +80,13 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
   \code{\link{readDICOM}}
 }
 \examples{
-x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+x <- rereadDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Abdo.dcm")
 
-x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+x <- rereadDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
                 main="Spine1.dcm")
 }
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher \email{bwhitcher@gmail.com}}
 \keyword{file}

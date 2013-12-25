@@ -348,7 +348,7 @@ currently available in \pkg{oro.dicom}.  Going back to the
 \code{Abdo.dcm} example, the image is accessed via
 
 <<abdo-png,echo=FALSE,results=hide>>=
-jpeg(filename="dicom_abdo.jpeg", width=480, height=480, quality=50, bg="black")
+jpeg(filename="dicom_abdo.jpeg", width=480, height=480, quality=95, bg="black")
 par(mar=rep(0,4))
 @ 
 <<abdo-image>>=
@@ -417,11 +417,11 @@ dim(dcmImage)
 
 <<DICOM Siemens 02,echo=FALSE,results=hide>>=
 dcmNifti <- dicom2nifti(dcm, mosaic=TRUE)
-jpeg(filename="dcmImage.jpeg", width=1.5*480, height=1.5*480, quality=50, bg="black")
+jpeg(filename="dcmImage.jpeg", width=2*480, height=2*480, quality=95, bg="black")
 image(t(dcm$img), col=grey(0:64/64), zlim=c(16, 1024), axes=FALSE, 
       xlab="", ylab="")
 dev.off()
-jpeg(filename="dcmNifti.jpeg", width=480, height=480, quality=50, bg="black")
+jpeg(filename="dcmNifti.jpeg", width=480, height=480, quality=95, bg="black")
 image(dcmNifti, zlim=c(16, 1024))
 dev.off()
 @ 
@@ -512,10 +512,10 @@ image(hk40n)
 orthographic(hk40n, col.crosshairs="green")
 @ 
 <<DICOM2NIFTI HK40 03,echo=FALSE,results=hide>>=
-jpeg("hk40n_image.jpeg", width=480, height=480, quality=50, bg="black")
+jpeg("hk40n_image.jpeg", width=480, height=480, quality=95, bg="black")
 image(hk40n, zlim=c(0,1024))
 dev.off()
-jpeg("hk40n_orthographic.jpeg", width=480, height=480, quality=50, bg="black")
+jpeg("hk40n_orthographic.jpeg", width=480, height=480, quality=95, bg="black")
 orthographic(hk40n, zlim=c(0,1024), col.crosshairs="green")
 dev.off()
 @ 
