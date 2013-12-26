@@ -126,8 +126,13 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         rm(group, element, dictionaryIndex, dic, rawValue, VR, vr, value, length)
         group <- rawToHex(rawString[strseek + 1:2])
         element <- rawToHex(rawString[strseek + 3:4])
-        dictionaryIndex <- group == dicom.dic$group & element == dicom.dic$element
-        dic <- dicom.dic[dictionaryIndex,]
+        if (! any(dictionaryIndex <- group == dicom.dic$group & element == dicom.dic$element)) {
+            ## Private tag = Unknown
+            dic <- data.frame(group = group, element = element, code = "UN", offset = 1, name = "Unknown",
+                              stringsAsFactors=FALSE)
+        } else {
+            dic <- dicom.dic[dictionaryIndex,]
+        }
         if (verbose) {
             cat("#", group, element, dic$name, dic$code, sep="\t")
         }
@@ -189,11 +194,14 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
             } else {
                 value <- switch(VR$code,
                                 UL = ,
-                                US = readBin(rawValue, "integer", n=length/VR$bytes, size=VR$bytes, signed=FALSE, endian=endian),
+                                US = readBin(rawValue, "integer", n=length/VR$bytes, 
+                                             size=VR$bytes, signed=FALSE, endian=endian),
                                 SL = ,
-                                SS = readBin(rawValue, "integer", n=length/VR$bytes, size=VR$bytes, signed=TRUE, endian=endian),
+                                SS = readBin(rawValue, "integer", n=length/VR$bytes, 
+                                             size=VR$bytes, signed=TRUE, endian=endian),
                                 FD = ,
-                                FL = readBin(rawValue, "numeric", n=length/VR$bytes, size=VR$bytes, signed=TRUE, endian=endian),
+                                FL = readBin(rawValue, "numeric", n=length/VR$bytes, 
+                                             size=VR$bytes, signed=TRUE, endian=endian),
                                 OB = ,
                                 OW = .rawToCharWithEmbeddedNuls(rawValue),
                                 SQ = "Sequence",
