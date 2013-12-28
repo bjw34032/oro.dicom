@@ -4,6 +4,7 @@
 % $Id: $
 
 \name{DICOM Dictionary}
+\alias{dicom.dic.thompson}
 \alias{dicom.dic}
 \alias{dicom.VR}
 \title{Lookup Tables for DICOM Header Information}
@@ -11,6 +12,7 @@
   Lookup tables for DICOM header information.
 }
 \usage{
+data(dicom.dic.thompson)
 data(dicom.dic)
 data(dicom.VR)
 }

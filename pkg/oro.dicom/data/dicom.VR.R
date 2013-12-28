@@ -32,4 +32,4 @@
 ## $Id: $
 ##
 
-dicom.dic <- read.table("dicom_dic.txt", header=TRUE, colClasses="character")
+dicom.VR <- read.csv("dicom_VR.csv", stringsAsFactors = FALSE)
