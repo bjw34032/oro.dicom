@@ -32,4 +32,4 @@
 ## $Id: $
 ##
 
-dicom.dic <- read.table("dicom.dic.txt", header=TRUE, colClasses="character")
+dicom.dic <- read.table("dicom_dic.txt", header=TRUE, colClasses="character")

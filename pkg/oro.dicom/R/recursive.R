@@ -190,8 +190,12 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
             if (group == "5600" && element == "0020" && sq.txt == "") { # SpectroscopyData
                 value <- "SpectroscopyData"
                 spectroscopyData <- TRUE
-                dseek <- strseek
+                dseek <- strseek + 4 # HACK: not sure why I need to skip an extra four bytes
             } else {
+                if (dic$code != VR$code) { 
+                    ## Should this be a stop()?
+                    warning("DICOM dictionary does not match VR code")
+                }
                 value <- switch(VR$code,
                                 UL = ,
                                 US = readBin(rawValue, "integer", n=length/VR$bytes, 
@@ -223,10 +227,22 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         }
         dicomHeaderRow <- c(group, element, dic$name, dic$code, length, value, sq.txt)
         dicomHeader <- rbind(dicomHeader, dicomHeaderRow)
-        if (dic$code == "SQ" && length > 0) {
+        if (group == "FFFE" && element == "E0DD") { # SequenceDelimitationItem
+            dseek <- strseek
+            break
+        }
+        if (VR$code == "SQ") {
             groupElement <- paste("(", group, ",", element, ")", sep="")
-            dcm <- parseDICOMHeader(rawString[strseek + 1:length], paste(sq.txt, groupElement), 
-                                    verbose=verbose)
+            if (length > 0) {
+                ## Pass length of bytes provided explicitly by the sequence tag
+                dcm <- parseDICOMHeader(rawString[strseek + 1:length], paste(sq.txt, groupElement), 
+                                        verbose=verbose)
+            } else {
+                ## Pass remaining bytes and look for SequenceDelimitationItem tag
+                dcm <- parseDICOMHeader(rawString[(strseek + 1):length(rawString)], paste(sq.txt, groupElement),
+                                        verbose=verbose)
+                length <- dcm$data.seek
+            }
             dicomHeader <- rbind(dicomHeader, dcm$header)
         }
         strseek <- strseek + length
@@ -267,22 +283,16 @@ parseSpectroscopyData <- function(rawString, hdr, endian="little") {
     numberOfFrames <- as.numeric(with(hdr, value[name == "NumberOfFrames" & sequence == ""]))
     rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
     columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
-    if (length < 0) {
-        length <- rows * columns * numberOfFrames
-    }
-    ## Assuming only "integer" data are being provided
-    imageData <- readBin(rawString[1:length], "numeric", n=length, size=4, endian=endian)
-    ##
     dataPointRows <- as.numeric(with(hdr, value[name == "DataPointRows" & sequence == ""]))
     dataPointColumns <- as.numeric(with(hdr, value[name == "DataPointColumns" & sequence == ""]))
     dataRepresentation <- with(hdr, value[name == "DataRepresentation" & sequence == ""])
     nComponents <- ifelse(dataRepresentation == "COMPLEX", 2, 1)
     whichComponent <- ifelse(nComponents > 1 && dataRepresentation == "IMAGINARY", 2, 1)
     valuesPerFrame <- columns * rows * dataPointRows * dataPointColumns
-    length <- as.numeric(with(hdr, length[name == "SpectroscopyData" & sequence == ""]))
     bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
-    total.bytes <- dataPointRows * dataPointColumns * bytes
-    odd <- seq(1, 2*valuesPerFrame, by=2)
-    even <- seq(2, 2*valuesPerFrame, by=2)
+    length <- valuesPerFrame * numberOfFrames
+    imageData <- readBin(rawString[1:length], "numeric", n=length, size=4, endian=endian)
+    odd <- seq(1, length, by=2)
+    even <- seq(2, length, by=2)
     complex(real=imageData[odd], imaginary=imageData[even])
 }
