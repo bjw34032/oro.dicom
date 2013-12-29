@@ -32,4 +32,4 @@
 ## $Id: $
 ##
 
-dicom.VR <- read.csv("dicom_VR.csv", stringsAsFactors = FALSE)
+dicom.VR <- read.csv("dicom.VR.csv", stringsAsFactors = FALSE)
