@@ -84,7 +84,8 @@ rereadDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
     iconv(rawToChar(str.raw[str.raw != as.raw(0)]), to=to)
 }
 
-parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALSE) {
+parseDICOMHeader <- function(rawString, sq.txt="", endian="little", 
+                             verbose=FALSE) {
     ##
     ## "The default DICOM Transfer Syntax, which shall be supported by
     ## all AEs, uses Little Endian encoding and is specified in Annex
@@ -128,8 +129,8 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         element <- rawToHex(rawString[strseek + 3:4])
         if (! any(dictionaryIndex <- group == dicom.dic$group & element == dicom.dic$element)) {
             ## Private tag = Unknown
-            dic <- data.frame(group = group, element = element, code = "UN", offset = 1, name = "Unknown",
-                              stringsAsFactors=FALSE)
+            dic <- data.frame(group = group, element = element, code = "UN", 
+                              offset = 1, name = "Unknown", stringsAsFactors=FALSE)
         } else {
             dic <- dicom.dic[dictionaryIndex,]
         }
@@ -182,12 +183,14 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
         if (verbose) {
             cat("", VR$code, length, sep="\t")
         }
-        if (group == "7FE0" && element == "0010" && sq.txt == "") { # PixelData
+        if (group == "7FE0" && element == "0010" && sq.txt == "") { 
+            ## PixelData
             value <- "PixelData"
             pixelData <- TRUE
             dseek <- strseek
         } else {
-            if (group == "5600" && element == "0020" && sq.txt == "") { # SpectroscopyData
+            if (group == "5600" && element == "0020" && sq.txt == "") { 
+                ## SpectroscopyData
                 value <- "SpectroscopyData"
                 spectroscopyData <- TRUE
                 dseek <- strseek + 4 # HACK: not sure why I need to skip an extra four bytes
@@ -235,17 +238,19 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little", verbose=FALS
             groupElement <- paste("(", group, ",", element, ")", sep="")
             if (length > 0) {
                 ## Pass length of bytes provided explicitly by the sequence tag
-                dcm <- parseDICOMHeader(rawString[strseek + 1:length], paste(sq.txt, groupElement), 
+                dcm <- parseDICOMHeader(rawString[strseek + 1:length], 
+                                        paste(sq.txt, groupElement), 
                                         verbose=verbose)
             } else {
                 ## Pass remaining bytes and look for SequenceDelimitationItem tag
-                dcm <- parseDICOMHeader(rawString[(strseek + 1):length(rawString)], paste(sq.txt, groupElement),
+                dcm <- parseDICOMHeader(rawString[(strseek + 1):length(rawString)], 
+                                        paste(sq.txt, groupElement),
                                         verbose=verbose)
                 length <- dcm$data.seek
             }
             dicomHeader <- rbind(dicomHeader, dcm$header)
         }
-        strseek <- strseek + length
+        strseek <- strseek + ifelse(length >= 0, length, 0)
     } ##
     list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
          spectroscopy.data = spectroscopyData)
@@ -256,6 +261,9 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
     bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
     length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
+    if (length <= 0) {
+        stop("Number of bytes in PixelData not specified")
+    }
     imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
                          endian=endian)
     if (length == rows * columns * bytes) { # 2D PixelData
