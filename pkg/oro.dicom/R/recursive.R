@@ -178,7 +178,11 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
         if (! is.null(vr)) {
             VR <- dicom.VR[dicom.VR$code == vr, ]
         } else {
-            VR <- dicom.VR[dicom.VR$code == "UN", ]
+            if (dic$code != "UN") {
+                VR <- dicom.VR[dicom.VR$code == dic$code, ]
+            } else {
+                VR <- dicom.VR[dicom.VR$code == "UN", ]
+            }
         }
         if (verbose) {
             cat("", VR$code, length, sep="\t")
@@ -195,10 +199,10 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
                 spectroscopyData <- TRUE
                 dseek <- strseek + 4 # HACK: not sure why I need to skip an extra four bytes
             } else {
-                if (dic$code != VR$code) { 
-                    ## Should this be a stop()?
-                    warning("DICOM dictionary does not match VR code")
-                }
+                ##if (dic$code != VR$code) { 
+                ##    ## Should this be a stop()?
+                ##    warning("DICOM dictionary does not match VR code")
+                ##}
                 value <- switch(VR$code,
                                 UL = ,
                                 US = readBin(rawValue, "integer", n=length/VR$bytes, 
