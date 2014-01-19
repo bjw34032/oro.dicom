@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2013, Brandon Whitcher
+## Copyright (c) 2010-2014, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 ##
 
 rereadDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
-                            skipSequence=FALSE, readPixelData=TRUE, warn=-1,
+                            skipSequence=FALSE, pixelData=TRUE, warn=-1,
                             debug=FALSE) {
     ## Warnings?
     oldwarn <- getOption("warn")
@@ -59,13 +59,13 @@ rereadDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
     row.names(hdr) <- NULL
     names(hdr) <- c("group", "element", "name", "code", "length", "value", "sequence")
     ##
-    if (dcm$pixel.data && readPixelData) {
+    if (dcm$pixel.data && pixelData) {
         if (debug) {
             cat("##### Reading PixelData (7FE0,0010) #####", fill=TRUE)
         }
         img <- parsePixelData(fraw[(132 + dcm$data.seek + 1):fsize], hdr, endian, flipud)
     } else { 
-        if (dcm$spectroscopy.data && readPixelData) {
+        if (dcm$spectroscopy.data && pixelData) {
             if (debug) {
                 cat("##### Reading SpectroscopyData (5600,0020) #####", fill=TRUE)
             }

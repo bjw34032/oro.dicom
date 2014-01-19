@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2013, Brandon Whitcher
+## Copyright (c) 2010-2014, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -147,7 +147,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
 ##                DICM=DICM, skipSequence=skipSequence,
 ##                pixelData=pixelData, warn=warn, debug=debug)
     rereadDICOMFile(fname, endian=endian, flipud=flipud, DICM=DICM,
-                    skipSequence=skipSequence, readPixelData=pixelData,
+                    skipSequence=skipSequence, pixelData=pixelData,
                     warn=warn, debug=debug)
 }
 
