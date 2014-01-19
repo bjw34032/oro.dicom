@@ -18,8 +18,8 @@ readDICOMFile(fname, endian = "little", flipud = TRUE, skip128 = TRUE,
               DICM = TRUE, skipSequence = TRUE, pixelData = TRUE,
               warn = -1, debug = FALSE)
 rereadDICOMFile(fname, endian = "little", flipud = TRUE, DICM = TRUE, 
-                skipSequence = FALSE, readPixelData = TRUE,
-                warn = -1, debug = FALSE)
+                skipSequence = FALSE, pixelData = TRUE, warn = -1,
+                debug = FALSE)
 parseDICOMHeader(rawString, sq.txt = "", endian = "little", 
                  verbose = FALSE)
 }
@@ -35,9 +35,9 @@ parseDICOMHeader(rawString, sq.txt = "", endian = "little",
   \item{skipSequence}{is a logical variable to skip all content
     contained in SequenceItem tags (default = \code{TRUE}).}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) on
-    whether or not the PixelData should be read from the DICOM files.}
-  \item{readPixelData}{is a logical variable (default = \code{TRUE}) on
-    whether or not the PixelData should be read from the DICOM files.}
+    whether or not the PixelData should be read from the DICOM files.  This 
+    is useful when one wants to gather the DICOM header information without 
+    loading the images.}
   \item{warn}{is a number to regulate the display of warnings (default =
     -1).  See \code{options} for more details.}
   \item{debug}{is a logical variable (default = \code{FALSE}) that
