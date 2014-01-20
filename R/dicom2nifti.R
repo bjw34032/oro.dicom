@@ -35,7 +35,10 @@
 dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
                           descrip="SeriesDescription", ...) {
     switch(as.character(DIM),
-           "2" = { img <- create3D(dcm, ...) },
+           "2" = { 
+               dcmList <- list(hdr=list(dcm$hdr), img=list(dcm$img))
+               img <- create3D(dcmList, ...)
+               },
            "3" = { img <- create3D(dcm, ...) },
            "4" = { img <- create4D(dcm, ...) },
            stop("Dimension parameter \"DIM\" incorrectly specified."))
@@ -83,7 +86,10 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                         reslice=TRUE, qform=TRUE, sform=TRUE, DIM=3,
                         descrip="SeriesDescription", aux.file=NULL, ...) {
     switch(as.character(DIM),
-           "2" = { img <- create3D(dcm, ...) },
+           "2" = { 
+               dcmList <- list(hdr=list(dcm$hdr), img=list(dcm$img))
+               img <- create3D(dcmList, ...)
+               },
            "3" = { img <- create3D(dcm, ...) },
            "4" = { img <- create4D(dcm, ...) },
            stop("Dimension parameter \"DIM\" incorrectly specified."))
@@ -91,21 +97,18 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
         img <- swapDimension(img, dcm)
     }
     nim <- oro.nifti::nifti(img, datatype=datatype)
-    if (is.null(attr(img,"pixdim"))) {
+    if (is.null(attr(img, "pixdim"))) {
         ## (x,y) pixel dimensions
         pixelSpacing <- extractHeader(dcm$hdr, "PixelSpacing", FALSE)
         nim@"pixdim"[2:3] <- header2matrix(pixelSpacing, 2)[1,]
         ## z pixel dimensions
         nim@"pixdim"[4] <- ifelse(nim@"dim_"[1] > 2,
-                                  extractHeader(dcm$hdr, "SliceThickness")[1],
-                                  1)
+                                  extractHeader(dcm$hdr, "SliceThickness")[1], 1)
     } else {
         nim@"pixdim"[2:4] <- attr(img,"pixdim")
     }
     ## description
-    
     if (! is.null(descrip)) {
-        
         for (i in 1:length(descrip)) {
             if (i == 1) {
                 descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
@@ -119,9 +122,7 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
             warning("Description is greater than 80 characters and will be truncated")
         }
         nim@"descrip" <- descrip.string
-        
     }
-    
     ## aux_file
     if (! is.null(aux.file)) {
         if (nchar(descrip.string) > 24) {

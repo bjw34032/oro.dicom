@@ -97,13 +97,13 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       warning("ImagePositionPatient is moving in more than one dimension.")
     }
     if (pixelData) {
-      for (z in 1:Z) {
-        img[,,z] <- dcm$img[[z]]
-      }
+        for (z in 1:Z) {
+            img[,,z] <- dcm$img[[z]]
+        }
     } else {
-      for (z in 1:Z) {
-        img[,,z] <- rereadDICOMFile(names(dcm$hdr)[z])$img
-      }
+        for (z in 1:Z) {
+            img[,,z] <- rereadDICOMFile(names(dcm$hdr)[z])$img
+        }
     }
   }
   ## imagePositionPatient <<- imagePositionPatient[iop.order,]
