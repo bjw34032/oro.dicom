@@ -157,7 +157,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.4.1)
 > x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > (seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
 +                                     numeric=FALSE))
-[1] "Liver/SpleeT2W/UTSE/RC$ COR    TSE   2000      100    90"
+[1] "Liver SpleeT2W UTSE RC$ COR    TSE   2000      100    90"
 > (IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
 [1] "1.000000 0.000000 0.000000 0.000000 0.000000 -1.000000"
 > 
@@ -258,8 +258,8 @@ Warning in is.sagittal(iop) :
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D dcmImage <- readDICOM(system.file("hk-40", package="oro.dicom"),
-> ##D                       verbose=TRUE)
+> ##D dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
+> ##D                        verbose=TRUE)
 > ## End(Not run)
 > 
 > 
@@ -272,16 +272,16 @@ Warning in is.sagittal(iop) :
 > 
 > ### Name: readDICOMFile
 > ### Title: Read Single DICOM File
-> ### Aliases: parseDICOMHeader rereadDICOMFile readDICOMFile dicomInfo
+> ### Aliases: parseDICOMHeader readDICOMFile dicomInfo
 > ### Keywords: file
 > 
 > ### ** Examples
 > 
-> x <- rereadDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 > graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Abdo.dcm")
 > 
-> x <- rereadDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+> x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 > graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 +                 main="Spine1.dcm")
 > 
@@ -291,7 +291,7 @@ Warning in is.sagittal(iop) :
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.141 0.097 2.268 0 0 
+Time elapsed:  2.528 0.145 2.709 0 0 
 > grDevices::dev.off()
 null device 
           1 

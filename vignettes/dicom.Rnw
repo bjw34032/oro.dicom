@@ -10,7 +10,7 @@
 \usepackage{thumbpdf}
 
 %% almost as usual
-\author{Brandon Whitcher\\Mango Solutions \And 
+\author{Brandon Whitcher\\Pfizer Worldwide R{\&}D \And 
         Volker J. Schmid\\Ludwig-Maximilians Universit\"at M\"unchen \AND
         Andrew Thornton\\Cardiff University}
 \title{Working with the {DICOM} Data Standard in \proglang{R}}
@@ -50,12 +50,11 @@ using the capabilities of \pkg{oro.dicom} and \pkg{oro.nifti}.
 %% in the following format:
 \Address{
   Brandon Whitcher\\
-  Mango Solutions\\
-  Office 202, Second Floor\\
-  14 Greville Street\\
-  London EC1N 8SB, United Kingdom\\
-  E-mail: \email{bwhitcher@mango-solutions.com}\\
-  URL: \url{http://www2.imperial.ac.uk/~bwhitche}, \url{http://rigorousanalytics.blogspot.com}\\
+  Pfizer Worldwide Research \& Development\\
+  610 Main Street\\
+  Cambridge, MA 02139, United States\\
+  E-mail: \email{bwhitcher@gmail.com}\\
+  URL: \url{http://www.imperial.ac.uk/people/b.whitcher}, \url{http://rigorousanalytics.blogspot.com}\\
   
   Volker J. Schmid\\
   Bioimaging group\\
@@ -287,6 +286,7 @@ load(system.file("hk-40/hk40.RData", package="oro.dicom"))
 @ 
 <<DICOM HK40 01,eval=FALSE>>=
 fname <- system.file("hk-40", package="oro.dicom")
+data(dicom.dic)
 hk40 <- readDICOM(fname)
 @ 
 <<DICOM HK40 01.1>>=
