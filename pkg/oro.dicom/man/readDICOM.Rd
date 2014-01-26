@@ -47,9 +47,9 @@ readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
 }
 \examples{
 \dontrun{
-dcmImage <- readDICOM(system.file("hk-40", package="oro.dicom"),
-                      verbose=TRUE)
+dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
+                       verbose=TRUE)
 }
 }
-\author{Brandon Whitcher \email{bjw34032@users.sourceforge.net}}
+\author{Brandon Whitcher \email{bwhitcher@gmail.com}}
 \keyword{file}
