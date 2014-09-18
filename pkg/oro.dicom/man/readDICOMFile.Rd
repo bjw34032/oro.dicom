@@ -13,7 +13,7 @@
   from a DICOM file.
 }
 \usage{
-readDICOMFile(fname, endian = "little", flipud = TRUE,
+readDICOMFile(fname, endian = "little", flipud = TRUE, skipFirst128 = TRUE,
               DICM = TRUE, skipSequence = FALSE, pixelData = TRUE,
               warn = -1, debug = FALSE)
 parseDICOMHeader(rawString, sq.txt = "", endian = "little", 
@@ -24,6 +24,8 @@ parseDICOMHeader(rawString, sq.txt = "", endian = "little",
   \item{endian}{is the endian-ness of the file (default is \code{"little"}).}
   \item{flipud}{is a logical variable for vertical flipping of the image
     (default is \code{TRUE}).}
+  \item{skipFirst128}{is a logical variable to read the first 128 bytes in the
+    file.}
   \item{DICM}{is a logical variable to read in the four bytes \dQuote{DICM}
     (default = \code{TRUE}).}
   \item{skipSequence}{is a logical variable to skip all content
