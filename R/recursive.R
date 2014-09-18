@@ -32,19 +32,21 @@
 ## $Id: $
 ##
 
-readDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
-                          skipSequence=FALSE, pixelData=TRUE, warn=-1,
-                          debug=FALSE) {
+readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE,
+                          DICM=TRUE, skipSequence=FALSE, pixelData=TRUE, 
+                          warn=-1, debug=FALSE) {
   ## Warnings?
   oldwarn <- getOption("warn")
   options(warn = warn)
   ##
   fsize <- file.info(fname)$size
   fraw <- readBin(fname, "raw", n=as.integer(fsize), endian=endian)
-  skip128 <- fraw[1:128]
-  if (debug) {
-    cat("#", "First 128 bytes of DICOM header =", fill=TRUE)
-    print(skip128)
+  if (skipFirst128) {
+    skip128 <- fraw[1:128]
+      if (debug) {
+      cat("#", "First 128 bytes of DICOM header =", fill=TRUE)
+      print(skip128)
+    }
   }
   if (DICM) {
     if (rawToChar(fraw[129:132]) != "DICM") {
@@ -53,8 +55,9 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
   }
   dicomHeader <- sequence <- NULL
   seq.txt <- ""
+  bstart <- 1 + ifelse(skipFirst128, 128, 0) + ifelse(DICM, 4, 0) # number of bytes to start
   ## Call parseDICOMHeader() to recursively parse the DICOM header
-  dcm <- parseDICOMHeader(fraw[133:fsize], seq.txt, endian=endian, verbose=debug)
+  dcm <- parseDICOMHeader(fraw[bstart:fsize], seq.txt, endian=endian, verbose=debug)
   hdr <- as.data.frame(dcm$header, stringsAsFactors=FALSE)
   row.names(hdr) <- NULL
   names(hdr) <- c("group", "element", "name", "code", "length", "value", "sequence")
@@ -63,13 +66,13 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, DICM=TRUE,
     if (debug) {
       cat("##### Reading PixelData (7FE0,0010) #####", fill=TRUE)
     }
-    img <- parsePixelData(fraw[(132 + dcm$data.seek + 1):fsize], hdr, endian, flipud)
+    img <- parsePixelData(fraw[(bstart + dcm$data.seek):fsize], hdr, endian, flipud)
   } else { 
     if (dcm$spectroscopy.data && pixelData) {
       if (debug) {
         cat("##### Reading SpectroscopyData (5600,0020) #####", fill=TRUE)
       }
-      img <- parseSpectroscopyData(fraw[(132 + dcm$data.seek + 1):fsize], hdr, endian)
+      img <- parseSpectroscopyData(fraw[(bstart + dcm$data.seek + 1):fsize], hdr, endian)
     } else {
       img <- NULL
     }
