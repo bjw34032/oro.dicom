@@ -66,13 +66,19 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE
     if (debug) {
       cat("##### Reading PixelData (7FE0,0010) #####", fill=TRUE)
     }
+    if (with(hdr, value[name == "PixelData" & sequence == ""]) < 0) {
+      rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
+      columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
+      bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
+      length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
+    }
     img <- parsePixelData(fraw[(bstart + dcm$data.seek):fsize], hdr, endian, flipud)
   } else { 
     if (dcm$spectroscopy.data && pixelData) {
       if (debug) {
         cat("##### Reading SpectroscopyData (5600,0020) #####", fill=TRUE)
       }
-      img <- parseSpectroscopyData(fraw[(bstart + dcm$data.seek + 1):fsize], hdr, endian)
+      img <- parseSpectroscopyData(fraw[(bstart + dcm$data.seek):fsize], hdr, endian)
     } else {
       img <- NULL
     }
