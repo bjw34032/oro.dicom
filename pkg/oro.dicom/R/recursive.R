@@ -49,7 +49,7 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE
     }
   }
   if (DICM) {
-    if (rawToChar(fraw[129:132]) != "DICM") {
+    if (.rawToCharWithEmbeddedNuls(fraw[129:132]) != "DICM") {
       stop("DICM != DICM")
     }
   }
@@ -65,12 +65,6 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE
   if (dcm$pixel.data && pixelData) {
     if (debug) {
       cat("##### Reading PixelData (7FE0,0010) #####", fill=TRUE)
-    }
-    if (with(hdr, value[name == "PixelData" & sequence == ""]) < 0) {
-      rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
-      columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
-      bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
-      length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
     }
     img <- parsePixelData(fraw[(bstart + dcm$data.seek):fsize], hdr, endian, flipud)
   } else { 
@@ -272,10 +266,12 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
   length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
   if (length <= 0) {
-    stop("Number of bytes in PixelData not specified")
+    stop(paste("Number of bytes in PixelData not specified; guess =", guess))
   }
+  pixelRepresentation <- as.numeric(with(hdr, length[name == "PixelRepresentation" & sequence == ""]))
+  signed <- ifelse(pixelRepresentation == 1, TRUE, FALSE)
   imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
-                       endian=endian)
+                       signed=signed, endian=endian)
   if (length == rows * columns * bytes) { # 2D PixelData
     imageData <-  t(matrix(imageData[1:(columns * rows)], columns, rows))
     if (flipupdown) {
