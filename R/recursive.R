@@ -32,8 +32,9 @@
 ## $Id: $
 ##
 
-readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE,
-                          DICM=TRUE, skipSequence=FALSE, pixelData=TRUE, 
+readDICOMFile <- function(fname, endian="little", flipud=TRUE, 
+                          ## skipFirst128=TRUE, DICM=TRUE, 
+                          skipSequence=FALSE, pixelData=TRUE, 
                           warn=-1, debug=FALSE) {
   ## Warnings?
   oldwarn <- getOption("warn")
@@ -41,19 +42,25 @@ readDICOMFile <- function(fname, endian="little", flipud=TRUE, skipFirst128=TRUE
   ##
   fsize <- file.info(fname)$size
   fraw <- readBin(fname, "raw", n=as.integer(fsize), endian=endian)
-  if (skipFirst128) {
-    skip128 <- fraw[1:128]
-      if (debug) {
-      cat("#", "First 128 bytes of DICOM header =", fill=TRUE)
-      print(skip128)
-    }
+  if (any(fraw[1:128] != raw(0))) {
+    stop("Holy crap!")
   }
-  if (DICM) {
-    if (.rawToCharWithEmbeddedNuls(fraw[129:132]) != "DICM") {
-      stop("DICM != DICM")
-    }
+  skip128 <- fraw[1:128]
+  skipFirst128 <- ifelse(any(as.logical(skip128)), FALSE, TRUE)
+  if (debug) {
+    cat("#", "First 128 bytes of DICOM header =", fill=TRUE)
+    print(skip128)
   }
-  dicomHeader <- sequence <- NULL
+  DICM <- .rawToCharWithEmbeddedNuls(fraw[129:132]) == "DICM"
+  if (debug) {
+    cat("#", "DICM != DICM", fill=TRUE)
+  }
+  #if (DICM) {
+  #  if (.rawToCharWithEmbeddedNuls(fraw[129:132]) != "DICM") {
+  #    stop("DICM != DICM")
+  #  }
+  #}
+dicomHeader <- sequence <- NULL
   seq.txt <- ""
   bstart <- 1 + ifelse(skipFirst128, 128, 0) + ifelse(DICM, 4, 0) # number of bytes to start
   ## Call parseDICOMHeader() to recursively parse the DICOM header
@@ -124,8 +131,8 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
     group == "FFFE" && element %in% c("E000","E00D","E0DD")
   }
   ## Data files that are necessary to proceed
-  data(dicom.dic, package="oro.dicom", envir=environment())
-  data(dicom.VR, package="oro.dicom", envir=environment())
+  #data(dicom.dic, package="oro.dicom", envir=environment())
+  #data(dicom.VR, package="oro.dicom", envir=environment())
   ##
   strseek <- dseek <- 0
   dicomHeader <- NULL
@@ -134,11 +141,11 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
     ## rm(group, element, dictionaryIndex, dic, rawValue, VR, vr, value, length)
     group <- rawToHex(rawString[strseek + 1:2])
     element <- rawToHex(rawString[strseek + 3:4])
-    if (! any(dictionaryIndex <- group == dicom.dic$group & element == dicom.dic$element)) {
+    if (! any(dictionaryIndex <- group == oro.dicom::dicom.dic$group & element == oro.dicom::dicom.dic$element)) {
       ## Private tag = Unknown
-      dic <- list(group = group, element = element, code = "UN", offset = 1, name = "Unknown")
+      dic <- list(group=group, element=element, code="UN", offset=1, name="Unknown")
     } else {
-      dic <- dicom.dic[dictionaryIndex, ]
+      dic <- oro.dicom::dicom.dic[dictionaryIndex, ]
     }
     if (verbose) {
       cat("#", group, element, dic$name, dic$code, sep="\t")
@@ -182,11 +189,11 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
       }
     }
     if (! is.null(vr)) {
-      VR <- dicom.VR[dicom.VR$code == vr, ]
+      VR <- oro.dicom::dicom.VR[oro.dicom::dicom.VR$code == vr, ]
     } else if (dic$code != "UN") {
-      VR <- dicom.VR[dicom.VR$code == dic$code, ]
+      VR <- oro.dicom::dicom.VR[oro.dicom::dicom.VR$code == dic$code, ]
     } else {
-      VR <- dicom.VR[dicom.VR$code == "UN", ]
+      VR <- oro.dicom::dicom.VR[oro.dicom::dicom.VR$code == "UN", ]
     }
     if (verbose) {
       cat("", VR$code, length, sep="\t")
@@ -266,6 +273,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
   length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
   if (length <= 0) {
+    guess <- 1
     stop(paste("Number of bytes in PixelData not specified; guess =", guess))
   }
   pixelRepresentation <- as.numeric(with(hdr, length[name == "PixelRepresentation" & sequence == ""]))
@@ -281,10 +289,16 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     k <- length / rows / columns / bytes
     if (k == trunc(k)) {
       warning("3D DICOM file detected!")
-      imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
-      imageData <- aperm(imageData, c(2,1,3))
-      if (flipupdown) {
-        imageData <- imageData[rows:1, , ]
+      samplesPerPixel <- as.numeric(with(hdr, length[name == "SamplesPerPixel" & sequence == ""]))
+      planarConfiguration <- as.numeric(with(hdr, length[name == "PlanarConfiguration" & sequence == ""]))
+      if (samplesPerPixel > 1 && planarConfiguration == 0) {
+        stop("Color channels are interlaced")
+      } else {
+        imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
+        imageData <- aperm(imageData, c(2,1,3))
+        if (flipupdown) {
+          imageData <- imageData[rows:1, , ]
+        }
       }
     } else {
       stop("Number of bytes in PixelData does not match dimensions of image")
