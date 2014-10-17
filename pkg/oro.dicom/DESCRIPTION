@@ -13,3 +13,4 @@ Description: Data input/output functions for data that conform to the
 License: BSD_3_clause + file LICENSE
 URL: http://rig.oro.us.com, http://rigorousanalytics.blogspot.com
 LazyData: yes
+LazyDataCompression: gzip

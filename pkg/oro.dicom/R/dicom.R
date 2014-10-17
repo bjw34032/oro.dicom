@@ -35,7 +35,7 @@
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
                       warn=-1, debug=FALSE) {
-  readDICOMFile(fname, endian=endian, flipud=flipud, DICM=DICM,
+  readDICOMFile(fname, endian=endian, flipud=flipud, 
                 skipSequence=skipSequence, pixelData=pixelData,
                 warn=warn, debug=debug)
 }

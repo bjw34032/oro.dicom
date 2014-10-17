@@ -157,7 +157,7 @@ nextHeader <- function(dcm, string, reference, str.warning,
     if (any(matchHeader(header, string=reference[i]))) {
       if (! is.null(htmlfile)) {
         require("hwriter")
-        hwrite(str.warning, htmlfile, heading=3)
+        hwriter::hwrite(str.warning, htmlfile, heading=3)
       } else {
         warning(str.warning)
       }

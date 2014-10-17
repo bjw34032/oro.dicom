@@ -13,9 +13,8 @@
   from a DICOM file.
 }
 \usage{
-readDICOMFile(fname, endian = "little", flipud = TRUE, skipFirst128 = TRUE,
-              DICM = TRUE, skipSequence = FALSE, pixelData = TRUE,
-              warn = -1, debug = FALSE)
+readDICOMFile(fname, endian = "little", flipud = TRUE, skipSequence = FALSE, 
+              pixelData = TRUE, warn = -1, debug = FALSE)
 parseDICOMHeader(rawString, sq.txt = "", endian = "little", 
                  verbose = FALSE)
 }
@@ -24,10 +23,6 @@ parseDICOMHeader(rawString, sq.txt = "", endian = "little",
   \item{endian}{is the endian-ness of the file (default is \code{"little"}).}
   \item{flipud}{is a logical variable for vertical flipping of the image
     (default is \code{TRUE}).}
-  \item{skipFirst128}{is a logical variable to read the first 128 bytes in the
-    file.}
-  \item{DICM}{is a logical variable to read in the four bytes \dQuote{DICM}
-    (default = \code{TRUE}).}
   \item{skipSequence}{is a logical variable to skip all content
     contained in SequenceItem tags (default = \code{TRUE}).}
   \item{pixelData}{is a logical variable (default = \code{TRUE}) on
@@ -53,6 +48,9 @@ parseDICOMHeader(rawString, sq.txt = "", endian = "little",
 
   A resursive implementation of the code breaks the DICOM file into 
   segments and calls itself to parse each segment.  
+  
+  Strict adherence to the DICOM standard is not required.  Specifically, content is allowed to start at the first byte and the four characters \sQuote{DICM} are not required at bytes 129-132.  
+  
 }
 \value{
   A list containing two elements:
