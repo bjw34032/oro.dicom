@@ -156,7 +156,7 @@ nextHeader <- function(dcm, string, reference, str.warning,
   for (i in 1:length(reference)) {
     if (any(matchHeader(header, string=reference[i]))) {
       if (! is.null(htmlfile)) {
-        require("hwriter")
+        requireNamespace("hwriter", quietly=TRUE)
         hwriter::hwrite(str.warning, htmlfile, heading=3)
       } else {
         warning(str.warning)
