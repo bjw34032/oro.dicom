@@ -5,7 +5,8 @@ Title: Rigorous - DICOM Input / Output
 Author: Brandon Whitcher
 Maintainer: Brandon Whitcher <bwhitcher@gmail.com>
 Depends: R (>= 2.14.0)
-Suggests: hwriter
+Suggests: hwriter,
+    testthat
 Imports: oro.nifti (>= 0.4.0), utils
 Description: Data input/output functions for data that conform to the 
   Digital Imaging and Communications in Medicine (DICOM) standard, part
