@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2014, Brandon Whitcher
+## Copyright (c) 2010-2015, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -289,16 +289,17 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     k <- length / rows / columns / bytes
     if (k == trunc(k)) {
       warning("3D DICOM file detected!")
-      samplesPerPixel <- as.numeric(with(hdr, length[name == "SamplesPerPixel" & sequence == ""]))
-      planarConfiguration <- as.numeric(with(hdr, length[name == "PlanarConfiguration" & sequence == ""]))
-      if (samplesPerPixel > 1 && planarConfiguration == 0) {
-        stop("Color channels are interlaced")
-      } else {
+      samplesPerPixel <- with(hdr, value[grepl("SamplesPerPixel", name, ignore.case=TRUE) & sequence == ""])
+      if (samplesPerPixel == "1") { # && planarConfiguration == 0) {
         imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
         imageData <- aperm(imageData, c(2,1,3))
         if (flipupdown) {
           imageData <- imageData[rows:1, , ]
         }
+      } else {
+        planarConfiguration <- with(hdr, value[grepl("PlanarConfiguration", name, ignore.case=TRUE) & sequence == ""])
+        if (planarConfiguration == "0")
+          stop("Color channels are interlaced")
       }
     } else {
       stop("Number of bytes in PixelData does not match dimensions of image")
