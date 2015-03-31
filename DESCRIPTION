@@ -8,7 +8,7 @@ Depends: R (>= 2.14.0)
 Suggests: 
     hwriter,
     testthat
-Imports: oro.nifti (>= 0.4.0), utils
+Imports: utils, oro.nifti (>= 0.4.0)
 Description: Data input/output functions for data that conform to the 
   Digital Imaging and Communications in Medicine (DICOM) standard, part
   of the Rigorous Analytics bundle.

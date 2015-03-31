@@ -32,5 +32,5 @@
 ## $Id: $
 ##
 
-dicom.dic <- rbind(read.csv("dicom.dic.csv", stringsAsFactors = FALSE),
-                   read.csv("dicom.dic.thompson.csv", stringsAsFactors = FALSE))
+dicom.dic <- rbind(utils::read.csv("dicom.dic.csv", stringsAsFactors = FALSE),
+                   utils::read.csv("dicom.dic.thompson.csv", stringsAsFactors = FALSE))
