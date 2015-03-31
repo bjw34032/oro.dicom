@@ -32,6 +32,70 @@
 ## $Id: $
 ##
 
+#' Read Single DICOM File
+#' 
+#' All information, both header and image, is read into a list structure from a
+#' DICOM file.
+#' 
+#' A \code{while} loop is used to traverse the unknown number of DICOM header
+#' fields contained in a single file.  Information contained in
+#' \dQuote{sequences} may be included/excluded according to the logical
+#' variable \code{skipSequence} (default = \code{TRUE}).
+#' 
+#' A resursive implementation of the code breaks the DICOM file into segments
+#' and calls itself to parse each segment.
+#' 
+#' Strict adherence to the DICOM standard is not required.  Specifically,
+#' content is allowed to start at the first byte and the four characters
+#' \sQuote{DICM} are not required at bytes 129-132.
+#' 
+#' @aliases parseDICOMHeader readDICOMFile dicomInfo
+#' @usage readDICOMFile(fname, endian = "little", flipud = TRUE, skipSequence =
+#' FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
+#' parseDICOMHeader(rawString, sq.txt = "", endian = "little", verbose = FALSE)
+#' @param fname is the file name of the DICOM image (with suffix).
+#' @param endian is the endian-ness of the file (default is \code{"little"}).
+#' @param flipud is a logical variable for vertical flipping of the image
+#' (default is \code{TRUE}).
+#' @param skipSequence is a logical variable to skip all content contained in
+#' SequenceItem tags (default = \code{TRUE}).
+#' @param pixelData is a logical variable (default = \code{TRUE}) on whether or
+#' not the PixelData should be read from the DICOM files.  This is useful when
+#' one wants to gather the DICOM header information without loading the images.
+#' @param warn is a number to regulate the display of warnings (default = -1).
+#' See \code{options} for more details.
+#' @param debug is a logical variable (default = \code{FALSE}) that regulates
+#' to display of intermediate processing steps.
+#' @param verbose is a logical variable (default = \code{FALSE}) that regulates
+#' to display of intermediate processing steps.
+#' @param rawString is a vector of \code{raw} values taken directly from the
+#' DICOM file.
+#' @param sq.txt is an character string (default = \dQuote{}) that indicates if
+#' the DICOM header field is embedded within a sequence.
+#' @return A list containing two elements: \describe{ \item{hdr}{all DICOM
+#' header fields (with or without \dQuote{sequence} information).}
+#' \item{img}{the \sQuote{image} information.} }
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
+#' @seealso \code{\link{readDICOM}}
+#' @references Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
+#' the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
+#' Software}, \bold{44} (6), 1--28.  \url{http://www.jstatsoft.org/v44/i06}
+#' 
+#' Digital Imaging and Communications in Medicine (DICOM)\cr
+#' \url{http://medical.nema.org}\cr
+#' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
+#' @keywords file
+#' @examples
+#' 
+#' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
+#' graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+#'                 main="Abdo.dcm")
+#' 
+#' x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
+#' graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
+#'                 main="Spine1.dcm")
+#' 
+#' @export readDICOMFile
 readDICOMFile <- function(fname, endian="little", flipud=TRUE, 
                           ## skipFirst128=TRUE, DICM=TRUE, 
                           skipSequence=FALSE, pixelData=TRUE, 
@@ -89,11 +153,21 @@ dicomHeader <- sequence <- NULL
   ##
   list(hdr = hdr, img = img)
 }
+#' @rdname readDICOMFile
+#' @export
+dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
+                      DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
+                      warn=-1, debug=FALSE) {
+  readDICOMFile(fname, endian=endian, flipud=flipud, 
+                skipSequence=skipSequence, pixelData=pixelData,
+                warn=warn, debug=debug)
+}
 
 .rawToCharWithEmbeddedNuls <- function(str.raw, to="UTF-8") {
   iconv(rawToChar(str.raw[str.raw != as.raw(0)]), to=to)
 }
-
+#' @rdname readDICOMFile
+#' @export
 parseDICOMHeader <- function(rawString, sq.txt="", endian="little", 
                              verbose=FALSE) {
   ##
@@ -267,6 +341,40 @@ list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
      spectroscopy.data = spectroscopyData)
 }
 
+#' Parse DICOM Pixel or Spectroscopy Data
+#' 
+#' These subroutines process the information contained after the DICOM header
+#' and process this information into an image (2D or 3D) or complex-valued
+#' vector.
+#' 
+#' A \code{while} loop is used to traverse the unknown number of DICOM header
+#' fields contained in a single file.  Information contained in
+#' \dQuote{sequences} may be included/excluded according to the logical
+#' variable \code{skipSequence} (default = \code{TRUE}).
+#' 
+#' A resursive implementation of the code breaks the DICOM file into segments
+#' and calls itself to parse each segment.
+#' 
+#' @aliases parsePixelData parseSpectroscopyData
+#' @usage parsePixelData(rawString, hdr, endian = "little", flipupdown = TRUE)
+#' parseSpectroscopyData(rawString, hdr, endian = "little")
+#' @param rawString is a vector of \code{raw} values taken directly from the
+#' DICOM file.
+#' @param hdr is the list object of DICOM header information.
+#' @param endian is the endian-ness of the file (default is \code{"little"}).
+#' @param flipupdown is a logical variable for vertical flipping of the image
+#' (default is \code{TRUE}).
+#' @return A list containing two elements: \describe{ \item{hdr}{all DICOM
+#' header fields (with or without \dQuote{sequence} information).}
+#' \item{img}{the \sQuote{image} information.} }
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
+#' @seealso \code{\link{parseDICOMHeader}}, \code{\link{readDICOMFile}}.
+#' @references Digital Imaging and Communications in Medicine (DICOM)\cr
+#' \url{http://medical.nema.org}\cr
+#' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
+#' @source See references.
+#' @keywords file
+#' @export
 parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
   columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
@@ -307,7 +415,8 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   }
   return(imageData)
 }
-
+#' @rdname parsePixelData
+#' @export
 parseSpectroscopyData <- function(rawString, hdr, endian="little") {
   numberOfFrames <- as.numeric(with(hdr, value[name == "NumberOfFrames" & sequence == ""]))
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))

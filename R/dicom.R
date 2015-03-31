@@ -32,20 +32,44 @@
 ## $Id: $
 ##
 
-dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
-                      warn=-1, debug=FALSE) {
-  readDICOMFile(fname, endian=endian, flipud=flipud, 
-                skipSequence=skipSequence, pixelData=pixelData,
-                warn=warn, debug=debug)
-}
-
-dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
-                          exclude=NULL, ...) {
-  readDICOM(path, recursive=recursive, exclude=exclude, verbose=verbose,
-            counter=counter, ...)
-}
-
+#' Read All DICOM Files in a Directory
+#' 
+#' All DICOM files are imported and a text file summarizing their content
+#' recorded.
+#' 
+#' A \code{for} loop is used to process each DICOM file contained in the
+#' directory(ies).  If only a single file is specified in the path,
+#' \code{readDICOM} will read that file only.
+#' 
+#' @aliases readDICOM dicomSeparate
+#' @usage readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
+#' counter, ...)
+#' @param path Path name to the DICOM directory.
+#' @param recursive Search recursively down from the given path name.
+#' @param exclude Exclude file names containing this character string.
+#' @param verbose Flag to provide text-based progress bar.
+#' @param counter Ignored.
+#' @param ... Arguments to be passed to \code{readDICOMFile}.
+#' @return A list structure with two major components: \item{img}{All images
+#' associated with the DICOM directory(ies).} \item{hdr}{All header files
+#' associated with the DICOM directory(ies).}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
+#' @seealso \code{\link{readDICOMFile}}
+#' @references Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
+#' the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
+#' Software}, \bold{44} (6), 1--28.  \url{http://www.jstatsoft.org/v44/i06}
+#' 
+#' Digital Imaging and Communications in Medicine (DICOM)\cr
+#' \url{http://medical.nema.org}
+#' @keywords file
+#' @examples
+#' 
+#' \dontrun{
+#' dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
+#'                        verbose=TRUE)
+#' }
+#' 
+#' @export readDICOM
 readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
                       counter, ...) {
   if (length(list.files(path)) == 0 && file.exists(path)) {
@@ -81,4 +105,11 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
     close(tpb)
   }
   list(hdr=headers, img=images)
+}
+#' @rdname readDICOM
+#' @export
+dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
+                          exclude=NULL, ...) {
+  readDICOM(path, recursive=recursive, exclude=exclude, verbose=verbose,
+            counter=counter, ...)
 }

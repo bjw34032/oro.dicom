@@ -32,6 +32,45 @@
 ## $Id: $
 ##
 
+
+
+#' Convert DICOM Header to Analyze
+#' 
+#' A subset of header information from DICOM is placed into Analyze 7.5 format.
+#' 
+#' See the references.
+#' 
+#' @usage dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3, descrip =
+#' "SeriesDescription", ...)
+#' @param dcm DICOM object containing both header and image information.
+#' @param datatype is an integer that denotes the type of data contained in
+#' each voxel.  See \code{convert.datatype.anlz} or the ANALYZE documentation
+#' for more details.
+#' @param reslice Logical variable (default = \code{TRUE}) indicating if the
+#' data volume should be resliced.
+#' @param DIM The dimension of the array to be used (default = 3D).
+#' @param descrip DICOM header field(s) to be included in the \code{descrip}
+#' @param \dots Arguments to be passed to \code{anlz}
+#' @return An object of class \code{anlz}.
+#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @seealso \code{\link[oro.nifti]{convert.datatype.anlz}},
+#' \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
+#' @references Analyze 7.5\cr \url{http://www.mayo.edu/bir/PDF/ANALYZE75.pdf}
+#' 
+#' Digital Imaging and Communications in Medicine (DICOM)\cr
+#' \url{http://medical.nema.org}
+#' @keywords file
+#' @examples
+#' 
+#' \dontrun{
+#' dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+#' require("oro.nifti")
+#' dcmAnlz <- dicom2analyze(dcmList, datatype=4, mode="integer")
+#' image(dcmAnlz)
+#' orthographic(dcmAnlz)
+#' }
+#' 
+#' @export dicom2analyze
 dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
                           descrip="SeriesDescription", ...) {
     switch(as.character(DIM),
@@ -82,6 +121,58 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
     return(aim)
 }
 
+
+
+#' Convert DICOM Header to NIfTI
+#' 
+#' A subset of header information from DICOM is placed into NIfTI-1 format.
+#' 
+#' See the references.
+#' 
+#' @usage dicom2nifti(dcm, datatype = 4, units = c("mm","sec"), rescale =
+#' FALSE, reslice = TRUE, qform = TRUE, sform = TRUE, DIM = 3, descrip =
+#' "SeriesDescription", aux.file = NULL, ...)
+#' @param dcm DICOM object containing both header and image information.
+#' @param datatype is an integer that denotes the type of data contained in
+#' each voxel.  See \code{convert.datatype} or the NIfTI documentation for more
+#' details.
+#' @param units Spatial and temporal units for \code{xyzt}
+#' @param rescale Should slope and intercept parameters be extracted from the
+#' DICOM headers and saved?
+#' @param reslice Logical variable (default = \code{TRUE}) indicating if the
+#' data volume should be resliced.
+#' @param qform Logical variable (default = \code{TRUE}) indicating if the 3D
+#' image orientation should be used.
+#' @param sform Logical variable (default = \code{TRUE}) indicating if the 3D
+#' image orientation should be used.
+#' @param DIM The dimension of the array to be used (default = 3D).
+#' @param descrip DICOM header field(s) to be included in the \code{descrip}
+#' slot for the \code{nifti} class object.
+#' @param aux.file Character string to be included in the \code{aux_file} slot
+#' for the \code{nifti} class object.
+#' @param \dots Arguments to be passed to \code{nifti}
+#' @return An object of class \code{nifti}.
+#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @seealso \code{\link[oro.nifti]{convert.datatype}},
+#' \code{\link{dicom2analyze}}, \code{\link[oro.nifti]{nifti}}
+#' @references Digital Imaging and Communications in Medicine (DICOM)\cr
+#' \url{http://medical.nema.org}
+#' 
+#' NIfTI-1\cr \url{http://nifti.nimh.nih.gov/nifti-1}
+#' @keywords file
+#' @examples
+#' 
+#' \dontrun{
+#' dcmList <- dicomSeparate(system.file("hk-40", package="oro.dicom"))
+#' require("oro.nifti")
+#' dcmNifti <- dicom2nifti(dcmList, datatype=4, mode="integer")
+#' qform(dcmNifti)
+#' sform(dcmNifti)
+#' image(dcmNifti)
+#' orthographic(dcmNifti)
+#' }
+#' 
+#' @export dicom2nifti
 dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                         reslice=TRUE, qform=TRUE, sform=TRUE, DIM=3,
                         descrip="SeriesDescription", aux.file=NULL, ...) {
@@ -147,9 +238,9 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
     ## sform
     if (sform) { # Basic LAS convention corresponds to the xform matrix
         nim@"sform_code" <- 2
-        nim@"srow_x" <- pixdim(nim)[2] * c(-1,0,0,0)
-        nim@"srow_y" <- pixdim(nim)[3] * c(0,1,0,0)
-        nim@"srow_z" <- pixdim(nim)[4] * c(0,0,1,0)
+        nim@"srow_x" <- oro.nifti::pixdim(nim)[2] * c(-1,0,0,0)
+        nim@"srow_y" <- oro.nifti::pixdim(nim)[3] * c(0,1,0,0)
+        nim@"srow_z" <- oro.nifti::pixdim(nim)[4] * c(0,0,1,0)
     }
     ## rescale
     if (rescale) {
