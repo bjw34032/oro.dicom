@@ -9,7 +9,6 @@ See references.
 }
 \usage{
 parsePixelData(rawString, hdr, endian = "little", flipupdown = TRUE)
-parseSpectroscopyData(rawString, hdr, endian = "little")
 
 parseSpectroscopyData(rawString, hdr, endian = "little")
 }

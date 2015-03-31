@@ -3,6 +3,7 @@
 export(create3D)
 export(create4D)
 export(dec2base)
+export(dec2hex)
 export(dicom2analyze)
 export(dicom2nifti)
 export(dicomInfo)

@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2014, Brandon Whitcher
+## Copyright (c) 2010-2015, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@
 ## $Id: $
 ##
 
-
-
 #' Convert DICOM Header to Analyze
 #' 
 #' A subset of header information from DICOM is placed into Analyze 7.5 format.
@@ -52,7 +50,7 @@
 #' @param descrip DICOM header field(s) to be included in the \code{descrip}
 #' @param \dots Arguments to be passed to \code{anlz}
 #' @return An object of class \code{anlz}.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link[oro.nifti]{convert.datatype.anlz}},
 #' \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
 #' @references Analyze 7.5\cr \url{http://www.mayo.edu/bir/PDF/ANALYZE75.pdf}
@@ -121,8 +119,6 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
     return(aim)
 }
 
-
-
 #' Convert DICOM Header to NIfTI
 #' 
 #' A subset of header information from DICOM is placed into NIfTI-1 format.
@@ -152,7 +148,7 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
 #' for the \code{nifti} class object.
 #' @param \dots Arguments to be passed to \code{nifti}
 #' @return An object of class \code{nifti}.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link[oro.nifti]{convert.datatype}},
 #' \code{\link{dicom2analyze}}, \code{\link[oro.nifti]{nifti}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr

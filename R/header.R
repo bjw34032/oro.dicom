@@ -32,8 +32,6 @@
 ## $Id: $
 ##
 
-
-
 #' Construct Data Frame from DICOM Headers
 #' 
 #' A data frame is created given the valid DICOM fields provided by the user.
@@ -53,7 +51,7 @@
 #' display of intermediate processing steps.
 #' @return Data frame where the rows correspond to images and the columns
 #' correspond to the UNION of all DICOM fields across all files in the list.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @references Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 #' the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
 #' Software}, \bold{44} (6), 1--28.  \url{http://www.jstatsoft.org/v44/i06}
@@ -136,8 +134,6 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
   }
 }
 
-
-
 #' Extract Single Field from DICOM Headers
 #' 
 #' A particular DICOM field is extracted for a collection of DICOM headers.
@@ -154,7 +150,7 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
 #' @param inSequence Logical; whether or not to look into SequenceItem
 #' elements.
 #' @return Vector of values from the requested DICOM field.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{readDICOM}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
@@ -199,8 +195,6 @@ extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,
   return(out.vec)
 }
 
-
-
 #' Converts DICOM Header Field to a Matrix
 #' 
 #' Converts a vector of DICOM header information, assuming there are multiple
@@ -216,7 +210,7 @@ extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,
 #' @param byrow is a logical variable (default = \code{TRUE}) telling the
 #' routine to populate the matrix by rows then columns.
 #' @return Matrix with \code{length(hdr)} rows and \code{ncol} columns.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}, \code{\link{matrix}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
@@ -247,7 +241,7 @@ header2matrix <- function(hdr, ncol, sep=" ", byrow=TRUE) {
 #' field; e.g., using \code{extractHeader}.
 #' @param string is a character string to be matched with the DICOM header.
 #' @return A logical vector of length \code{length(hdr)}.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
@@ -262,8 +256,6 @@ matchHeader <- function(hdr, string) {
   ifelse(is.na(hdr), FALSE, regexpr(string, hdr, ignore.case=TRUE) > -1)
 }
 
-
-
 #' Write DICOM Table to ASCII File
 #' 
 #' A wrapper to \code{write.table} specifically for DICOM tables.
@@ -275,7 +267,7 @@ matchHeader <- function(hdr, string) {
 #' @param filename Name of the file to be created.
 #' @param ... Additional parameters to be passed to \code{write.table}.
 #' @return None.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{write.table}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
@@ -284,8 +276,6 @@ matchHeader <- function(hdr, string) {
 writeHeader <- function(dtable, filename, ...) {
   write.table(dtable, filename, quote=FALSE, sep="\t", ...)
 }
-
-
 
 #' Check String Against DICOM Header Field to Produce Error Message or NEXT
 #' 
@@ -305,7 +295,7 @@ writeHeader <- function(dtable, filename, ...) {
 #' @param heading is the HTML tag <H?> (default = \code{3}).
 #' @param numeric is the argument to be passed to \code{matchHeader}.
 #' @return An expression to be evaluated and HTML content.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}, \code{\link{matchHeader}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}

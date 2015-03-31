@@ -32,8 +32,6 @@
 ## $Id: $
 ##
 
-
-
 #' Convert Decimal to Base N Number in String
 #' 
 #' This function converts the nonnegative integer to the specified base.
@@ -44,12 +42,12 @@
 #' length of the character string.
 #' 
 #' @aliases dec2base dec2hex
-#' @usage dec2base(n, base, len=0) dec2hex(n, len=0)
+#' @usage dec2base(n, base, len=0)
 #' @param n Non-negative integer.
 #' @param base Number between 2 and 36.
 #' @param len Length of the character string.
 #' @return The returned argument is a string.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @keywords misc
 #' @examples
 #' 
@@ -66,7 +64,8 @@ dec2base <- function(n, base, len=0) {
   ## convert digits to symbols
   paste(symbols[digits + 1], collapse="")
 }
-
+#' @rdname dec2base
+#' @export dec2hex
 dec2hex <- function(n, len=0) {
   dec2base(n, 16, len)
 }

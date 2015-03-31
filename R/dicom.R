@@ -1,5 +1,5 @@
 ##
-## Copyright (c) 2010-2014, Brandon Whitcher
+## Copyright (c) 2010-2015, Brandon Whitcher
 ## All rights reserved.
 ## 
 ## Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,7 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
   list(hdr=headers, img=images)
 }
 #' @rdname readDICOM
-#' @export
+#' @export dicomSeparate
 dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
                           exclude=NULL, ...) {
   readDICOM(path, recursive=recursive, exclude=exclude, verbose=verbose,

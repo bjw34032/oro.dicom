@@ -67,7 +67,7 @@
 #' of characters of the format yyyy.mm.dd for this VR.
 #' 
 #' @aliases str2time str2date
-#' @usage str2time(tt, format.out) str2date(dd, format.in, format.out)
+#' @usage str2time(tt, format.out)
 #' @param tt TM field from a DICOM header.
 #' @param dd DA field from a DICOM header.
 #' @param format.in,format.out Appropriate formatting of input or output.
@@ -75,7 +75,7 @@
 #' text version of the time where colons have been inserted for readability.}
 #' \item{time}{Time in seconds from midnight.} for \dQuote{DA}, a simple
 #' character string.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{readDICOM}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}\cr
@@ -91,7 +91,7 @@ str2time <- function(tt, format.out="%02i:%02i:%08.5f") {
   list(txt = sprintf(format.out, hh, mm, ss), time = 3600*hh + 60*mm + ss)
 }
 #' @rdname str2time
-#' @export 
+#' @export str2date
 str2date <- function(dd, format.in="%Y%m%d", format.out="%d %b %Y") {
   format(as.Date(dd, format.in), format.out)
 }

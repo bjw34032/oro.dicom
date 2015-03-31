@@ -154,7 +154,7 @@ dicomHeader <- sequence <- NULL
   list(hdr = hdr, img = img)
 }
 #' @rdname readDICOMFile
-#' @export
+#' @export dicomInfo
 dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
                       DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
                       warn=-1, debug=FALSE) {
@@ -167,7 +167,7 @@ dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
   iconv(rawToChar(str.raw[str.raw != as.raw(0)]), to=to)
 }
 #' @rdname readDICOMFile
-#' @export
+#' @export parseDICOMHeader
 parseDICOMHeader <- function(rawString, sq.txt="", endian="little", 
                              verbose=FALSE) {
   ##
@@ -357,7 +357,6 @@ list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
 #' 
 #' @aliases parsePixelData parseSpectroscopyData
 #' @usage parsePixelData(rawString, hdr, endian = "little", flipupdown = TRUE)
-#' parseSpectroscopyData(rawString, hdr, endian = "little")
 #' @param rawString is a vector of \code{raw} values taken directly from the
 #' DICOM file.
 #' @param hdr is the list object of DICOM header information.
@@ -374,7 +373,7 @@ list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
 #' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
 #' @source See references.
 #' @keywords file
-#' @export
+#' @export parsePixelData
 parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
   columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
@@ -416,7 +415,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   return(imageData)
 }
 #' @rdname parsePixelData
-#' @export
+#' @export parseSpectroscopyData
 parseSpectroscopyData <- function(rawString, hdr, endian="little") {
   numberOfFrames <- as.numeric(with(hdr, value[name == "NumberOfFrames" & sequence == ""]))
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))

@@ -7,8 +7,6 @@
 \title{Orthogonal Planes}
 \usage{
 is.axial(imageOrientationPatient, axial = c("L","R","A","P"))
-is.coronal(imageOrientationPatient, coronal = c("L","R","H","F"))
-is.sagittal(imageOrientationPatient, sagittal = c("A","P","H","F"))
 
 is.coronal(imageOrientationPatient, coronal = c("L", "R", "H", "F"))
 
@@ -48,7 +46,7 @@ is.coronal(iop)
 is.sagittal(iop)
 }
 \author{
-Brandon Whitcher <\email{bjw34032@users.sourceforge.net}>
+Brandon Whitcher <\email{bwhitcher@gmail.com}>
 }
 \seealso{
 \code{\link{getOrientation}}

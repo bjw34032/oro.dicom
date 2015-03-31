@@ -59,7 +59,7 @@
 #' @return Anatomical direction shall be designated by the capital letters:
 #' \item{A}{anterior} \item{P}{posterior} \item{R}{right} \item{L}{left}
 #' \item{H}{head} \item{F}{foot}
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{swapDimension}}
 #' @references \url{http://www.dclunie.com/medical-image-faq/html/part2.html}
 #' @export getOrientation
@@ -108,7 +108,7 @@ getOrientation <- function(xyz, delta=0.0001) {
 #' because of the reslicing operation.  An additional attribute
 #' \dQuote{\code{pixdim}} is provided in order to facilitate conversion from
 #' DICOM to NIFTI/ANALYZE.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{dicom2nifti}}, \code{\link{getOrientation}}
 #' @keywords misc
 #' @export swapDimension
@@ -245,8 +245,6 @@ swapDimension <- function(img, dcm, digits=2) {
 #' 
 #' @aliases is.axial is.coronal is.sagittal
 #' @usage is.axial(imageOrientationPatient, axial = c("L","R","A","P"))
-#' is.coronal(imageOrientationPatient, coronal = c("L","R","H","F"))
-#' is.sagittal(imageOrientationPatient, sagittal = c("A","P","H","F"))
 #' @param imageOrientationPatient A vector of length six taken from the DICOM
 #' header field \dQuote{ImageOrientationPatient}.
 #' @param axial Characters that are valid in defining an \sQuote{axial} slice.
@@ -255,7 +253,7 @@ swapDimension <- function(img, dcm, digits=2) {
 #' @param sagittal Characters that are valid in defining a \sQuote{sagittal}
 #' slice.
 #' @return Logical value.
-#' @author Brandon Whitcher <\email{bjw34032@@users.sourceforge.net}>
+#' @author Brandon Whitcher <\email{bwhitcher@@gmail.com}>
 #' @seealso \code{\link{getOrientation}}
 #' @keywords misc
 #' @examples

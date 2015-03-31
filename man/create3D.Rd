@@ -88,7 +88,7 @@ image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
       main=paste("Slice", z, "from Siemens MOSAIC"))
 }
 \author{
-Brandon Whitcher \email{bjw34032@users.sourceforge.net}
+Brandon Whitcher \email{bwhitcher@gmail.com}
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr

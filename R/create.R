@@ -63,7 +63,7 @@
 #' determines whether or not to access the \code{InstanceNumber} field in the
 #' DICOM header to help order the slices.
 #' @return Multi-dimensional array of medical imaging data.
-#' @author Brandon Whitcher \email{bjw34032@@users.sourceforge.net}
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{array}}, \code{\link{readDICOM}},
 #' \code{\link{storage.mode}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
@@ -105,7 +105,7 @@
 #' image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 #'       main=paste("Slice", z, "from Siemens MOSAIC"))
 #' 
-#' @export
+#' @export create3D
 create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, sequence=FALSE) {
   if (pixelData) {
@@ -189,7 +189,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 #' @rdname create3D
-#' @export
+#' @export create4D
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL, instance=TRUE, sequence=FALSE) {
