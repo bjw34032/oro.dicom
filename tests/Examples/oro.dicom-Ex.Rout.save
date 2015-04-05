@@ -38,11 +38,6 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.5.0)
 > 
 > ### ** Examples
 > 
-> ## pixelData = TRUE
-> ## The DICOM image data are read from readDICOM()
-> ## Not run: 
-> ##D dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
-> ## End(Not run)
 > load(system.file("hk-40/hk40.RData", package="oro.dicom"))
 > dcmList <- hk40
 > dcmImage <- create3D(dcmList)
@@ -251,6 +246,9 @@ Warning in is.sagittal(iop) :
 > 
 > ### ** Examples
 > 
+> ## pixelData = TRUE
+> ## The DICOM image data are read from readDICOM()
+> 
 > ## Not run: 
 > ##D dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE)
 > ## End(Not run)
@@ -309,7 +307,7 @@ $time
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.146 0.041 3.185 0 0 
+Time elapsed:  3.023 0.036 3.056 0 0 
 > grDevices::dev.off()
 null device 
           1 

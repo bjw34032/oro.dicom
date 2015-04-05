@@ -2,8 +2,8 @@ Package: oro.dicom
 Version: 0.5.0
 Date: 2015-03-31
 Title: Rigorous - DICOM Input / Output
-Author: Brandon Whitcher
-Maintainer: Brandon Whitcher <bwhitcher@gmail.com>
+Authors@R: c(person("Brandon", "Whitcher", role = c("aut", "cre"),
+		     email = "bwhitcher@gmail.com"))
 Depends: 
   R (>= 2.14.0)
 Suggests: 
