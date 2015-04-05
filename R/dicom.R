@@ -41,7 +41,7 @@
 #' directory(ies).  If only a single file is specified in the path,
 #' \code{readDICOM} will read that file only.
 #' 
-#' @aliases readDICOM dicomSeparate
+#' @aliases readDICOM
 #' @usage readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
 #' counter, ...)
 #' @param path Path name to the DICOM directory.
@@ -105,11 +105,4 @@ readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
     close(tpb)
   }
   list(hdr=headers, img=images)
-}
-#' @rdname readDICOM
-#' @export dicomSeparate
-dicomSeparate <- function(path, verbose=FALSE, counter=100, recursive=TRUE,
-                          exclude=NULL, ...) {
-  readDICOM(path, recursive=recursive, exclude=exclude, verbose=verbose,
-            counter=counter, ...)
 }

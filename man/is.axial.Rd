@@ -46,7 +46,7 @@ is.coronal(iop)
 is.sagittal(iop)
 }
 \author{
-Brandon Whitcher <\email{bwhitcher@gmail.com}>
+Brandon Whitcher \email{bwhitcher@gmail.com}
 }
 \seealso{
 \code{\link{getOrientation}}

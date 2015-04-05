@@ -49,7 +49,7 @@
 #' content is allowed to start at the first byte and the four characters
 #' \sQuote{DICM} are not required at bytes 129-132.
 #' 
-#' @aliases parseDICOMHeader readDICOMFile dicomInfo
+#' @aliases parseDICOMHeader readDICOMFile
 #' @usage readDICOMFile(fname, endian = "little", flipud = TRUE, skipSequence =
 #' FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
 #' parseDICOMHeader(rawString, sq.txt = "", endian = "little", verbose = FALSE)
@@ -152,15 +152,6 @@ dicomHeader <- sequence <- NULL
   options(warn = oldwarn)
   ##
   list(hdr = hdr, img = img)
-}
-#' @rdname readDICOMFile
-#' @export dicomInfo
-dicomInfo <- function(fname, endian="little", flipud=TRUE, skip128=TRUE,
-                      DICM=TRUE, skipSequence=FALSE, pixelData=TRUE,
-                      warn=-1, debug=FALSE) {
-  readDICOMFile(fname, endian=endian, flipud=flipud, 
-                skipSequence=skipSequence, pixelData=pixelData,
-                warn=warn, debug=debug)
 }
 
 .rawToCharWithEmbeddedNuls <- function(str.raw, to="UTF-8") {

@@ -253,7 +253,7 @@ swapDimension <- function(img, dcm, digits=2) {
 #' @param sagittal Characters that are valid in defining a \sQuote{sagittal}
 #' slice.
 #' @return Logical value.
-#' @author Brandon Whitcher <\email{bwhitcher@@gmail.com}>
+#' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{getOrientation}}
 #' @keywords misc
 #' @examples

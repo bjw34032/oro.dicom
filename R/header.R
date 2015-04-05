@@ -158,9 +158,9 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
 #' @examples
 #' 
 #' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-#' (seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
-#'                                     numeric=FALSE))
-#' (IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE))
+#' seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
+#'                                     numeric=FALSE)
+#' IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 #' 
 #' @export extractHeader
 extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,

@@ -51,7 +51,7 @@
 #' @keywords misc
 #' @examples
 #' 
-#' (x <- dec2base(23, 2))
+#' x <- dec2base(23, 2)
 #' 
 #' @export dec2base
 dec2base <- function(n, base, len=0) {
