@@ -39,8 +39,6 @@
 #' 
 #' 
 #' @aliases create3D create4D
-#' @usage create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-#' mosaic = FALSE, mosaicXY = NULL, sequence = FALSE) 
 #' @param dcm is the DICOM list structure (if \code{pixelData} = \code{TRUE})
 #' or the DICOM header information (if \code{pixelData} = \code{FALSE}).
 #' @param mode is a valid character string for \code{storage.mode}.
@@ -70,11 +68,6 @@
 #' \url{http://medical.nema.org}
 #' @examples
 #' 
-#' ## pixelData = TRUE
-#' ## The DICOM image data are read from readDICOM()
-#' \dontrun{
-#' dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
-#' }
 #' load(system.file("hk-40/hk40.RData", package="oro.dicom"))
 #' dcmList <- hk40
 #' dcmImage <- create3D(dcmList)

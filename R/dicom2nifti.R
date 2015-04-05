@@ -38,8 +38,6 @@
 #' 
 #' See the references.
 #' 
-#' @usage dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3, descrip =
-#' "SeriesDescription", ...)
 #' @param dcm DICOM object containing both header and image information.
 #' @param datatype is an integer that denotes the type of data contained in
 #' each voxel.  See \code{convert.datatype.anlz} or the ANALYZE documentation
@@ -125,8 +123,6 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
 #' 
 #' See the references.
 #' 
-#' @usage dicom2nifti(dcm, datatype = 4, units = c("mm","sec"), rescale =
-#' FALSE, reslice = TRUE, qform = TRUE, sform = TRUE, DIM = 3, descrip =
 #' "SeriesDescription", aux.file = NULL, ...)
 #' @param dcm DICOM object containing both header and image information.
 #' @param datatype is an integer that denotes the type of data contained in

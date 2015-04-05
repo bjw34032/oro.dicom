@@ -67,7 +67,6 @@
 #' of characters of the format yyyy.mm.dd for this VR.
 #' 
 #' @aliases str2time str2date
-#' @usage str2time(tt, format.out)
 #' @param tt TM field from a DICOM header.
 #' @param dd DA field from a DICOM header.
 #' @param format.in,format.out Appropriate formatting of input or output.
@@ -80,6 +79,12 @@
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}\cr
 #' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
+#' 
+#' @examples 
+#' 
+#' str2date("19930822")
+#' str2time("112308")
+#' 
 #' @keywords misc
 #' @export str2time
 str2time <- function(tt, format.out="%02i:%02i:%08.5f") {

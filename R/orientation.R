@@ -98,7 +98,6 @@ getOrientation <- function(xyz, delta=0.0001) {
 #' orthographic viewing is standardized.
 #' 
 #' 
-#' @usage swapDimension(img, dcm, digits=2)
 #' @param img Multidimensional array (assumed to be three-dimensional only).
 #' @param dcm DICOM header/image object associated with the multidimensional
 #' array.
@@ -244,7 +243,6 @@ swapDimension <- function(img, dcm, digits=2) {
 #' 
 #' 
 #' @aliases is.axial is.coronal is.sagittal
-#' @usage is.axial(imageOrientationPatient, axial = c("L","R","A","P"))
 #' @param imageOrientationPatient A vector of length six taken from the DICOM
 #' header field \dQuote{ImageOrientationPatient}.
 #' @param axial Characters that are valid in defining an \sQuote{axial} slice.
@@ -259,15 +257,13 @@ swapDimension <- function(img, dcm, digits=2) {
 #' @examples
 #' 
 #' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-#' iop <-
-#'   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+#' iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 #' is.axial(iop)
 #' is.coronal(iop)
 #' is.sagittal(iop)
 #' 
 #' x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-#' iop <-
-#'   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+#' iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 #' is.axial(iop)
 #' is.coronal(iop)
 #' is.sagittal(iop)

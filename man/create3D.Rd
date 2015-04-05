@@ -6,7 +6,7 @@
 \title{Create Arrays from DICOM Headers/Images}
 \usage{
 create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
+  mosaic = FALSE, mosaicXY = NULL, sequence = FALSE)
 
 create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
   mosaic = FALSE, mosaicXY = NULL, nslices = NULL, ntimes = NULL,
@@ -52,11 +52,6 @@ A DICOM list structure is used to produce a multi-dimensional array
 representing a single acquisition of medical imaging data.
 }
 \examples{
-## pixelData = TRUE
-## The DICOM image data are read from readDICOM()
-\dontrun{
-dcmList <- readDICOM(system.file("hk-40", package="oro.dicom"))
-}
 load(system.file("hk-40/hk40.RData", package="oro.dicom"))
 dcmList <- hk40
 dcmImage <- create3D(dcmList)

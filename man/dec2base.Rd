@@ -5,7 +5,7 @@
 \alias{dec2hex}
 \title{Convert Decimal to Base N Number in String}
 \usage{
-dec2base(n, base, len=0)
+dec2base(n, base, len = 0)
 
 dec2hex(n, len = 0)
 }

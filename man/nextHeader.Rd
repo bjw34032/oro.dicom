@@ -5,7 +5,7 @@
 \title{Check String Against DICOM Header Field to Produce Error Message or NEXT}
 \usage{
 nextHeader(dcm, string, reference, str.warning, htmlfile = NULL,
-heading = 3, numeric = FALSE)
+  heading = 3, numeric = FALSE)
 }
 \arguments{
 \item{dcm}{is the DICOM list structure.}

@@ -5,7 +5,7 @@
 \alias{str2time}
 \title{Convert DICOM Time/Date Entry}
 \usage{
-str2time(tt, format.out)
+str2time(tt, format.out = "\%02i:\%02i:\%08.5f")
 
 str2date(dd, format.in = "\%Y\%m\%d", format.out = "\%d \%b \%Y")
 }
@@ -55,6 +55,10 @@ Example: \describe{ \item{1.}{19930822 would represent August 22, 1993.} }
 Notes: For reasons of backward compatibility with versions of this standard
 prior to V3.0, it is recommended that implementations also support a string
 of characters of the format yyyy.mm.dd for this VR.
+}
+\examples{
+str2date("19930822")
+str2time("112308")
 }
 \author{
 Brandon Whitcher \email{bwhitcher@gmail.com}

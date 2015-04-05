@@ -37,8 +37,6 @@
 #' A data frame is created given the valid DICOM fields provided by the user.
 #' 
 #' 
-#' @usage dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort =
-#' TRUE, verbose = FALSE, debug = FALSE)
 #' @param hdrs List object of DICOM headers.
 #' @param stringsAsFactors Logical variable to be passed to \code{data.frame}.
 #' @param collapse Character string used to \code{paste} DICOM group, element
@@ -141,8 +139,6 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
 #' The DICOM field is extracted from each DICOM header and placed into a
 #' vector.
 #' 
-#' @usage extractHeader(hdrs, string, numeric = TRUE, names = FALSE, inSequence
-#' = TRUE)
 #' @param hdrs List object of DICOM headers.
 #' @param string DICOM field name.
 #' @param numeric Logical; values are converted to numbers when \code{TRUE}.
@@ -158,8 +154,7 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
 #' @examples
 #' 
 #' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-#' seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
-#'                                     numeric=FALSE)
+#' seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
 #' IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 #' 
 #' @export extractHeader
@@ -201,7 +196,6 @@ extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,
 #' entries per element of the vector, into a matrix.
 #' 
 #' 
-#' @usage header2matrix(hdr, ncol, sep = " ", byrow = TRUE)
 #' @param hdr is the result from extracting information from a DICOM header
 #' field; e.g., using \code{extractHeader}.
 #' @param ncol is the number of columns.
@@ -236,7 +230,6 @@ header2matrix <- function(hdr, ncol, sep=" ", byrow=TRUE) {
 #' character strings with the DICOM header information.
 #' 
 #' 
-#' @usage matchHeader(hdr, string)
 #' @param hdr is the result from extracting information from a DICOM header
 #' field; e.g., using \code{extractHeader}.
 #' @param string is a character string to be matched with the DICOM header.
@@ -262,7 +255,6 @@ matchHeader <- function(hdr, string) {
 #' 
 #' This function is a straightforward wrapper to \code{write.table}.
 #' 
-#' @usage writeHeader(dtable, filename, ...)
 #' @param dtable The DICOM table.
 #' @param filename Name of the file to be created.
 #' @param ... Additional parameters to be passed to \code{write.table}.
@@ -283,8 +275,6 @@ writeHeader <- function(dtable, filename, ...) {
 #' lackthereof) contained in the DICOM header.
 #' 
 #' 
-#' @usage nextHeader(dcm, string, reference, str.warning, htmlfile = NULL,
-#' heading = 3, numeric = FALSE)
 #' @param dcm is the DICOM list structure.
 #' @param string is a character string to be matched with the DICOM header.
 #' @param reference is the scalar/vector of character strings to check against

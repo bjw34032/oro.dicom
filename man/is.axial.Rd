@@ -6,7 +6,7 @@
 \alias{is.sagittal}
 \title{Orthogonal Planes}
 \usage{
-is.axial(imageOrientationPatient, axial = c("L","R","A","P"))
+is.axial(imageOrientationPatient, axial = c("L", "R", "A", "P"))
 
 is.coronal(imageOrientationPatient, coronal = c("L", "R", "H", "F"))
 
@@ -32,15 +32,13 @@ Functions to test the orientation for a single slice.
 }
 \examples{
 x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-iop <-
-  header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 is.axial(iop)
 is.coronal(iop)
 is.sagittal(iop)
 
 x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-iop <-
-  header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 is.axial(iop)
 is.coronal(iop)
 is.sagittal(iop)

@@ -5,9 +5,8 @@
 \alias{readDICOMFile}
 \title{Read Single DICOM File}
 \usage{
-readDICOMFile(fname, endian = "little", flipud = TRUE, skipSequence =
-FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
-parseDICOMHeader(rawString, sq.txt = "", endian = "little", verbose = FALSE)
+readDICOMFile(fname, endian = "little", flipud = TRUE,
+  skipSequence = FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
 
 parseDICOMHeader(rawString, sq.txt = "", endian = "little",
   verbose = FALSE)

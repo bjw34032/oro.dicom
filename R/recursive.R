@@ -50,9 +50,6 @@
 #' \sQuote{DICM} are not required at bytes 129-132.
 #' 
 #' @aliases parseDICOMHeader readDICOMFile
-#' @usage readDICOMFile(fname, endian = "little", flipud = TRUE, skipSequence =
-#' FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
-#' parseDICOMHeader(rawString, sq.txt = "", endian = "little", verbose = FALSE)
 #' @param fname is the file name of the DICOM image (with suffix).
 #' @param endian is the endian-ness of the file (default is \code{"little"}).
 #' @param flipud is a logical variable for vertical flipping of the image
@@ -97,7 +94,6 @@
 #' 
 #' @export readDICOMFile
 readDICOMFile <- function(fname, endian="little", flipud=TRUE, 
-                          ## skipFirst128=TRUE, DICM=TRUE, 
                           skipSequence=FALSE, pixelData=TRUE, 
                           warn=-1, debug=FALSE) {
   ## Warnings?
@@ -347,7 +343,6 @@ list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
 #' and calls itself to parse each segment.
 #' 
 #' @aliases parsePixelData parseSpectroscopyData
-#' @usage parsePixelData(rawString, hdr, endian = "little", flipupdown = TRUE)
 #' @param rawString is a vector of \code{raw} values taken directly from the
 #' DICOM file.
 #' @param hdr is the list object of DICOM header information.

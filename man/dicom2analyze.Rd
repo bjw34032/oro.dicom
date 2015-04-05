@@ -4,8 +4,8 @@
 \alias{dicom2analyze}
 \title{Convert DICOM Header to Analyze}
 \usage{
-dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3, descrip =
-"SeriesDescription", ...)
+dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3,
+  descrip = "SeriesDescription", ...)
 }
 \arguments{
 \item{dcm}{DICOM object containing both header and image information.}

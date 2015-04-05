@@ -4,8 +4,8 @@
 \alias{extractHeader}
 \title{Extract Single Field from DICOM Headers}
 \usage{
-extractHeader(hdrs, string, numeric = TRUE, names = FALSE, inSequence
-= TRUE)
+extractHeader(hdrs, string, numeric = TRUE, names = FALSE,
+  inSequence = TRUE)
 }
 \arguments{
 \item{hdrs}{List object of DICOM headers.}
@@ -31,8 +31,7 @@ vector.
 }
 \examples{
 x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
-                                    numeric=FALSE)
+seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
 IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 }
 \author{

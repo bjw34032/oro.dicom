@@ -42,8 +42,6 @@
 #' \code{readDICOM} will read that file only.
 #' 
 #' @aliases readDICOM
-#' @usage readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
-#' counter, ...)
 #' @param path Path name to the DICOM directory.
 #' @param recursive Search recursively down from the given path name.
 #' @param exclude Exclude file names containing this character string.
@@ -64,9 +62,11 @@
 #' @keywords file
 #' @examples
 #' 
+#' ## pixelData = TRUE
+#' ## The DICOM image data are read from readDICOM()
+#'
 #' \dontrun{
-#' dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
-#'                        verbose=TRUE)
+#' dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE)
 #' }
 #' 
 #' @export readDICOM

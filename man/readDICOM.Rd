@@ -5,7 +5,7 @@
 \title{Read All DICOM Files in a Directory}
 \usage{
 readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
-counter, ...)
+  counter, ...)
 }
 \arguments{
 \item{path}{Path name to the DICOM directory.}
@@ -35,9 +35,11 @@ directory(ies).  If only a single file is specified in the path,
 \code{readDICOM} will read that file only.
 }
 \examples{
+## pixelData = TRUE
+## The DICOM image data are read from readDICOM()
+
 \dontrun{
-dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
-                       verbose=TRUE)
+dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE)
 }
 }
 \author{

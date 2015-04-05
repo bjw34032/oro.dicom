@@ -154,8 +154,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.5.0)
 > ### ** Examples
 > 
 > x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> seriesDescription <- extractHeader(x$hdr, "SeriesDescription",
-+                                     numeric=FALSE)
+> seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
 > IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 > 
 > 
@@ -195,8 +194,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.5.0)
 > ### ** Examples
 > 
 > x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
-> iop <-
-+   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+> iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 > is.axial(iop)
 [1] FALSE
 > is.coronal(iop)
@@ -205,8 +203,7 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.5.0)
 [1] FALSE
 > 
 > x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
-> iop <-
-+   header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
+> iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 > is.axial(iop)
 Warning in is.axial(iop) :
   Oblique acquisition in ImageOrientationPatient.
@@ -255,8 +252,7 @@ Warning in is.sagittal(iop) :
 > ### ** Examples
 > 
 > ## Not run: 
-> ##D dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"),
-> ##D                        verbose=TRUE)
+> ##D dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE)
 > ## End(Not run)
 > 
 > 
@@ -284,11 +280,36 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> cleanEx()
+> nameEx("str2time")
+> ### * str2time
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: str2time
+> ### Title: Convert DICOM Time/Date Entry
+> ### Aliases: str2date str2time
+> ### Keywords: misc
+> 
+> ### ** Examples
+> 
+> str2date("19930822")
+[1] "22 Aug 1993"
+> str2time("112308")
+$txt
+[1] "11:23:08.00000"
+
+$time
+[1] 40988
+
+> 
+> 
+> 
 > ### * <FOOTER>
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  2.987 0.032 3.015 0 0 
+Time elapsed:  3.146 0.041 3.185 0 0 
 > grDevices::dev.off()
 null device 
           1 

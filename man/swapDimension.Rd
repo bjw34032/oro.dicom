@@ -4,7 +4,7 @@
 \alias{swapDimension}
 \title{Reslice Data Volume Using DICOM Header Fields}
 \usage{
-swapDimension(img, dcm, digits=2)
+swapDimension(img, dcm, digits = 2)
 }
 \arguments{
 \item{img}{Multidimensional array (assumed to be three-dimensional only).}

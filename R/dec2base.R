@@ -42,7 +42,6 @@
 #' length of the character string.
 #' 
 #' @aliases dec2base dec2hex
-#' @usage dec2base(n, base, len=0)
 #' @param n Non-negative integer.
 #' @param base Number between 2 and 36.
 #' @param len Length of the character string.
