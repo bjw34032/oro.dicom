@@ -147,7 +147,10 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       }
     }
     storage.mode(img) <- mode
-    imagePositionPatient <- cbind(X,Y,1:z)
+    imagePositionPatient <- cbind(X, Y, 1:z)
+    imageOrientationPatient <-
+      header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
+    imageOrientationPatient <- matrix(imageOrientationPatient, z, 6, byrow=TRUE)
   } else {
     ## Check if the DICOM list has length > 1
     Z <- ifelse(is.null(dim(dcm$img)), length(dcm$hdr), 1)
@@ -158,7 +161,12 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     if (any(is.na(imagePositionPatient))) {
       stop("Missing values detected in ImagePositionPatient.")
     }
-    movingDimensions <- apply(imagePositionPatient, 2,
+    imageOrientationPatient <-
+      header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
+    if (any(is.na(imageOrientationPatient))) {
+      stop("Missing values detected in ImageOrientationPatient.")
+    }
+      movingDimensions <- apply(imagePositionPatient, 2,
                               function(j) any(diff(j) != 0))
     if (sum(movingDimensions) != 1) {
       warning("ImagePositionPatient is moving in more than one dimension.")
@@ -173,12 +181,11 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
         }
     }
   }
-  ## imagePositionPatient <<- imagePositionPatient[iop.order,]
-  ## sliceLocation <<- sliceLocation[order(sliceLocation)]
   if (transpose) {
     img <- aperm(img, c(2,1,3))
   }
   attr(img, "ipp") <- imagePositionPatient
+  attr(img, "iop") <- imageOrientationPatient
   return(img)
 }
 #' @rdname create3D
@@ -272,7 +279,6 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
       warning("ImagePositionPatient indicates oblique slices, assuming transverse acquisition.")
       movingDimensions <- c(FALSE, FALSE, TRUE)
     }
-    ## print(movingDimensions)
     ## Guess number of slices
     if (is.null(nslices)) {
       nslices <- length(unique(imagePositionPatient[,movingDimensions]))
@@ -291,8 +297,6 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
     }
     img <- array(0, c(X,Y,nslices,Z/nslices))
     storage.mode(img) <- mode
-    ## cat("index =", fill=TRUE)
-    ## print(index)
     if (pixelData) {
       for (z in 1:Z) {
         zz <- (z - 1) %% nslices + 1
@@ -310,16 +314,6 @@ create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   if (transpose) {
     img <- aperm(img, c(2,1,3,4))
   }
-  ## patientPosition <- unique(extractHeader(dcm$hdr, "PatientPosition", FALSE))
-  ## if (! mosaic) {
-  ##   if (patientPosition == "FFS") {
-  ##     sliceLocation <- sliceLocation[order(sliceLocation)]
-  ##     img <- img[,,Z:1,]
-  ##     sliceLocation <<- rev(sliceLocation)
-  ##   } else {
-  ##     sliceLocation <<- sliceLocation[order(sliceLocation)]
-  ##   }
-  ## }
   attr(img, "ipp") <- imagePositionPatient
   return(img)
 }

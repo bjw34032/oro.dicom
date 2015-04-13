@@ -1,22 +1,22 @@
 ##
 ## Copyright (c) 2010, Brandon Whitcher
 ## All rights reserved.
-## 
+##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions are
 ## met:
-## 
+##
 ##     * Redistributions of source code must retain the above copyright
-##       notice, this list of conditions and the following disclaimer. 
+##       notice, this list of conditions and the following disclaimer.
 ##     * Redistributions in binary form must reproduce the above
 ##       copyright notice, this list of conditions and the following
 ##       disclaimer in the documentation and/or other materials provided
 ##       with the distribution.
 ##     * Neither the name of Rigorous Analytics Ltd. nor the names of
-##       its contributors may be used to endorse or promote products 
-##       derived from this software without specific prior written 
+##       its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written
 ##       permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,10 +33,10 @@
 ##
 
 #' Convert Direction Cosines to Anatomical Direction
-#' 
+#'
 #' For cross-sectional DICOM images the orientation must be derived from the
 #' Image Orientation (Patient) direction cosines.
-#' 
+#'
 #' C.7.6.2.1.1 Image Position And Image Orientation.  The Image Position
 #' (0020,0032) specifies the x, y, and z coordinates of the upper left hand
 #' corner of the image; it is the center of the first voxel transmitted.  Image
@@ -51,7 +51,7 @@
 #' system; i.e., the vector cross product of a unit vector along the positive
 #' x-axis and a unit vector along the positive y-axis is equal to a unit vector
 #' along the positive z-axis.
-#' 
+#'
 #' @usage getOrientation(xyz, delta = 0.0001)
 #' @param xyz is a vector of direction cosines from
 #' \dQuote{ImageOrientationPatient} (0020,0037).
@@ -92,12 +92,11 @@ getOrientation <- function(xyz, delta=0.0001) {
 }
 
 #' Reslice Data Volume Using DICOM Header Fields
-#' 
+#'
 #' The input data volume (assumed to be three-dimensional) is re-sliced so that
 #' each slice is in the axial plane.  Orientation is preserved so that
 #' orthographic viewing is standardized.
-#' 
-#' 
+#'
 #' @param img Multidimensional array (assumed to be three-dimensional only).
 #' @param dcm DICOM header/image object associated with the multidimensional
 #' array.
@@ -119,6 +118,9 @@ swapDimension <- function(img, dcm, digits=2) {
   }
   imageOrientationPatient <-
     header2matrix(extractHeader(dcm$hdr, "ImageOrientationPatient", FALSE), 6)
+  if (nrow(imageOrientationPatient) != oro.nifti::nsli(img)) {
+    imageOrientationPatient <- attributes(img)$iop
+  }
   ## Ensure all rows of imageOrientationPatient are identical!
   pixelSpacing <-
     header2matrix(extractHeader(dcm$hdr, "PixelSpacing", FALSE), 2)
@@ -138,7 +140,7 @@ swapDimension <- function(img, dcm, digits=2) {
   ld <- as.numeric(length(dim(img)))
   ## AXIAL
   if (is.axial(imageOrientationPatient)) {
-    if (unlist(strsplit(first.row,""))[1] %in% c("A","P")) {
+    if (unlist(strsplit(first.row, ""))[1] %in% c("A","P")) {
       if (ld == 3) {
         index <- c(2,1,3)
       }
@@ -148,25 +150,29 @@ swapDimension <- function(img, dcm, digits=2) {
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (unlist(strsplit(first.row,""))[1] == "R") {
-      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
+    if (unlist(strsplit(first.row, ""))[1] == "R") {
+      img <- switch(as.character(ld),
+                    "3" = img[X:1, , ],
+                    "4" = img[X:1, , , ],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (unlist(strsplit(first.col,""))[1] == "A") {
-      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
+    if (unlist(strsplit(first.col, ""))[1] == "A") {
+      img <- switch(as.character(ld),
+                    "3" = img[, Y:1, ],
+                    "4" = img[, Y:1, , ])
     }
     ## The z-axis is increasing toward the HEAD of the patient.
-    z.index <- order(imagePositionPatient[,3])
+    z.index <- order(imagePositionPatient[, 3])
     if (ld == 3) {
-      img <- img[,,z.index]
+      img <- img[, , z.index]
     }
     if (ld == 4) {
-      img <- img[,,Z:1,]
+      img <- img[, , Z:1, ]
     }
   }
   ## CORONAL
   if (is.coronal(imageOrientationPatient)) {
-    if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
+    if (unlist(strsplit(first.row, ""))[1] %in% c("H","F")) {
       if (ld == 3) {
         index <- c(2,1,3)
       }
@@ -176,21 +182,25 @@ swapDimension <- function(img, dcm, digits=2) {
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (unlist(strsplit(first.row,""))[1] == "R") {
-      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
+    if (unlist(strsplit(first.row, ""))[1] == "R") {
+      img <- switch(as.character(ld),
+                    "3" = img[X:1, , ],
+                    "4" = img[X:1, , , ],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (unlist(strsplit(first.col,""))[1] == "H") {
-      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
+    if (unlist(strsplit(first.col, ""))[1] == "H") {
+      img <- switch(as.character(ld),
+                    "3" = img[, Y:1, ],
+                    "4" = img[, Y:1, , ])
     }
     ## The y-axis is increasing to the posterior side of the patient.
-    z.index <- order(imagePositionPatient[,2])
+    z.index <- order(imagePositionPatient[, 2])
     if (ld == 3) {
-      img <- img[,,z.index]
+      img <- img[, , z.index]
       index <- c(1,3,2)
     }
     if (ld == 4) {
-      img <- img[,,Z:1,]
+      img <- img[, , Z:1, ]
       index <- c(1,3,2,4)
     }
     img <- aperm(img, index) # re-organize orthogonal views
@@ -198,7 +208,7 @@ swapDimension <- function(img, dcm, digits=2) {
   }
   ## SAGITTAL
   if (is.sagittal(imageOrientationPatient)) {
-    if (unlist(strsplit(first.row,""))[1] %in% c("H","F")) {
+    if (unlist(strsplit(first.row, ""))[1] %in% c("H","F")) {
       if (ld == 3) {
         index <- c(2,1,3)
       }
@@ -208,41 +218,51 @@ swapDimension <- function(img, dcm, digits=2) {
       img <- aperm(img, index)
       pixdim <- pixdim[index[1:3]]
     }
-    if (unlist(strsplit(first.row,""))[1] == "P") {
-      img <- switch(as.character(ld), "3" = img[X:1,,], "4" = img[X:1,,,],
+    if (unlist(strsplit(first.row, ""))[1] == "P") {
+      img <- switch(as.character(ld),
+                    "3" = img[X:1, , ],
+                    "4" = img[X:1, , , ],
                     stop("Dimension \"DIM\" incorrectly specified."))
     }
-    if (unlist(strsplit(first.col,""))[1] == "H") {
-      img <- switch(as.character(ld), "3" = img[,Y:1,], "4" = img[,Y:1,,])
+    if (unlist(strsplit(first.col, ""))[1] == "H") {
+      img <- switch(as.character(ld),
+                    "3" = img[, Y:1, ],
+                    "4" = img[, Y:1, , ])
     }
     ## The x-axis is increasing to the left hand side of the patient.
-    z.index <- order(imagePositionPatient[,1])
+    z.index <- order(imagePositionPatient[, 1])
     if (ld == 3) {
-      img <- img[,,z.index]
+      img <- img[, , z.index]
       index <- c(3,1,2)
     }
     if (ld == 4) {
-      img <- img[,,Z:1,]
+      img <- img[, , Z:1, ]
       index <- c(3,1,2,4)
     }
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index[1:3]]
   }
-  imagePositionPatient <- imagePositionPatient[z.index,]
+  cat("HERE!")
+  imageOrientationPatient <- imageOrientationPatient[z.index, ]
+  if (any(is.na(imageOrientationPatient))) {
+    stop("Missing values are present in ImageOrientationPatient.")
+  }
+  imagePositionPatient <- imagePositionPatient[z.index, ]
   if (any(is.na(imagePositionPatient))) {
     stop("Missing values are present in ImagePositionPatient.")
   }
-  attr(img,"ipp") <- imagePositionPatient
-  attr(img,"pixdim") <- pixdim
+  attr(img, "ipp") <- imagePositionPatient
+  attr(img, "iop") <- imageOrientationPatient
+  attr(img, "pixdim") <- pixdim
   return(img)
 }
 
 #' Orthogonal Planes
-#' 
+#'
 #' Functions to test the orientation for a single slice.
-#' 
-#' 
+#'
 #' @aliases is.axial is.coronal is.sagittal
+#' @name orthogonal-planes
 #' @param imageOrientationPatient A vector of length six taken from the DICOM
 #' header field \dQuote{ImageOrientationPatient}.
 #' @param axial Characters that are valid in defining an \sQuote{axial} slice.
@@ -255,23 +275,24 @@ swapDimension <- function(img, dcm, digits=2) {
 #' @seealso \code{\link{getOrientation}}
 #' @keywords misc
 #' @examples
-#' 
+#'
 #' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
 #' iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 #' is.axial(iop)
 #' is.coronal(iop)
 #' is.sagittal(iop)
-#' 
+#'
 #' x <- readDICOMFile(system.file("dcm/Spine1.dcm", package="oro.dicom"))
 #' iop <- header2matrix(extractHeader(x$hdr, "ImageOrientationPatient", FALSE), 6)
 #' is.axial(iop)
 #' is.coronal(iop)
 #' is.sagittal(iop)
-#' 
+#'
+#' @rdname is.axial
 #' @export
 is.axial <- function(imageOrientationPatient, axial=c("L","R","A","P")) {
-  first.row <- getOrientation(imageOrientationPatient[1,1:3])
-  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  first.row <- getOrientation(imageOrientationPatient[1, 1:3])
+  first.col <- getOrientation(imageOrientationPatient[1, 4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     warning("Oblique acquisition in ImageOrientationPatient.")
   }
@@ -282,8 +303,8 @@ is.axial <- function(imageOrientationPatient, axial=c("L","R","A","P")) {
 #' @export
 is.coronal <- function(imageOrientationPatient,
                        coronal=c("L","R","H","F")) {
-  first.row <- getOrientation(imageOrientationPatient[1,1:3])
-  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  first.row <- getOrientation(imageOrientationPatient[1, 1:3])
+  first.col <- getOrientation(imageOrientationPatient[1, 4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     warning("Oblique acquisition in ImageOrientationPatient.")
   }
@@ -294,8 +315,8 @@ is.coronal <- function(imageOrientationPatient,
 #' @export
 is.sagittal <- function(imageOrientationPatient,
                         sagittal=c("A","P","H","F")) {
-  first.row <- getOrientation(imageOrientationPatient[1,1:3])
-  first.col <- getOrientation(imageOrientationPatient[1,4:6])
+  first.row <- getOrientation(imageOrientationPatient[1, 1:3])
+  first.col <- getOrientation(imageOrientationPatient[1, 4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     warning("Oblique acquisition in ImageOrientationPatient.")
   }

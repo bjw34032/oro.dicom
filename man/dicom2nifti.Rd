@@ -47,8 +47,6 @@ A subset of header information from DICOM is placed into NIfTI-1 format.
 }
 \details{
 See the references.
-
-"SeriesDescription", aux.file = NULL, ...)
 }
 \examples{
 \dontrun{
