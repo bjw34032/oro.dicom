@@ -5,7 +5,7 @@
 \alias{readDICOMFile}
 \title{Read Single DICOM File}
 \usage{
-readDICOMFile(fname, endian = "little", flipud = TRUE,
+readDICOMFile(fname, boffset = NULL, endian = "little", flipud = TRUE,
   skipSequence = FALSE, pixelData = TRUE, warn = -1, debug = FALSE)
 
 parseDICOMHeader(rawString, sq.txt = "", endian = "little",
@@ -13,6 +13,10 @@ parseDICOMHeader(rawString, sq.txt = "", endian = "little",
 }
 \arguments{
 \item{fname}{is the file name of the DICOM image (with suffix).}
+
+\item{boffset}{is the number of bytes to skip at the beginning of the DICOM
+file (default = \code{NULL} which lets the code determine the starting
+point).}
 
 \item{endian}{is the endian-ness of the file (default is \code{"little"}).}
 
