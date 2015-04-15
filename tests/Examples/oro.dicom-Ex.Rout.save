@@ -181,9 +181,9 @@ oro.dicom: Rigorous - DICOM Input / Output (version = 0.5.0)
 > 
 > flush(stderr()); flush(stdout())
 > 
-> ### Name: is.axial
+> ### Name: orthogonal-planes
 > ### Title: Orthogonal Planes
-> ### Aliases: is.axial is.coronal is.sagittal
+> ### Aliases: is.axial is.coronal is.sagittal orthogonal-planes
 > ### Keywords: misc
 > 
 > ### ** Examples
@@ -307,7 +307,7 @@ $time
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.023 0.036 3.056 0 0 
+Time elapsed:  3.044 0.027 3.076 0 0 
 > grDevices::dev.off()
 null device 
           1 
