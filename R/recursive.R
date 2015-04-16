@@ -304,35 +304,35 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
         }
       }
     }
-if (verbose) {
-  cat("", value, sq.txt, sep="\t", fill=TRUE)
-}
-dicomHeaderRow <- c(group, element, dic$name, dic$code, length, value, sq.txt)
-dicomHeader <- rbind(dicomHeader, dicomHeaderRow)
-if (group == "FFFE" && element == "E0DD") { # SequenceDelimitationItem
-  dseek <- strseek
-  break
-}
-if (VR$code == "SQ") {
-  groupElement <- paste("(", group, ",", element, ")", sep="")
-  if (length > 0) {
-    ## Pass length of bytes provided explicitly by the sequence tag
-    dcm <- parseDICOMHeader(rawString[strseek + 1:length],
-                            paste(sq.txt, groupElement),
-                            verbose=verbose)
-  } else {
-    ## Pass remaining bytes and look for SequenceDelimitationItem tag
-    dcm <- parseDICOMHeader(rawString[(strseek + 1):length(rawString)],
-                            paste(sq.txt, groupElement),
-                            verbose=verbose)
-    length <- dcm$data.seek
+    if (verbose) {
+      cat("", value, sq.txt, sep="\t", fill=TRUE)
+    }
+    dicomHeaderRow <- c(group, element, dic$name, dic$code, length, value, sq.txt)
+    dicomHeader <- rbind(dicomHeader, dicomHeaderRow)
+    if (group == "FFFE" && element == "E0DD") { # SequenceDelimitationItem
+      dseek <- strseek
+      break
+    }
+    if (VR$code == "SQ") {
+      groupElement <- paste("(", group, ",", element, ")", sep="")
+      if (length > 0) {
+        ## Pass length of bytes provided explicitly by the sequence tag
+        dcm <- parseDICOMHeader(rawString[strseek + 1:length],
+                                paste(sq.txt, groupElement),
+                                verbose=verbose)
+      } else {
+        ## Pass remaining bytes and look for SequenceDelimitationItem tag
+        dcm <- parseDICOMHeader(rawString[(strseek + 1):length(rawString)],
+                                paste(sq.txt, groupElement),
+                                verbose=verbose)
+        length <- dcm$data.seek
+      }
+      dicomHeader <- rbind(dicomHeader, dcm$header)
+    }
+    strseek <- strseek + ifelse(length >= 0, length, 0)
   }
-  dicomHeader <- rbind(dicomHeader, dcm$header)
-}
-strseek <- strseek + ifelse(length >= 0, length, 0)
-  }
-list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
-     spectroscopy.data = spectroscopyData)
+  list(header = dicomHeader, pixel.data = pixelData, data.seek = dseek,
+       spectroscopy.data = spectroscopyData)
 }
 
 #' Parse DICOM Pixel or Spectroscopy Data
@@ -376,7 +376,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     guess <- 1
     stop(paste("Number of bytes in PixelData not specified; guess =", guess))
   }
-  pixelRepresentation <- as.numeric(with(hdr, length[name == "PixelRepresentation" & sequence == ""]))
+  pixelRepresentation <- as.numeric(with(hdr, value[name == "PixelRepresentation" & sequence == ""]))
   signed <- ifelse(pixelRepresentation == 1, TRUE, FALSE)
   imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
                        signed=signed, endian=endian)
