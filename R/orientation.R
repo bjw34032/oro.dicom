@@ -242,7 +242,6 @@ swapDimension <- function(img, dcm, digits=2) {
     img <- aperm(img, index) # re-organize orthogonal views
     pixdim <- pixdim[index[1:3]]
   }
-  cat("HERE!")
   imageOrientationPatient <- imageOrientationPatient[z.index, ]
   if (any(is.na(imageOrientationPatient))) {
     stop("Missing values are present in ImageOrientationPatient.")
