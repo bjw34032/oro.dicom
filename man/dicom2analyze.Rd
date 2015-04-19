@@ -45,7 +45,7 @@ orthographic(dcmAnlz)
 Brandon Whitcher \email{bwhitcher@gmail.com}
 }
 \references{
-Analyze 7.5\cr \url{http://www.mayo.edu/bir/PDF/ANALYZE75.pdf}
+Analyze 7.5\cr \url{https://rportal.mayo.edu/bir/ANALYZE75.pdf}
 
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
