@@ -373,36 +373,45 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
   length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
   if (length <= 0) {
-    guess <- 1
-    stop(paste("Number of bytes in PixelData not specified; guess =", guess))
+    transferSyntaxUID <- with(hdr, length[name == "TransferSyntaxuID" & sequence == ""])
+    if (grepl("1.2.840.10008.1.2.4", transferSyntaxUID)) {
+      stop("JPEG compression is not currently supported.")
+    }
+    length <- rows * columns # length(rawString)
+    warning(paste("Number of bytes in PixelData not specified; guess =", length))
+    warning(paste("Length of raw vector =", length(rawString)))
   }
-  pixelRepresentation <- as.numeric(with(hdr, value[name == "PixelRepresentation" & sequence == ""]))
+  pixelRepresentation <- 
+    as.numeric(with(hdr, value[name == "PixelRepresentation" & sequence == ""]))
   signed <- ifelse(pixelRepresentation == 1, TRUE, FALSE)
   imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
                        signed=signed, endian=endian)
   if (length == rows * columns * bytes) { # 2D PixelData
     imageData <-  t(matrix(imageData[1:(columns * rows)], columns, rows))
     if (flipupdown) {
-      imageData <- imageData[rows:1, ]
+      imageData <- imageData[rows:1,]
     }
   } else { # 3D PixelData
     k <- length / rows / columns / bytes
     if (k == trunc(k)) {
       warning("3D DICOM file detected!")
-      samplesPerPixel <- with(hdr, value[grepl("SamplesPerPixel", name, ignore.case=TRUE) & sequence == ""])
+      samplesPerPixel <- 
+        with(hdr, value[grepl("SamplesPerPixel", name, ignore.case=TRUE) & sequence == ""])
       if (samplesPerPixel == "1") { # && planarConfiguration == 0) {
         imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
         imageData <- aperm(imageData, c(2,1,3))
         if (flipupdown) {
-          imageData <- imageData[rows:1, , ]
+          imageData <- imageData[rows:1,,]
         }
       } else {
-        planarConfiguration <- with(hdr, value[grepl("PlanarConfiguration", name, ignore.case=TRUE) & sequence == ""])
-        if (planarConfiguration == "0")
-          stop("Color channels are interlaced")
+        planarConfiguration <- 
+          with(hdr, value[grepl("PlanarConfiguration", name, ignore.case=TRUE) & sequence == ""])
+        if (planarConfiguration == "0") {
+          stop("Color channels are interlaced.")
+        }
       }
     } else {
-      stop("Number of bytes in PixelData does not match dimensions of image")
+      stop("Number of bytes in PixelData does not match dimensions of image.")
     }
   }
   return(imageData)
