@@ -375,7 +375,13 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   if (length <= 0) {
     transferSyntaxUID <- with(hdr, length[name == "TransferSyntaxuID" & sequence == ""])
     if (grepl("1.2.840.10008.1.2.4", transferSyntaxUID)) {
-      stop("JPEG compression is not currently supported.")
+      stop("JPEG/MPEG compression is not currently supported.")
+    }
+    if (grepl("1.2.840.10008.1.2.5", transferSyntaxUID)) {
+      stop("RLE compression is not currently supported.")
+    }
+    if (grepl("1.2.840.10008.1.2.1.99", transferSyntaxUID)) {
+      stop("The deflate transfer syntax is not currently supported.")
     }
     length <- rows * columns # length(rawString)
     warning(paste("Number of bytes in PixelData not specified; guess =", length))
