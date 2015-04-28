@@ -8,6 +8,7 @@ sudo: required
 r_check_revdep: false
 r_binary_packages: 
   - hwriter 
+  - Rcurl
   - testthat
 apt_packages:
  - libcurl4-openssl-dev
