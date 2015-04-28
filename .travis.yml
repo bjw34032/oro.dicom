@@ -1,11 +1,16 @@
 # Sample .travis.yml for R projects
 
 language: r
+cran: cran.r-project.org
 warnings_are_errors: true
 sudo: required
 
+r_check_revdep: false
+r_binary_packages: 
+  - hwriter 
+  - testthat
 r_build_args: --compact-vignettes=gs+qpdf --resave-data
-r_check_args: 
+r_check_args: --as-cran
 
 notifications:
   email:
