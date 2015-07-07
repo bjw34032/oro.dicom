@@ -216,7 +216,7 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
       dic <- oro.dicom::dicom.dic[dictionaryIndex, ]
     }
     if (verbose) {
-      cat("#", group, element, dic$name, dic$code, sep="\t")
+      cat("#", strseek, group, element, dic$name, dic$code, sep="\t")
     }
     b56 <- .rawToCharWithEmbeddedNuls(rawString[strseek + 5:6])
     b78 <- readBin(rawString[strseek + 7:8], "integer", size=2, endian=endian)
@@ -387,7 +387,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     warning(paste("Number of bytes in PixelData not specified; guess =", length))
     warning(paste("Length of raw vector =", length(rawString)))
   }
-  pixelRepresentation <- 
+  pixelRepresentation <-
     as.numeric(with(hdr, value[name == "PixelRepresentation" & sequence == ""]))
   signed <- ifelse(pixelRepresentation == 1, TRUE, FALSE)
   imageData <- readBin(rawString[1:length], "integer", n=length, size=bytes,
@@ -401,7 +401,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
     k <- length / rows / columns / bytes
     if (k == trunc(k)) {
       warning("3D DICOM file detected!")
-      samplesPerPixel <- 
+      samplesPerPixel <-
         with(hdr, value[grepl("SamplesPerPixel", name, ignore.case=TRUE) & sequence == ""])
       if (samplesPerPixel == "1") { # && planarConfiguration == 0) {
         imageData <- array(imageData[1:(columns * rows * k)], c(columns, rows, k))
@@ -410,7 +410,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
           imageData <- imageData[rows:1,,]
         }
       } else {
-        planarConfiguration <- 
+        planarConfiguration <-
           with(hdr, value[grepl("PlanarConfiguration", name, ignore.case=TRUE) & sequence == ""])
         if (planarConfiguration == "0") {
           stop("Color channels are interlaced.")

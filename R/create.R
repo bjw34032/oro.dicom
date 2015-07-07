@@ -1,22 +1,22 @@
 ##
 ## Copyright (c) 2010-2014 Brandon Whitcher
 ## All rights reserved.
-## 
+##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions are
 ## met:
-## 
+##
 ##     * Redistributions of source code must retain the above copyright
-##       notice, this list of conditions and the following disclaimer. 
+##       notice, this list of conditions and the following disclaimer.
 ##     * Redistributions in binary form must reproduce the above
 ##       copyright notice, this list of conditions and the following
 ##       disclaimer in the documentation and/or other materials provided
 ##       with the distribution.
 ##     * Neither the name of Rigorous Analytics Ltd. nor the names of
-##       its contributors may be used to endorse or promote products 
-##       derived from this software without specific prior written 
+##       its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written
 ##       permission.
-## 
+##
 ## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ## "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 ## LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -33,11 +33,11 @@
 ##
 
 #' Create Arrays from DICOM Headers/Images
-#' 
+#'
 #' A DICOM list structure is used to produce a multi-dimensional array
 #' representing a single acquisition of medical imaging data.
-#' 
-#' 
+#'
+#'
 #' @aliases create3D create4D
 #' @param dcm is the DICOM list structure (if \code{pixelData} = \code{TRUE})
 #' or the DICOM header information (if \code{pixelData} = \code{FALSE}).
@@ -53,6 +53,9 @@
 #' to determine the (x,y) values.
 #' @param sequence is a logical variable (default = \code{FALSE}) on whether to
 #' look in SequenceItem entries for DICOM header information.
+#' @param boffset is the number of bytes to skip at the beginning of the DICOM
+#' file (default = \code{NULL} which lets the code determine the starting
+#' point).
 #' @param nslices is the third dimension of the array.  Attempts are made to
 #' determine this number from the DICOM data.
 #' @param ntimes is the fourth dimension of the array.  Attempts are made to
@@ -67,7 +70,7 @@
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
 #' @examples
-#' 
+#'
 #' load(system.file("hk-40/hk40.RData", package="oro.dicom"))
 #' dcmList <- hk40
 #' dcmImage <- create3D(dcmList)
@@ -77,7 +80,7 @@
 #' dSL <- abs(diff(imagePositionPatient[,3]))
 #' plot(dSL, ylim=range(range(dSL) * 1.5, 0, 10), xlab="Image", ylab="mm",
 #'      main="Difference in Slice Location")
-#' 
+#'
 #' \dontrun{
 #' ## pixelData = FALSE
 #' ## The DICOM image data are read from create3D()
@@ -97,10 +100,11 @@
 #' z <- trunc(dim(dcmImage)[3]/2)
 #' image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 #'       main=paste("Slice", z, "from Siemens MOSAIC"))
-#' 
+#'
 #' @export create3D
 create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
-                     mosaic=FALSE, mosaicXY=NULL, sequence=FALSE) {
+                     mosaic=FALSE, mosaicXY=NULL, sequence=FALSE,
+                     boffset=NULL) {
   if (pixelData) {
     if (is.null(dcm$hdr)) {
       stop("DICOM \"hdr\" information is not present.")
@@ -177,7 +181,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
         }
     } else {
         for (z in 1:Z) {
-            img[,,z] <- readDICOMFile(names(dcm$hdr)[z])$img
+            img[,,z] <- readDICOMFile(names(dcm$hdr)[z], boffset=boffset)$img
         }
     }
   }
