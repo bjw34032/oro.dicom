@@ -58,6 +58,7 @@
 #' \url{http://medical.nema.org}
 #' @keywords misc
 #' @export dicomTable
+#' @importFrom utils setTxtProgressBar txtProgressBar write.table
 dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
                        colSort=TRUE, verbose=FALSE, debug=FALSE) {
   myMerge <- function(df1, df2) {
