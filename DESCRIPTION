@@ -21,3 +21,4 @@ URL:
   http://rigorousanalytics.blogspot.com
 LazyData: true
 LazyDataCompression: gzip
+RoxygenNote: 6.0.1
