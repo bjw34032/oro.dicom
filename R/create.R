@@ -101,7 +101,7 @@
 #' image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 #'       main=paste("Slice", z, "from Siemens MOSAIC"))
 #'
-#' @export create3D
+#' @export
 create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, sequence=FALSE,
                      boffset=NULL) {
@@ -193,7 +193,7 @@ create3D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
   return(img)
 }
 #' @rdname create3D
-#' @export create4D
+#' @export
 create4D <- function(dcm, mode="integer", transpose=TRUE, pixelData=TRUE,
                      mosaic=FALSE, mosaicXY=NULL, nslices=NULL,
                      ntimes=NULL, instance=TRUE, sequence=FALSE) {

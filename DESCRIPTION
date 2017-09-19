@@ -1,5 +1,5 @@
 Package: oro.dicom
-Version: 0.5.2.1
+Version: 0.5.2.2
 Date: 2015-06-28
 Title: Rigorous - DICOM Input / Output
 Authors@R: c(person("Brandon", "Whitcher", role = c("aut", "cre"),

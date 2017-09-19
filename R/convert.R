@@ -86,7 +86,7 @@
 #' str2time("112308")
 #' 
 #' @keywords misc
-#' @export str2time
+#' @export
 str2time <- function(tt, format.out="%02i:%02i:%08.5f") {
   tt <- as.numeric(tt)
   hh <- as.integer(trunc(tt / 10000))
@@ -96,7 +96,7 @@ str2time <- function(tt, format.out="%02i:%02i:%08.5f") {
   list(txt = sprintf(format.out, hh, mm, ss), time = 3600*hh + 60*mm + ss)
 }
 #' @rdname str2time
-#' @export str2date
+#' @export
 str2date <- function(dd, format.in="%Y%m%d", format.out="%d %b %Y") {
   format(as.Date(dd, format.in), format.out)
 }
