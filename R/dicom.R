@@ -70,6 +70,7 @@
 #' }
 #' 
 #' @export readDICOM
+#' @importFrom utils setTxtProgressBar txtProgressBar write.table
 readDICOM <- function(path, recursive=TRUE, exclude=NULL, verbose=FALSE,
                       counter, ...) {
   if (length(list.files(path)) == 0 && file.exists(path)) {

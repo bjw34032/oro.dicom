@@ -26,9 +26,6 @@ modality <- extractHeader(x$hdr, "Modality", numeric=FALSE)
 matchHeader(modality, "mr") # case insensitive by default
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
@@ -36,4 +33,6 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{extractHeader}}
 }
-
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}

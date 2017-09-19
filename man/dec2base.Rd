@@ -37,4 +37,3 @@ x <- dec2base(23, 2)
 Brandon Whitcher \email{bwhitcher@gmail.com}
 }
 \keyword{misc}
-

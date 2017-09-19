@@ -61,9 +61,6 @@ orthographic(dcmNifti)
 }
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
@@ -74,5 +71,7 @@ NIfTI-1\cr \url{http://nifti.nimh.nih.gov/nifti-1}
 \code{\link[oro.nifti]{convert.datatype}},
 \code{\link{dicom2analyze}}, \code{\link[oro.nifti]{nifti}}
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{file}
-

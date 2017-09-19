@@ -36,9 +36,6 @@ seriesDescription <- extractHeader(x$hdr, "SeriesDescription", numeric=FALSE)
 IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
@@ -46,5 +43,7 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{readDICOM}}
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{misc}
-

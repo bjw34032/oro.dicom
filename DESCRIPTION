@@ -20,4 +20,5 @@ URL: http://rig.oro.us.com,
     http://rigorousanalytics.blogspot.com
 LazyData: true
 LazyDataCompression: gzip
-RoxygenNote: 5.0.1.9000
+Encoding: UTF-8
+RoxygenNote: 6.0.1.9000

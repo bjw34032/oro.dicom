@@ -34,9 +34,6 @@ IOP <- extractHeader(x$hdr, "ImageOrientationPatient", numeric=FALSE)
 IOPmat <- header2matrix(IOP, ncol=6)
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
@@ -44,5 +41,7 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{extractHeader}}, \code{\link{matrix}}
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{misc}
-

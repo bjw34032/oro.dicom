@@ -43,9 +43,6 @@ orthographic(dcmAnlz)
 }
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Analyze 7.5\cr \url{https://rportal.mayo.edu/bir/ANALYZE75.pdf}
 
@@ -56,5 +53,7 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \code{\link[oro.nifti]{convert.datatype.anlz}},
 \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{file}
-

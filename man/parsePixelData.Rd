@@ -42,9 +42,6 @@ variable \code{skipSequence} (default = \code{TRUE}).
 A resursive implementation of the code breaks the DICOM file into segments
 and calls itself to parse each segment.
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}\cr
@@ -53,5 +50,7 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{parseDICOMHeader}}, \code{\link{readDICOMFile}}.
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{file}
-

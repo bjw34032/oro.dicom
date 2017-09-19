@@ -31,9 +31,6 @@ An expression to be evaluated and HTML content.
 A function designed to \code{break} out of loops given information (or the
 lackthereof) contained in the DICOM header.
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
@@ -41,4 +38,6 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{extractHeader}}, \code{\link{matchHeader}}
 }
-
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}

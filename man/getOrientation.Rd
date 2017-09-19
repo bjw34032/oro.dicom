@@ -37,13 +37,12 @@ system; i.e., the vector cross product of a unit vector along the positive
 x-axis and a unit vector along the positive y-axis is equal to a unit vector
 along the positive z-axis.
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 \url{http://www.dclunie.com/medical-image-faq/html/part2.html}
 }
 \seealso{
 \code{\link{swapDimension}}
 }
-
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}

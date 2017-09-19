@@ -44,9 +44,6 @@ dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE
 }
 
 }
-\author{
-Brandon Whitcher \email{bwhitcher@gmail.com}
-}
 \references{
 Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
@@ -58,5 +55,7 @@ Digital Imaging and Communications in Medicine (DICOM)\cr
 \seealso{
 \code{\link{readDICOMFile}}
 }
+\author{
+Brandon Whitcher \email{bwhitcher@gmail.com}
+}
 \keyword{file}
-
