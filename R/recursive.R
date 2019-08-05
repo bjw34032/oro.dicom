@@ -99,6 +99,10 @@
 readDICOMFile <- function(fname, boffset=NULL, endian="little", flipud=TRUE,
                           skipSequence=FALSE, pixelData=TRUE,
                           warn=-1, debug=FALSE) {
+  
+  if (!file.exists(fname)) {
+    stop("DICOM file does not exist")
+  }
   ## Warnings?
   oldwarn <- getOption("warn")
   options(warn = warn)

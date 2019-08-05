@@ -4,9 +4,9 @@
 \alias{dicom2nifti}
 \title{Convert DICOM Header to NIfTI}
 \usage{
-dicom2nifti(dcm, datatype = 4, units = c("mm", "sec"), rescale = FALSE,
-  reslice = TRUE, qform = TRUE, sform = TRUE, DIM = 3,
-  descrip = "SeriesDescription", aux.file = NULL, ...)
+dicom2nifti(dcm, datatype = 4, units = c("mm", "sec"),
+  rescale = FALSE, reslice = TRUE, qform = TRUE, sform = TRUE,
+  DIM = 3, descrip = "SeriesDescription", aux.file = NULL, ...)
 }
 \arguments{
 \item{dcm}{DICOM object containing both header and image information.}

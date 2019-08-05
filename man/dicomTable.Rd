@@ -4,8 +4,8 @@
 \alias{dicomTable}
 \title{Construct Data Frame from DICOM Headers}
 \usage{
-dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-", colSort = TRUE,
-  verbose = FALSE, debug = FALSE)
+dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-",
+  colSort = TRUE, verbose = FALSE, debug = FALSE)
 }
 \arguments{
 \item{hdrs}{List object of DICOM headers.}
