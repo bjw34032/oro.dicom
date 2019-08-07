@@ -3,7 +3,6 @@
 \name{parsePixelData}
 \alias{parsePixelData}
 \alias{parseSpectroscopyData}
-\alias{parseSpectroscopyData}
 \title{Parse DICOM Pixel or Spectroscopy Data}
 \source{
 See references.

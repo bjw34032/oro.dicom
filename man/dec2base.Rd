@@ -3,7 +3,6 @@
 \name{dec2base}
 \alias{dec2base}
 \alias{dec2hex}
-\alias{dec2hex}
 \title{Convert Decimal to Base N Number in String}
 \usage{
 dec2base(n, base, len = 0)

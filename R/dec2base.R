@@ -52,7 +52,7 @@
 #' 
 #' x <- dec2base(23, 2)
 #' 
-#' @export dec2base
+#' @export
 dec2base <- function(n, base, len=0) {
   symbols <- c(as.character(0:9), LETTERS)
   max.len <- max(trunc(log(max(n, 1)) / log(base)) + 1, len)
@@ -64,7 +64,7 @@ dec2base <- function(n, base, len=0) {
   paste(symbols[digits + 1], collapse="")
 }
 #' @rdname dec2base
-#' @export dec2hex
+#' @export
 dec2hex <- function(n, len=0) {
   dec2base(n, 16, len)
 }

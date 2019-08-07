@@ -1,24 +1,24 @@
 Package: oro.dicom
-Version: 0.5.2
+Version: 0.5.2.2
 Date: 2015-06-28
 Title: Rigorous - DICOM Input / Output
 Authors@R: c(person("Brandon", "Whitcher", role = c("aut", "cre"),
 		     email = "bwhitcher@gmail.com"))
-Depends: 
-  R (>= 2.14.0)
-Suggests: 
-  testthat,
-  hwriter
-Imports: 
-  utils, 
-  oro.nifti (>= 0.4.0)
-Description: Data input/output functions for data that conform to the 
-  Digital Imaging and Communications in Medicine (DICOM) standard, part
-  of the Rigorous Analytics bundle.
+Depends:
+    R (>= 2.14.0)
+Suggests:
+    testthat,
+    hwriter
+Imports:
+    utils,
+    oro.nifti (>= 0.4.0)
+Description: Data input/output functions for data that conform to the
+    Digital Imaging and Communications in Medicine (DICOM) standard, part
+    of the Rigorous Analytics bundle.
 License: BSD_3_clause + file LICENSE
-URL: 
-  http://rig.oro.us.com, 
-  http://rigorousanalytics.blogspot.com
+URL: http://rig.oro.us.com,
+    http://rigorousanalytics.blogspot.com
 LazyData: true
 LazyDataCompression: gzip
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.1

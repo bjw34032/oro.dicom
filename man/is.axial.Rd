@@ -5,8 +5,6 @@
 \alias{is.axial}
 \alias{is.coronal}
 \alias{is.sagittal}
-\alias{is.coronal}
-\alias{is.sagittal}
 \title{Orthogonal Planes}
 \usage{
 is.axial(imageOrientationPatient, axial = c("L", "R", "A", "P"))

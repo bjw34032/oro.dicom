@@ -1,0 +1,781 @@
+\documentclass[article,nojss,shortnames]{jss}
+%\VignetteIndexEntry{Using oro.dicom}
+%\VignettePackage{DICOM}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath,rotating}
+\usepackage{thumbpdf}
+
+%% almost as usual
+\author{Brandon Whitcher\\Pfizer Worldwide R{\&}D \And 
+        Volker J. Schmid\\Ludwig-Maximilians Universit\"at M\"unchen \AND
+        Andrew Thornton\\Cardiff University}
+\title{Working with the {DICOM} Data Standard in \proglang{R}}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Brandon Whitcher, Volker J. Schmid, Andrew Thornton} %% comma-separated
+\Plaintitle{Working with the {DICOM} Data Standard in R} %% without formatting
+\Shorttitle{{DICOM} and R} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+
+The package \pkg{oro.dicom} facilitates the interaction with and
+manipulation of medical imaging data that conform to the DICOM
+standard.  DICOM data, from a single file or single directory or
+directory tree, may be uploaded into \proglang{R} using basic data
+structures: a data frame for the header information and a matrix for
+the image data.  A list structure is used to organize multiple DICOM
+files.  The conversion from DICOM to ANALYZE/NIfTI is straightforward
+using the capabilities of \pkg{oro.dicom} and \pkg{oro.nifti}.
+
+}
+\Keywords{export, imaging, import, medical, visualization}
+\Plainkeywords{export, imaging, import, medical, visualization} %% without formatting
+%% at least one keyword must be supplied
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{13}
+%% \Issue{9}
+%% \Month{September}
+%% \Year{2004}
+%% \Submitdate{2004-09-29}
+%% \Acceptdate{2004-09-29}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Brandon Whitcher\\
+  Pfizer Worldwide Research \& Development\\
+  610 Main Street\\
+  Cambridge, MA 02139, United States\\
+  E-mail: \email{bwhitcher@gmail.com}\\
+  URL: \url{http://www.imperial.ac.uk/people/b.whitcher}, \url{http://rigorousanalytics.blogspot.com}\\
+  
+  Volker J. Schmid\\
+  Bioimaging group\\
+  Department of Statistics\\
+  Ludwig-Maximilians-Universit\"at M\"unchen\\
+  80539 M\"unchen, Germany\\
+  E-mail: \email{volker.schmid@lmu.de}\\
+  URL: \url{http://volkerschmid.de}\\
+  
+  Andrew Thornton\\
+  Cardiff University School of Medicine\\
+  Heath Park\\
+  Cardiff CF14 4XN, United Kingdom\\
+  E-mail: \email{art27@cantab.net}\\
+  %% URL: \url{http://}\\
+}
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/1/31336-5053
+%% Fax: +43/1/31336-734
+
+%% for those who use Sweave please include the following line (with % symbols):
+%% need no \usepackage{Sweave.sty}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%% include your article here, just as usual
+%% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+\section{Introduction}
+
+Medical imaging is well established in both the clinical and research
+areas with numerous equipment manufacturers supplying a wide variety
+of modalities.  The DICOM (Digital Imaging and Communications in
+Medicine; \url{http://medical.nema.org}) standard was developed from
+earlier standards and released in 1993.  It is the data format for
+clinical imaging equipment and a variety of other devices whose
+complete specification is beyond the scope of this paper.  All major
+manufacturers of medical imaging equipment (e.g., GE, Siemens,
+Philips) have so-called DICOM conformance statements that explicitly
+state how their hardware implements DICOM.  The DICOM standard
+provides interoperability across hardware, but was not designed to
+facilitate efficient data manipulation and image processing.  Hence,
+additional data formats have been developed over the years to
+accommodate data analysis and image processing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[tbp]
+  \begin{center}
+    \begin{tabular}{p{0.525\textwidth}p{0.425\textwidth}}
+      \hline
+      \multicolumn{2}{c}{\pkg{oro.dicom}}\\
+      \hline
+      \code{create3D}, \code{create4D} & Create multi-dimensional arrays from DICOM header/image lists.\\
+      \code{dicom2analyze}, \code{dicom2nifti} & Convert DICOM objects to ANALYZE or NIfTI objects.\\
+      \code{readDICOMFile}, \code{readDICOM} & Read single or multiple DICOM files into \proglang{R}.\\
+      \code{dicomTable}, \code{writeHeader} & Construct data frame from DICOM header list and write to a CSV file.\\
+      \code{extractHeader}, \code{header2matrix}, \code{matchHeader} & Extract information from DICOM headers.\\
+      \code{str2date}, \code{str2time} & Convert DICOM date or time entry into an \proglang{R} object.\\
+      \hline
+      \end{tabular}
+  \end{center}
+  \caption{List of functions available in \pkg{oro.dicom}.}
+  \label{tab:functions}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+The material presented here provides users with a method of
+interacting with DICOM files in \proglang{R} \citep{R}.  Real-world
+data sets, that are publicly available, are used to illustrate the
+basic functionality of \pkg{oro.dicom} \citep{whi-sch-tho:JSS}.  It
+should be noted that the package focuses on functions for data
+input/output and visualization.  Images in the metadata-rich DICOM
+format may be converted to NIfTI semi-automatically using
+\pkg{oro.nifti} by utilizing as much information from the DICOM files
+as possible.  Basic visualization functions, similar to those commonly
+used in the medical imaging community, are provided for
+\texttt{nifti}.  Additionally, the \pkg{oro.nifti} package allows one
+to track every operation on a \texttt{nifti} object in an
+\proglang{XML}-based audit trail.
+
+The \pkg{oro.dicom} package should appeal not only to \proglang{R}
+package developers, but also to scientists and researchers who want to
+interrogate medical imaging data using the statistical capabilities of
+\proglang{R} without writing and validating their own basic data
+input/output functionality.  Table~\ref{tab:functions} lists the key
+functions for \pkg{oro.dicom} and groups them according to common
+functionality.
+
+\section[oro.dicom: DICOM data input/output in R]{\pkg{oro.dicom}: DICOM data input/output in \proglang{R}}
+
+The DICOM ``standard'' for data acquired using a clinical imaging
+device is very broad and complex.  Roughly speaking each
+DICOM-compliant file is a collection of fields organized into two
+two-byte sequences (group,element) that are represented as hexadecimal
+numbers and form a tag.  The (group,element) combination establishes
+what type of information is forthcoming in the file.  There is no
+fixed number of bytes for a DICOM header.  The final (group,element)
+tag should be the ``pixel data'' tag (7FE0,0010), such that all
+subsequent information is related to the image(s).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[tbp]
+\begin{verbatim}
+Data element with explicit VR of OB, OF, OW, SQ, UT or UN:
+
++-----------------------------------------------------------+
+|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 | 11 |
++----+----+----+----+----+----+----+----+----+----+----+----+
+|<Group-->|<Element>|<VR----->|<0x0000->|<Length----------->|<Value->
+
+Data element with explicit VR other than as shown above:
+
++---------------------------------------+
+|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |
++----+----+----+----+----+----+----+----+
+|<Group-->|<Element>|<VR----->|<Length->|<Value->
+
+Data element with implicit VR:
+
++---------------------------------------+
+|  0 |  1 |  2 |  3 |  4 |  5 |  6 |  7 |
++----+----+----+----+----+----+----+----+
+|<Group-->|<Element>|<Length----------->|<Value->
+\end{verbatim}
+\caption{Byte ordering for a single (group,element) tag in the DICOM
+  standard.  Explicit VRs store the VR as text characters in two
+  bytes.  More information is provided in Section 7, Part 3.5-2009 of
+  the DICOM standard (\url{http://medical.nema.org}).}
+\label{fig:group-element}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+All attributes in the DICOM standard require different data types for
+correct representation.  These are known as value representations
+(VRs) in DICOM, which may be encoded explicitly or implicitly.  There
+are 27 explicit VRs defined in the DICOM standard.  Detailed
+explanations of these data types are provided in the Section~6.2
+(part~5) of the DICOM standard (\url{http://medical.nema.org}).
+Internal functions have been written to manipulate each of the value
+representations and are beyond the scope of this article.  The
+functions \code{str2date} and \code{str2time} are useful for
+converting from the DICOM \code{Datetime} and \code{Time} value
+representations to \proglang{R} date and time objects, respectively.
+
+\subsection{The DICOM header}
+\label{sec:dicom-header}
+
+Accessing the information stored in a single DICOM file is provided
+using the \code{readDICOMFile} function.  The basic structure of a DICOM
+file is summarized in Figure~\ref{fig:group-element}, for both
+explicit and implicit value representations.  The first two bytes
+represent the \code{group} tag and the second two bytes represent the
+\code{element} tag, regardless of the type of VR.  The third set of
+two bytes contains the characters of the VR on which a decision about
+being implicit or explicit is made.  Explicit VRs of type \code{(OB,
+  OF, OW, SQ, UT, UN)} skip bytes six and seven (counting from zero),
+convert the next four bytes into an integer \code{length} and read
+\code{length} number of objects from the DICOM file.  All other
+explicit VRs follow a slightly different path where bytes six and
+seven (counting from zero) provide an integer \code{length} and all
+remaining bytes are read in as the \code{value}.  If the character
+string in bytes four and five do not correspond to a known VR
+(Figure~\ref{fig:group-element}), then the
+(\code{group},\code{element}) tag is declared to be implicit, the
+\code{length} is taken from bytes four through seven and all remaining
+bytes contribute to the \code{value}.
+
+The basic structure of the resulting object is a list with two
+elements: the DICOM header (\code{hdr}) and the DICOM image
+(\code{img}).  The header information is organized in a data frame
+with six columns and an unknown number of rows depending on the input
+parameters.
+
+\begin{Schunk}
+\begin{Sinput}
+R> fname <- system.file(file.path("dcm", "Abdo.dcm"), package="oro.dicom")
+R> abdo <- readDICOMFile(fname)
+R> names(abdo)
+\end{Sinput}
+\begin{Soutput}
+[1] "hdr" "img"
+\end{Soutput}
+\begin{Sinput}
+R> head(abdo$hdr)
+\end{Sinput}
+\begin{Soutput}
+  group element                       name code length
+1  0002    0000                GroupLength   UL      4
+2  0002    0001 FileMetaInformationVersion   OB      2
+3  0002    0002    MediaStorageSOPClassUID   UI     26
+4  0002    0003 MediaStorageSOPInstanceUID   UI     38
+5  0002    0010          TransferSyntaxUID   UI     20
+6  0002    0012     ImplementationClassUID   UI     16
+                                  value sequence
+1                                   166         
+2                                  \001         
+3             1.2.840.10008.5.1.4.1.1.4         
+4 1.3.46.670589.11.0.4.1996082307380007         
+5                   1.2.840.10008.1.2.1         
+6                      1.3.46.670589.17         
+\end{Soutput}
+\begin{Sinput}
+R> tail(abdo$hdr)
+\end{Sinput}
+\begin{Soutput}
+   group element                name code length     value sequence
+79  0028    0101          BitsStored   US      2        12         
+80  0028    0102             HighBit   US      2        11         
+81  0028    0103 PixelRepresentation   US      2         0         
+82  0028    1050        WindowCenter   DS      4       530         
+83  0028    1051         WindowWidth   DS      4      1052         
+84  7FE0    0010           PixelData   OB 131072 PixelData         
+\end{Soutput}
+\end{Schunk}
+
+The ordering of the rows is identical to the ordering in the original
+DICOM file.  Hence, the first five tags in the DICOM header of
+\code{Abdo.dcm} are: \code{GroupLength},
+\code{FileMetaInformationVersion}, \code{MediaStorageSOPClassUID},
+\code{MediaStorageSOPInstanceUID} and \code{TransferSyntaxUID}.  The
+last five tags in the DICOM header are also shown, with the very last
+tag indicating the start of the image data for that file and the
+number of bytes (131072) involved.  When additional tags in the DICOM
+header information are queried (via \code{extractHeader})
+
+\begin{Schunk}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "BitsAllocated")
+\end{Sinput}
+\begin{Soutput}
+[1] 16
+\end{Soutput}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "Rows")
+\end{Sinput}
+\begin{Soutput}
+[1] 256
+\end{Soutput}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "Columns")
+\end{Sinput}
+\begin{Soutput}
+[1] 256
+\end{Soutput}
+\end{Schunk}
+
+it is clear that the data are consistent with the header information
+in terms of the number of bytes ($256\times256\times(16/8)=131072$).
+
+The first five columns are taken directly from the DICOM header
+information (\code{group}, \code{element}, \code{code}, \code{length}
+and \code{value}) or inferred from that information (\code{name}).
+Note, the (\code{group},\code{element}) values are stored as character
+strings even though they are hexadecimal numbers.  All aspects of the
+data frame may be interrogated in \proglang{R} in order to extract
+relevant information from the DICOM header; e.g.,
+\code{"BitsAllocated"} as above.  The \code{sequence} column is used
+to keep track of tags that are embedded in a fixed-length
+\code{SequenceItems} tag or between a
+\code{SequenceItem}-\code{SequenceDelimitationItem} pair.
+
+When multiple DICOM files are located in a single directory, or spread
+across multiple directories, one may use the function
+\code{readDICOM} (applied here to the directory \code{hk-40}).
+
+\begin{Schunk}
+\begin{Sinput}
+R> fname <- system.file("hk-40", package="oro.dicom")
+R> data(dicom.dic)
+R> hk40 <- readDICOM(fname)
+\end{Sinput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+R> unlist(lapply(hk40, length))
+\end{Sinput}
+\begin{Soutput}
+hdr img 
+ 40  40 
+\end{Soutput}
+\end{Schunk}
+
+The object associated with \code{readDICOM} is now a nested set of
+lists, where the \code{hdr} element is a list of data frames and the
+\code{img} element is a list of matrices.  These two lists are
+associated in a pairwise sense; i.e., \code{hdr[[1]]} is the header
+information for the image \code{img[[1]]}.  Default parameters
+\code{recursive = TRUE} and \code{pixelData = TRUE} (which is actually
+an input parameter for \code{readDICOMFile}) allow the user to search down
+all possible sub-directories and upload the image in addition to the
+header information, respectively.  Also, by default all files are
+treated as DICOM files unless the \code{exclude} parameter is set to
+the unwanted file extension; e.g., \code{exclude = "xml"}.
+
+The list of DICOM header information across multiple files may be
+converted to a single data frame using \code{dicomTable}, and written
+to disc for further analysis; e.g., using \code{write.csv}.
+
+\begin{Schunk}
+\begin{Sinput}
+R> hk40.info <- dicomTable(hk40$hdr)
+R> write.csv(hk40.info, file="hk40_header.csv")
+R> sliceloc.col <- which(hk40$hdr[[1]]$name == "SliceLocation") 
+R> sliceLocation <- as.numeric(hk40.info[, sliceloc.col])
+R> head(sliceLocation)
+\end{Sinput}
+\begin{Soutput}
+[1] 160.9315 157.8315 154.7315 151.6315 148.5315 145.4315
+\end{Soutput}
+\begin{Sinput}
+R> head(diff(sliceLocation))
+\end{Sinput}
+\begin{Soutput}
+[1] -3.1 -3.1 -3.1 -3.1 -3.1 -3.1
+\end{Soutput}
+\begin{Sinput}
+R> unique(extractHeader(hk40$hdr, "SliceThickness"))
+\end{Sinput}
+\begin{Soutput}
+[1] 3.125
+\end{Soutput}
+\end{Schunk}
+
+The tag \code{SliceLocation} is extracted from the DICOM header
+information (at the first element in the list) and processed using the
+\code{diff} function, and should agree with the \code{SliceThickness}
+tag.  Single DICOM fields may also be extracted from the list of DICOM
+header information that contain attributes that are crucial for
+further image processing; e.g., extracting relevant MR sequences or
+acquisition timings.
+
+\begin{Schunk}
+\begin{Sinput}
+R> head(extractHeader(hk40$hdr, "SliceLocation"))
+\end{Sinput}
+\begin{Soutput}
+[1] 160.9315 157.8315 154.7315 151.6315 148.5315 145.4315
+\end{Soutput}
+\begin{Sinput}
+R> modality <- extractHeader(hk40$hdr, "Modality", numeric=FALSE)
+R> head(matchHeader(modality, "mr"))
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE TRUE TRUE TRUE TRUE TRUE
+\end{Soutput}
+\begin{Sinput}
+R> (seriesTime <- extractHeader(hk40$hdr, "SeriesTime", numeric=FALSE))
+\end{Sinput}
+\begin{Soutput}
+ [1] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+ [5] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+ [9] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[13] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[17] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[21] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[25] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[29] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[33] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+[37] "113751.966000" "113751.966000" "113751.966000" "113751.966000"
+\end{Soutput}
+\begin{Sinput}
+R> str2time(seriesTime)
+\end{Sinput}
+\begin{Soutput}
+$txt
+ [1] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+ [4] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+ [7] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[10] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[13] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[16] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[19] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[22] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[25] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[28] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[31] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[34] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[37] "11:37:51.96600" "11:37:51.96600" "11:37:51.96600"
+[40] "11:37:51.96600"
+
+$time
+ [1] 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97
+ [8] 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97
+[15] 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97
+[22] 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97
+[29] 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97 41871.97
+[36] 41871.97 41871.97 41871.97 41871.97 41871.97
+\end{Soutput}
+\end{Schunk}
+
+\subsection{The DICOM image}
+
+Most DICOM files involve a single slice from an acquisition -- the
+image.  A notable exception is the Siemens MOSAIC format (addressed in
+Section~\ref{sec:mosaic}).  The \pkg{oro.dicom} package assumes the
+image is stored as a flat file of two-byte integers without
+compression.  A variety of additional image formats are possible
+within the DICOM standard; e.g., RGB-colorized, JPEG, JPEG Lossless,
+JPEG 2000 and run-length encoding (RLE).  None of these formats are
+currently available in \pkg{oro.dicom}.  Going back to the
+\code{Abdo.dcm} example, the image is accessed via
+
+\begin{Schunk}
+\begin{Sinput}
+R> image(t(abdo$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="")
+\end{Sinput}
+\end{Schunk}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[tbp]
+  \centering
+  \includegraphics*[width=0.6\textwidth]{dicom_abdo.jpeg}
+  \caption{Coronal slice of the abdomen viewed in
+    \textit{neurological} convention (left is right and right is
+    left).}
+  \label{fig:dicom_abdo}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Figure~\ref{fig:dicom_abdo} displays a coronal slice through the
+abdomen from an MRI acquisition.  All information from the original
+data acquisition should accompany the image through the DICOM header,
+and this information is utilized as much as possible by
+\pkg{oro.dicom} to simplify the manipulation of DICOM data.  As
+previously shown, this information is easily available to the user by
+matching DICOM header fields with valid strings.  Note, the function
+\code{extractHeader} assumes the output should be coerced via
+\code{as.numeric} but this may be disabled setting the input parameter
+\code{numeric=FALSE}.
+
+\begin{Schunk}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "Manufacturer", numeric=FALSE)
+\end{Sinput}
+\begin{Soutput}
+[1] "Philips"
+\end{Soutput}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "RepetitionTime")
+\end{Sinput}
+\begin{Soutput}
+[1] 2000
+\end{Soutput}
+\begin{Sinput}
+R> extractHeader(abdo$hdr, "EchoTime")
+\end{Sinput}
+\begin{Soutput}
+[1] 100
+\end{Soutput}
+\end{Schunk}
+
+The basic DICOM file structure does not encourage the analysis of
+multi-dimensional imaging data (e.g., 3D or~4D) commonly acquired on
+clinical scanners.  Hence, the \pkg{oro.dicom} package has been
+developed to access DICOM files and facilitate their conversion to the
+NIfTI or ANALYZE formats in \proglang{R}.  The conversion process
+requires the \pkg{oro.nifti} package and will be outlined in
+Section~\ref{sec:dicom2nifti}.
+
+\subsubsection{Siemens MOSAIC format}
+\label{sec:mosaic}
+
+Siemens multi-slice EPI (echo planar imaging) data may be collected as
+a ``mosaic'' image; i.e., all slices acquired in a single TR
+(repetition time) frame of a dynamic run are stored in a single DICOM
+file.  The images are stored in an $M{\times}N$ array of images.  The
+function \code{create3D} will try to guess the number of images
+embedded within the single DICOM file using the
+\code{AcquisitionMatrix} field.  If this doesn't work, one may enter
+the $(M,N)$ doublet explicitly.
+
+\begin{Schunk}
+\begin{Sinput}
+R> fname <- system.file(file.path("dcm", "MR-sonata-3D-as-Tile.dcm"),
++                       package="oro.dicom")
+R> dcm <- readDICOMFile(fname)
+R> dim(dcm$img)
+\end{Sinput}
+\begin{Soutput}
+[1] 384 384
+\end{Soutput}
+\begin{Sinput}
+R> dcmImage <- create3D(dcm, mosaic=TRUE)
+R> dim(dcmImage)
+\end{Sinput}
+\begin{Soutput}
+[1] 64 64 36
+\end{Soutput}
+\end{Schunk}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[tbp]
+  \begin{center}
+    \begin{tabular}{cc}
+      \includegraphics*[width=0.45\textwidth]{dcmImage.jpeg} & 
+      \includegraphics*[width=0.45\textwidth]{dcmNifti.jpeg}\\
+      \textbf{(a)} & \textbf{(b)}
+    \end{tabular}
+  \end{center}
+  \caption{\textbf{(a)} Single MOSAIC image as read in from
+    \code{readDICOMFile}.  \textbf{(b)} Lightbox display of
+    three-dimensional array of images after processing via
+    \code{create3D}.}
+  \label{fig:mosaic}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Figure~\ref{fig:mosaic}a is taken from the raw DICOM file, in mosaic
+format, and displayed with the default margins in \proglang{R}.
+Figure~\ref{fig:mosaic}b is displayed after re-organizing the original
+DICOM file into a three-dimensional array (it was also converted to
+the NIfTI format for ease of visualization using the overloaded
+\code{image} function in \pkg{oro.nifti}).
+
+\section{Converting DICOM to NIfTI}
+\label{sec:dicom2nifti}
+
+The \pkg{oro.dicom} and \pkg{oro.nifti} packages have been
+specifically designed to use as much information as possible from the
+metadata-rich DICOM format and apply that information in the
+construction of the NIfTI data volume.  The function
+\code{dicom2nifti} converts a list of DICOM images into an
+\code{nifti} object, and likewise \code{dicom2analyze} converts such a
+list into an \code{anlz} object.
+
+Historically, data conversion from DICOM to NIfTI (or ANALYZE) has
+been provided outside of \proglang{R} using one of several standalone
+software packages:
+\begin{itemize}
+\item Xmedcon \citep{xmedcon}, 
+\item FreeSurfer (\url{http://surfer.nmr.mgh.harvard.edu}),
+\item MRIConvert (\url{http://lnci.oregon.edu/\~jolinda/MRIConvert}).
+\end{itemize}
+This is by no means an exhaustive list of software packages available
+for DICOM conversion.  In addition there are several other 
+\proglang{R} packages with the ability to process DICOM data
+\begin{itemize}
+\item \pkg{fmri} \citep{pol-tab:fmri},
+\item \pkg{tractor.base} \citep{tractor.base} (part of the tractor
+  project \url{http://code.google.com/p/tractor}).
+\end{itemize}
+
+\subsection{An example using a single-series data set}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[tbp]
+  \begin{center}
+    \begin{tabular}{c}
+    \includegraphics*[width=0.6\textwidth]{hk40n_image.jpeg}\\
+    \textbf{(a)}\\
+    \includegraphics*[width=0.6\textwidth]{hk40n_orthographic.jpeg}\\
+    \textbf{(b)}
+    \end{tabular}
+  \end{center}
+  \caption{\textbf{(a)} Lightbox display of three-dimensional array of
+    images.  \textbf{(b)} Orthographic display of the same
+    three-dimensional array (using the default settings for
+    \code{orthographic}).}
+  \label{fig:hk40n}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Using the 40~images from the \code{hk40} object (previously defined in
+Section~\ref{sec:dicom-header}) it is straightforward to perform
+DICOM-to-NIfTI conversion using only default settings and plot the
+results in either lightbox or orthographic displays.
+
+\begin{Schunk}
+\begin{Sinput}
+R> dput(formals(dicom2nifti))
+\end{Sinput}
+\begin{Soutput}
+pairlist(dcm = , datatype = 4, units = c("mm", "sec"), rescale = FALSE, reslice = TRUE, qform = TRUE, sform = TRUE, DIM = 3, descrip = "SeriesDescription", aux.file = NULL, ... = )
+\end{Soutput}
+\begin{Sinput}
+R> (hk40n <- dicom2nifti(hk40))
+\end{Sinput}
+\begin{Soutput}
+NIfTI-1 format
+  Type            : nifti
+  Data Type       : 4 (INT16)
+  Bits per Pixel  : 16
+  Slice Code      : 0 (Unknown)
+  Intent Code     : 0 (None)
+  Qform Code      : 2 (Aligned_Anat)
+  Sform Code      : 2 (Aligned_Anat)
+  Dimension       : 256 x 256 x 40
+  Pixel Dimension : 1.56 x 1.56 x 3.12
+  Voxel Units     : mm
+  Time Units      : sec
+\end{Soutput}
+\end{Schunk}
+\begin{Schunk}
+\begin{Sinput}
+R> image(hk40n)
+R> orthographic(hk40n, col.crosshairs="green")
+\end{Sinput}
+\end{Schunk}
+
+By default \code{dicom2nifti} takes all image data from the DICOM list
+and creates a 3D image.  Four-dimensional image volumes (three in
+space plus one in time) are also converted automatically by specifying
+\code{DIM=4}, where slice positions are taken from the
+\texttt{ImagePositionPatient} DICOM header field.  For example, using
+\code{DIM=4} on the \code{hk40} DICOM data,
+
+\begin{Schunk}
+\begin{Sinput}
+R> (hk40n <- dicom2nifti(hk40, DIM=4))
+\end{Sinput}
+\begin{Soutput}
+NIfTI-1 format
+  Type            : nifti
+  Data Type       : 4 (INT16)
+  Bits per Pixel  : 16
+  Slice Code      : 0 (Unknown)
+  Intent Code     : 0 (None)
+  Qform Code      : 2 (Aligned_Anat)
+  Sform Code      : 2 (Aligned_Anat)
+  Dimension       : 256 x 256 x 40
+  Pixel Dimension : 1.56 x 1.56 x 3.12
+  Voxel Units     : mm
+  Time Units      : sec
+\end{Soutput}
+\end{Schunk}
+
+will also produce a three-dimensional volume of images, since the
+\texttt{ImagePositionPatient} field is unique for each single slice of
+the volume.
+
+The functions \code{dicom2nifti} and \code{dicom2analyze} will fail
+when the dimensions of the individual images in the DICOM list do not
+match.  However, they do not check for different series numbers or
+patient~IDs so caution should be exercised when scripting automated
+work flows for DICOM-to-NIfTI conversion.  In cases where a DICOM file
+includes images from more than one series, the corresponding slices
+have to be chosen before conversion, using \code{dicomTable},
+\code{extractHeader}, and \code{matchHeader}.
+
+\subsection{An example using a multiple-volume data set}
+
+The National Biomedical Imaging Archive (NBIA;
+\url{http://cabig.nci.nih.gov/tools/NCIA}) is a searchable, national
+repository integrating \emph{in vivo} cancer images with clinical and
+genomic data.  The NBIA provides the scientific community with public
+access to DICOM images, image markup, annotations, and rich metadata.
+The multiple MRI sequences processed here were downloaded from the
+``RIDER~Neuro~MRI'' collection at
+\url{http://wiki.nci.nih.gov/display/CIP/RIDER}.  A small \code{for}
+loop has been written to operate on a subset of the DICOM directory
+structure, where the \code{SeriesInstanceUID} DICOM header field is
+assumed to be 100\% accurate in series differentiation.
+
+\begin{Schunk}
+\begin{Sinput}
+R> subject <- "1086100996"
+R> DCM <- readDICOM(subject, verbose=TRUE)
+R> seriesInstanceUID <- extractHeader(DCM$hdr, "SeriesInstanceUID", FALSE)
+R> for (uid in unique(seriesInstanceUID)) {
++    index <- which(unlist(lapply(DCM$hdr, function(x) uid %in% x$value)))
++    uid.dcm <- list(hdr=DCM$hdr[index], img=DCM$img[index])
++    patientsName <- extractHeader(uid.dcm$hdr, "PatientsName", FALSE)
++    studyDate <- extractHeader(uid.dcm$hdr, "StudyDate", FALSE)
++    seriesDescription <- extractHeader(uid.dcm$hdr, "SeriesDescription", FALSE)
++    fname <- paste(gsub("[^0-9A-Za-z]", "", 
++                        unique(c(patientsName, studyDate, seriesDescription))), 
++                   collapse="_")
++    cat("##  ", fname, fill=TRUE)
++    if (gsub("[^0-9A-Za-z]", "", unique(seriesDescription)) == "axtensor") {
++      D <- 4
++      reslice <- FALSE
++    } else {
++      D <- 3
++      reslice <- TRUE
++    }
++    uid.nifti <- dicom2nifti(uid.dcm, DIM=D, reslice=reslice,
++                             descrip=c("PatientID", "SeriesDescription"))
++    writeNIfTI(uid.nifti, fname)
++  }
+\end{Sinput}
+\end{Schunk}
+
+Note, the diffusion tensor imaging (DTI) data \code{axtensor} is
+assumed to be four dimensional and all other series (the multiple
+flip-angle acquisitions) are assumed to be three dimensional.  There
+is always a balance between what information should be pre-specified
+versus what can easily be extracted from the DICOM headers or images.
+
+\section{Conclusion}
+
+Medical image analysis depends on the efficient manipulation and
+conversion of DICOM data.  The \pkg{oro.dicom} package has been
+developed to provide the user with a set of functions that mask as
+many of the background details as possible while still providing
+flexible and robust performance.
+
+The future of medical image analysis in \proglang{R} will benefit from
+a unified view of the imaging data standards: DICOM, NIfTI, ANALYZE,
+AFNI, MINC, etc.  The existence of a single package for handling
+imaging data formats would facilitate interoperability between the
+ever increasing number of \proglang{R} packages devoted to medical
+image analysis.  We do not assume that the data structures in
+\pkg{oro.dicom} or \pkg{oro.nifti} are best-suited for this purpose
+and we welcome an open discussion around how best to provide this
+standardization to the end user.
+
+\section*{Acknowledgments}
+
+The authors would like to thank the National Biomedical Imaging
+Archive (NBIA), the National Cancer Institute (NCI), the National
+Institute of Health (NIH) and all institutions that have contributed
+medical imaging data to the public domain.  VS is supported by the
+German Research Council (DFG SCHM 2747/1-1).
+
+\bibliography{dicom}
+
+\end{document}
+

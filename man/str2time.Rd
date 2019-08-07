@@ -3,7 +3,6 @@
 \name{str2time}
 \alias{str2time}
 \alias{str2date}
-\alias{str2date}
 \title{Convert DICOM Time/Date Entry}
 \usage{
 str2time(tt, format.out = "\%02i:\%02i:\%08.5f")

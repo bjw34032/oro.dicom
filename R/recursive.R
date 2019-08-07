@@ -95,10 +95,14 @@
 #' graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 #'                 main="Spine1.dcm")
 #'
-#' @export readDICOMFile
+#' @export
 readDICOMFile <- function(fname, boffset=NULL, endian="little", flipud=TRUE,
                           skipSequence=FALSE, pixelData=TRUE,
                           warn=-1, debug=FALSE) {
+  
+  if (!file.exists(fname)) {
+    stop("DICOM file does not exist")
+  }
   ## Warnings?
   oldwarn <- getOption("warn")
   options(warn = warn)
@@ -161,7 +165,7 @@ readDICOMFile <- function(fname, boffset=NULL, endian="little", flipud=TRUE,
   iconv(rawToChar(str.raw[str.raw != as.raw(0)]), to=to)
 }
 #' @rdname readDICOMFile
-#' @export parseDICOMHeader
+#' @export
 parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
                              verbose=FALSE) {
   ##
@@ -366,7 +370,7 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
 #' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
 #' @source See references.
 #' @keywords file
-#' @export parsePixelData
+#' @export
 parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
   columns <- as.numeric(with(hdr, value[name == "Columns" & sequence == ""]))
@@ -423,7 +427,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   return(imageData)
 }
 #' @rdname parsePixelData
-#' @export parseSpectroscopyData
+#' @export
 parseSpectroscopyData <- function(rawString, hdr, endian="little") {
   numberOfFrames <- as.numeric(with(hdr, value[name == "NumberOfFrames" & sequence == ""]))
   rows <- as.numeric(with(hdr, value[name == "Rows" & sequence == ""]))
