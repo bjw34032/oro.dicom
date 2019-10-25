@@ -5,3 +5,4 @@
 ^vignettes/*\.bbl$
 ^vignettes/*\.blg$
 ^cran-comments\.md$
+^CRAN-RELEASE$
