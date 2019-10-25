@@ -39,7 +39,7 @@ fields contained in a single file.  Information contained in
 \dQuote{sequences} may be included/excluded according to the logical
 variable \code{skipSequence} (default = \code{TRUE}).
 
-A resursive implementation of the code breaks the DICOM file into segments
+A recursive implementation of the code breaks the DICOM file into segments
 and calls itself to parse each segment.
 }
 \references{

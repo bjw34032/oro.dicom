@@ -350,7 +350,7 @@ parseDICOMHeader <- function(rawString, sq.txt="", endian="little",
 #' \dQuote{sequences} may be included/excluded according to the logical
 #' variable \code{skipSequence} (default = \code{TRUE}).
 #'
-#' A resursive implementation of the code breaks the DICOM file into segments
+#' A recursive implementation of the code breaks the DICOM file into segments
 #' and calls itself to parse each segment.
 #'
 #' @aliases parsePixelData parseSpectroscopyData
