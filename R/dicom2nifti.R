@@ -51,7 +51,7 @@
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link[oro.nifti]{convert.datatype.anlz}},
 #' \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
-#' @references Analyze 7.5\cr \url{https://rportal.mayo.edu/bir/ANALYZE75.pdf}
+#' @references Analyze 7.5\cr \url{http://rportal.mayo.edu/bir/ANALYZE75.pdf}
 #'
 #' Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
