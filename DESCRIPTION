@@ -6,7 +6,7 @@ Authors@R:
     person(given = "Brandon",
            family = "Whitcher",
            role = c("aut", "cre"),
-           email = "muschellij2@gmail.com")
+           email = "bwhitcher@gmail.com")
 Depends:
     R (>= 2.14.0)
 Suggests:
