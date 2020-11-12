@@ -29,7 +29,7 @@ An expression to be evaluated and HTML content.
 }
 \description{
 A function designed to \code{break} out of loops given information (or the
-lackthereof) contained in the DICOM header.
+lack thereof) contained in the DICOM header.
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr

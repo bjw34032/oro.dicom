@@ -21,7 +21,7 @@ Type 'q()' to quit R.
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
 > library('oro.dicom')
-oro.dicom 0.5.2
+oro.dicom 0.5.3
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > cleanEx()
@@ -32,7 +32,7 @@ oro.dicom 0.5.2
 > 
 > ### Name: create3D
 > ### Title: Create Arrays from DICOM Headers/Images
-> ### Aliases: create3D create4D create4D
+> ### Aliases: create3D create4D
 > 
 > ### ** Examples
 > 
@@ -78,7 +78,7 @@ oro.dicom 0.5.2
 > 
 > ### Name: dec2base
 > ### Title: Convert Decimal to Base N Number in String
-> ### Aliases: dec2base dec2hex dec2hex
+> ### Aliases: dec2base dec2hex
 > ### Keywords: misc
 > 
 > ### ** Examples
@@ -193,8 +193,7 @@ oro.dicom 0.5.2
 > 
 > ### Name: orthogonal-planes
 > ### Title: Orthogonal Planes
-> ### Aliases: orthogonal-planes is.axial is.coronal is.sagittal is.coronal
-> ###   is.sagittal
+> ### Aliases: orthogonal-planes is.axial is.coronal is.sagittal
 > ### Keywords: misc
 > 
 > ### ** Examples
@@ -280,7 +279,7 @@ Warning in is.sagittal(iop) :
 > 
 > ### Name: readDICOMFile
 > ### Title: Read Single DICOM File
-> ### Aliases: readDICOMFile parseDICOMHeader parseDICOMHeader
+> ### Aliases: readDICOMFile parseDICOMHeader
 > ### Keywords: file
 > 
 > ### ** Examples
@@ -305,7 +304,7 @@ Warning in is.sagittal(iop) :
 > 
 > ### Name: str2time
 > ### Title: Convert DICOM Time/Date Entry
-> ### Aliases: str2time str2date str2date
+> ### Aliases: str2time str2date
 > ### Keywords: misc
 > 
 > ### ** Examples
