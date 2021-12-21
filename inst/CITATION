@@ -10,12 +10,11 @@ citEntry(entry = "Article",
   volume       = "44",
   number       = "6",
   pages        = "1--28",
-  url          = "http://www.jstatsoft.org/v44/i06/",
+  doi          = "10.18637/jss.v044.i06",
 
   textVersion  =
   paste("Brandon Whitcher, Volker J. Schmid, Andrew Thornton (2011).",
         "Working with the DICOM and NIfTI Data Standards in R.",
-        "Journal of Statistical Software, 44(6), 1-28.",
-        "URL http://www.jstatsoft.org/v44/i06/.")
+        "Journal of Statistical Software, 44(6), 1-28.")
 )
 
