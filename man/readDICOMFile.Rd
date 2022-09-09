@@ -5,12 +5,18 @@
 \alias{parseDICOMHeader}
 \title{Read Single DICOM File}
 \usage{
-readDICOMFile(fname, boffset = NULL, endian = "little",
-  flipud = TRUE, skipSequence = FALSE, pixelData = TRUE, warn = -1,
-  debug = FALSE)
+readDICOMFile(
+  fname,
+  boffset = NULL,
+  endian = "little",
+  flipud = TRUE,
+  skipSequence = FALSE,
+  pixelData = TRUE,
+  warn = -1,
+  debug = FALSE
+)
 
-parseDICOMHeader(rawString, sq.txt = "", endian = "little",
-  verbose = FALSE)
+parseDICOMHeader(rawString, sq.txt = "", endian = "little", verbose = FALSE)
 }
 \arguments{
 \item{fname}{is the file name of the DICOM image (with suffix).}
@@ -82,7 +88,7 @@ graphics::image(t(x$img), col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 \references{
 Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
-Software}, \bold{44} (6), 1--28.}
+Software}, \bold{44} (6), 1--28.
 
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}\cr

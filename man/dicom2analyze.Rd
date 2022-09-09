@@ -4,8 +4,15 @@
 \alias{dicom2analyze}
 \title{Convert DICOM Header to Analyze}
 \usage{
-dicom2analyze(dcm, datatype = 4, reslice = TRUE, DIM = 3,
-  descrip = "SeriesDescription", ...)
+dicom2analyze(
+  dcm,
+  datatype = 4,
+  reslice = TRUE,
+  DIM = 3,
+  descrip = "SeriesDescription",
+  digits = 2,
+  ...
+)
 }
 \arguments{
 \item{dcm}{DICOM object containing both header and image information.}
@@ -20,6 +27,8 @@ data volume should be resliced.}
 \item{DIM}{The dimension of the array to be used (default = 3D).}
 
 \item{descrip}{DICOM header field(s) to be included in the \code{descrip}}
+
+\item{digits}{Number of digits to use when rounding in \code{swapDimension}}
 
 \item{\dots}{Arguments to be passed to \code{anlz}}
 }

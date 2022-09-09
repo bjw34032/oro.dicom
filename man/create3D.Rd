@@ -5,13 +5,29 @@
 \alias{create4D}
 \title{Create Arrays from DICOM Headers/Images}
 \usage{
-create3D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-  mosaic = FALSE, mosaicXY = NULL, sequence = FALSE,
-  boffset = NULL)
+create3D(
+  dcm,
+  mode = "integer",
+  transpose = TRUE,
+  pixelData = TRUE,
+  mosaic = FALSE,
+  mosaicXY = NULL,
+  sequence = FALSE,
+  boffset = NULL
+)
 
-create4D(dcm, mode = "integer", transpose = TRUE, pixelData = TRUE,
-  mosaic = FALSE, mosaicXY = NULL, nslices = NULL, ntimes = NULL,
-  instance = TRUE, sequence = FALSE)
+create4D(
+  dcm,
+  mode = "integer",
+  transpose = TRUE,
+  pixelData = TRUE,
+  mosaic = FALSE,
+  mosaicXY = NULL,
+  nslices = NULL,
+  ntimes = NULL,
+  instance = TRUE,
+  sequence = FALSE
+)
 }
 \arguments{
 \item{dcm}{is the DICOM list structure (if \code{pixelData} = \code{TRUE})

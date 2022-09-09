@@ -4,8 +4,14 @@
 \alias{dicomTable}
 \title{Construct Data Frame from DICOM Headers}
 \usage{
-dicomTable(hdrs, stringsAsFactors = FALSE, collapse = "-",
-  colSort = TRUE, verbose = FALSE, debug = FALSE)
+dicomTable(
+  hdrs,
+  stringsAsFactors = FALSE,
+  collapse = "-",
+  colSort = TRUE,
+  verbose = FALSE,
+  debug = FALSE
+)
 }
 \arguments{
 \item{hdrs}{List object of DICOM headers.}
@@ -35,7 +41,7 @@ A data frame is created given the valid DICOM fields provided by the user.
 Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
 Software}, \bold{44} (6), 1--28.
-}
+
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}
 }

@@ -6,7 +6,9 @@
 \alias{dicom.dic.thompson}
 \alias{dicom.VR}
 \title{Lookup Tables for DICOM Header Information}
-\format{An object of class \code{data.frame} with 4188 rows and 5 columns.}
+\format{
+An object of class \code{data.frame} with 4188 rows and 5 columns.
+}
 \source{
 See references.
 }

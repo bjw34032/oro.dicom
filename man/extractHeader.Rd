@@ -4,8 +4,7 @@
 \alias{extractHeader}
 \title{Extract Single Field from DICOM Headers}
 \usage{
-extractHeader(hdrs, string, numeric = TRUE, names = FALSE,
-  inSequence = TRUE)
+extractHeader(hdrs, string, numeric = TRUE, names = FALSE, inSequence = TRUE)
 }
 \arguments{
 \item{hdrs}{List object of DICOM headers.}

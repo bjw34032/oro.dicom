@@ -4,8 +4,14 @@
 \alias{readDICOM}
 \title{Read All DICOM Files in a Directory}
 \usage{
-readDICOM(path, recursive = TRUE, exclude = NULL, verbose = FALSE,
-  counter, ...)
+readDICOM(
+  path,
+  recursive = TRUE,
+  exclude = NULL,
+  verbose = FALSE,
+  counter,
+  ...
+)
 }
 \arguments{
 \item{path}{Path name to the DICOM directory.}
@@ -47,7 +53,7 @@ dcmSphere <- readDICOM(system.file("sphere3", package="oro.dicom"), verbose=TRUE
 \references{
 Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
-Software}, \bold{44} (6), 1--28.}
+Software}, \bold{44} (6), 1--28.
 
 Digital Imaging and Communications in Medicine (DICOM)\cr
 \url{http://medical.nema.org}

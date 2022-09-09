@@ -127,9 +127,9 @@ swapDimension <- function(img, dcm, digits=2) {
   ## Ensure all rows of pixelSpacing are identical!
   sliceThickness <- extractHeader(dcm$hdr, "SliceThickness")
   pixdim <- c(unique(pixelSpacing), unique(sliceThickness))
-  ipp.signif <- signif(imageOrientationPatient, digits) # significant digits
-  first.row <- getOrientation(unique(signif(ipp.signif))[1:3])
-  first.col <- getOrientation(unique(signif(ipp.signif))[4:6])
+  iop.signif <- signif(imageOrientationPatient, digits) # significant digits
+  first.row <- getOrientation(unique(round(iop.signif, digits))[1:3])
+  first.col <- getOrientation(unique(round(iop.signif, digits))[4:6])
   if (nchar(first.row) > 1 || nchar(first.col) > 1) {
     warning("Oblique acquisition in ImageOrientationPatient (hope for the best).")
   }

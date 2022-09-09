@@ -46,6 +46,7 @@
 #' data volume should be resliced.
 #' @param DIM The dimension of the array to be used (default = 3D).
 #' @param descrip DICOM header field(s) to be included in the \code{descrip}
+#' @param digits Number of digits to use when rounding in \code{swapDimension}
 #' @param \dots Arguments to be passed to \code{anlz}
 #' @return An object of class \code{anlz}.
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
@@ -68,53 +69,53 @@
 #'
 #' @export dicom2analyze
 dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
-                          descrip="SeriesDescription", ...) {
-    switch(as.character(DIM),
-           "2" = {
-               dcmList <- list(hdr=list(dcm$hdr), img=list(dcm$img))
-               img <- create3D(dcmList, ...)
-               },
-           "3" = { img <- create3D(dcm, ...) },
-           "4" = { img <- create4D(dcm, ...) },
-           stop("Dimension parameter \"DIM\" incorrectly specified."))
-    if (DIM %in% 3:4 && reslice) {
-        img <- swapDimension(img, dcm)
-    }
-    aim <- oro.nifti::anlz(img, datatype=datatype)
-    if (is.null(attr(img,"pixdim"))) {
-        ## (x,y) pixel dimensions
-        aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(dcm$hdr, "PixelSpacing", FALSE)[1], " ")))
-        ## z pixel dimensions
-        aim@"pixdim"[4] <- ifelse(aim@"dim_"[1] > 2,
-                                  extractHeader(dcm$hdr, "SliceThickness")[1],
-                                  1)
+                          descrip="SeriesDescription", digits = 2, ...) {
+  switch(as.character(DIM),
+         "2" = {
+           dcmList <- list(hdr=list(dcm$hdr), img=list(dcm$img))
+           img <- create3D(dcmList, ...)
+         },
+         "3" = { img <- create3D(dcm, ...) },
+         "4" = { img <- create4D(dcm, ...) },
+         stop("Dimension parameter \"DIM\" incorrectly specified."))
+  if (DIM %in% 3:4 && reslice) {
+    img <- swapDimension(img, dcm, digits)
+  }
+  aim <- oro.nifti::anlz(img, datatype=datatype)
+  if (is.null(attr(img,"pixdim"))) {
+    ## (x,y) pixel dimensions
+    aim@"pixdim"[2:3] <- as.numeric(unlist(strsplit(extractHeader(dcm$hdr, "PixelSpacing", FALSE)[1], " ")))
+    ## z pixel dimensions
+    aim@"pixdim"[4] <- ifelse(aim@"dim_"[1] > 2,
+                              extractHeader(dcm$hdr, "SliceThickness")[1],
+                              1)
+  } else {
+    aim@"pixdim"[2:4] <- attr(img,"pixdim")
+  }
+  ## description
+  for (i in 1:length(descrip))
+    if (i == 1) {
+      descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
     } else {
-        aim@"pixdim"[2:4] <- attr(img,"pixdim")
+      descrip.string <- paste(descrip.string,
+                              extractHeader(dcm$hdr, descrip[i], FALSE)[1],
+                              sep="; ")
     }
-    ## description
-    for (i in 1:length(descrip))
-        if (i == 1) {
-            descrip.string <- extractHeader(dcm$hdr, descrip[i], FALSE)[1]
-        } else {
-            descrip.string <- paste(descrip.string,
-                                    extractHeader(dcm$hdr, descrip[i], FALSE)[1],
-                                    sep="; ")
-        }
-    if (nchar(descrip.string) > 80) {
-        warning("Description is greater than 80 characters and has been truncated")
-        aim@"descrip" <- substring(descrip.string, 1, 80)
-    } else {
-        aim@"descrip" <- descrip.string
-    }
-    ## scannum
-    aim@"scannum" <- unlist(substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10))
-    ## patient_id
-    aim@"patient_id" <- substring(extractHeader(dcm$hdr, "PatientID")[1], 1, 10)
-    ## exp_date
-    aim@"exp_date" <- substring(extractHeader(dcm$hdr, "StudyDate")[1], 1, 10)
-    ## exp_time
-    aim@"exp_time" <- substring(extractHeader(dcm$hdr, "StudyTime")[1], 1, 10)
-    return(aim)
+  if (nchar(descrip.string) > 80) {
+    warning("Description is greater than 80 characters and has been truncated")
+    aim@"descrip" <- substring(descrip.string, 1, 80)
+  } else {
+    aim@"descrip" <- descrip.string
+  }
+  ## scannum
+  aim@"scannum" <- unlist(substring(extractHeader(dcm$hdr, "StudyID")[1], 1, 10))
+  ## patient_id
+  aim@"patient_id" <- substring(extractHeader(dcm$hdr, "PatientID")[1], 1, 10)
+  ## exp_date
+  aim@"exp_date" <- substring(extractHeader(dcm$hdr, "StudyDate")[1], 1, 10)
+  ## exp_time
+  aim@"exp_time" <- substring(extractHeader(dcm$hdr, "StudyTime")[1], 1, 10)
+  return(aim)
 }
 
 #' Convert DICOM Header to NIfTI

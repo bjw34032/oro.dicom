@@ -55,7 +55,7 @@
 #' @seealso \code{\link{readDICOMFile}}
 #' @references Whitcher, B., V. J. Schmid and A. Thornton (2011).  Working with
 #' the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
-#' Software}, \bold{44} (6), 1--28.}
+#' Software}, \bold{44} (6), 1--28.
 #' 
 #' Digital Imaging and Communications in Medicine (DICOM)\cr
 #' \url{http://medical.nema.org}
