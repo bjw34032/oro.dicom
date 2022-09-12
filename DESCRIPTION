@@ -19,8 +19,7 @@ Description: Data input/output functions for data that conform to the
     Digital Imaging and Communications in Medicine (DICOM) standard, part
     of the Rigorous Analytics bundle.
 License: BSD_3_clause + file LICENSE
-URL: https://rig.oro.us.com,
-    https://rigorousanalytics.blogspot.com
+URL: https://rigorousanalytics.blogspot.com
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 7.2.0

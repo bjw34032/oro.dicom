@@ -15,6 +15,7 @@ dicom2nifti(
   DIM = 3,
   descrip = "SeriesDescription",
   aux.file = NULL,
+  digits = 2,
   ...
 )
 }
@@ -47,6 +48,8 @@ slot for the \code{nifti} class object.}
 \item{aux.file}{Character string to be included in the \code{aux_file} slot
 for the \code{nifti} class object.}
 
+\item{digits}{Number of digits to use when rounding in \code{swapDimension}}
+
 \item{\dots}{Arguments to be passed to \code{nifti}}
 }
 \value{
@@ -73,7 +76,7 @@ orthographic(dcmNifti)
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}
+\url{https://www.dicomstandard.org}
 
 NIfTI-1\cr \url{http://nifti.nimh.nih.gov/nifti-1}
 }

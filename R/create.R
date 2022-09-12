@@ -68,7 +68,7 @@
 #' @seealso \code{\link{array}}, \code{\link{readDICOM}},
 #' \code{\link{storage.mode}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @examples
 #'
 #' load(system.file("hk-40/hk40.RData", package="oro.dicom"))

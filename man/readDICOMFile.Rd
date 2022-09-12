@@ -91,8 +91,8 @@ the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
 Software}, \bold{44} (6), 1--28.
 
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}\cr
-\url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
+\url{https://www.dicomstandard.org}\cr
+\url{https://en.wikipedia.org/wiki/DICOM}
 }
 \seealso{
 \code{\link{readDICOM}}

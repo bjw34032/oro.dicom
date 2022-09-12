@@ -55,7 +55,7 @@
 #' Software}, \bold{44} (6), 1--28.
 #' 
 #' Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @keywords misc
 #' @export dicomTable
 #' @importFrom utils setTxtProgressBar txtProgressBar write.table
@@ -150,7 +150,7 @@ dicomTable <- function(hdrs, stringsAsFactors=FALSE, collapse="-",
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{readDICOM}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @keywords misc
 #' @examples
 #' 
@@ -208,7 +208,7 @@ extractHeader <- function(hdrs, string, numeric=TRUE, names=FALSE,
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}, \code{\link{matrix}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @keywords misc
 #' @examples
 #' 
@@ -238,7 +238,7 @@ header2matrix <- function(hdr, ncol, sep=" ", byrow=TRUE) {
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @examples
 #' 
 #' x <- readDICOMFile(system.file("dcm/Abdo.dcm", package="oro.dicom"))
@@ -263,7 +263,7 @@ matchHeader <- function(hdr, string) {
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{write.table}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @keywords file
 #' @export writeHeader
 writeHeader <- function(dtable, filename, ...) {
@@ -289,7 +289,7 @@ writeHeader <- function(dtable, filename, ...) {
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{extractHeader}}, \code{\link{matchHeader}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @export nextHeader
 nextHeader <- function(dcm, string, reference, str.warning,
                        htmlfile=NULL, heading=3, numeric=FALSE) {

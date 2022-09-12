@@ -52,10 +52,10 @@
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link[oro.nifti]{convert.datatype.anlz}},
 #' \code{\link{dicom2nifti}}, \code{\link[oro.nifti]{anlz}}
-#' @references Analyze 7.5\cr \url{http://rportal.mayo.edu/bir/ANALYZE75.pdf}
+#' @references Analyze 7.5\cr \url{https//eeg.sourceforge.net//ANALYZE75.pdf}
 #'
 #' Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #' @keywords file
 #' @examples
 #'
@@ -142,13 +142,14 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
 #' slot for the \code{nifti} class object.
 #' @param aux.file Character string to be included in the \code{aux_file} slot
 #' for the \code{nifti} class object.
+#' @param digits Number of digits to use when rounding in \code{swapDimension}
 #' @param \dots Arguments to be passed to \code{nifti}
 #' @return An object of class \code{nifti}.
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link[oro.nifti]{convert.datatype}},
 #' \code{\link{dicom2analyze}}, \code{\link[oro.nifti]{nifti}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}
+#' \url{https://www.dicomstandard.org}
 #'
 #' NIfTI-1\cr \url{http://nifti.nimh.nih.gov/nifti-1}
 #' @keywords file
@@ -167,7 +168,8 @@ dicom2analyze <- function(dcm, datatype=4, reslice=TRUE, DIM=3,
 #' @export dicom2nifti
 dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
                         reslice=TRUE, qform=TRUE, sform=TRUE, DIM=3,
-                        descrip="SeriesDescription", aux.file=NULL, ...) {
+                        descrip="SeriesDescription", aux.file=NULL, 
+                        digits = 2, ...) {
   switch(as.character(DIM),
          "2" = {
            dcmList <- list(hdr=list(dcm$hdr), img=list(dcm$img))
@@ -177,7 +179,7 @@ dicom2nifti <- function(dcm, datatype=4, units=c("mm","sec"), rescale=FALSE,
          "4" = { img <- create4D(dcm, ...) },
          stop("Dimension parameter \"DIM\" incorrectly specified."))
   if (DIM %in% 3:4 && reslice) {
-    img <- swapDimension(img, dcm)
+    img <- swapDimension(img, dcm, digits)
   }
   nim <- oro.nifti::nifti(img, datatype=datatype)
   if (is.null(attr(img, "pixdim"))) {

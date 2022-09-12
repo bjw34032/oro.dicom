@@ -1,7 +1,7 @@
 
-R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
-Copyright (C) 2016 The R Foundation for Statistical Computing
-Platform: x86_64-apple-darwin13.4.0 (64-bit)
+R version 4.1.3 (2022-03-10) -- "One Push-Up"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -20,16 +20,30 @@ Type 'q()' to quit R.
 > pkgname <- "oro.dicom"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
+> base::assign(".ExTimings", "oro.dicom-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
 > library('oro.dicom')
-oro.dicom 0.5.3
+oro.dicom 0.5.4
 > 
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
 > cleanEx()
 > nameEx("create3D")
 > ### * create3D
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: create3D
 > ### Title: Create Arrays from DICOM Headers/Images
 > ### Aliases: create3D create4D
@@ -70,12 +84,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("create3D", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("dec2base")
 > ### * dec2base
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: dec2base
 > ### Title: Convert Decimal to Base N Number in String
 > ### Aliases: dec2base dec2hex
@@ -89,12 +106,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("dec2base", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("dicom2analyze")
 > ### * dicom2analyze
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: dicom2analyze
 > ### Title: Convert DICOM Header to Analyze
 > ### Aliases: dicom2analyze
@@ -114,12 +134,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("dicom2analyze", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("dicom2nifti")
 > ### * dicom2nifti
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: dicom2nifti
 > ### Title: Convert DICOM Header to NIfTI
 > ### Aliases: dicom2nifti
@@ -141,12 +164,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("dicom2nifti", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("extractHeader")
 > ### * extractHeader
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: extractHeader
 > ### Title: Extract Single Field from DICOM Headers
 > ### Aliases: extractHeader
@@ -162,12 +188,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("extractHeader", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("header2matrix")
 > ### * header2matrix
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: header2matrix
 > ### Title: Converts DICOM Header Field to a Matrix
 > ### Aliases: header2matrix
@@ -185,12 +214,15 @@ oro.dicom 0.5.3
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("header2matrix", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("is.axial")
 > ### * is.axial
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: orthogonal-planes
 > ### Title: Orthogonal Planes
 > ### Aliases: orthogonal-planes is.axial is.coronal is.sagittal
@@ -226,12 +258,15 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("is.axial", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("matchHeader")
 > ### * matchHeader
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: matchHeader
 > ### Title: Match String to DICOM Header Field
 > ### Aliases: matchHeader
@@ -247,12 +282,15 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("matchHeader", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("readDICOM")
 > ### * readDICOM
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: readDICOM
 > ### Title: Read All DICOM Files in a Directory
 > ### Aliases: readDICOM
@@ -271,12 +309,15 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("readDICOM", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("readDICOMFile")
 > ### * readDICOMFile
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: readDICOMFile
 > ### Title: Read Single DICOM File
 > ### Aliases: readDICOMFile parseDICOMHeader
@@ -296,12 +337,15 @@ Warning in is.sagittal(iop) :
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("readDICOMFile", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > cleanEx()
 > nameEx("str2time")
 > ### * str2time
 > 
 > flush(stderr()); flush(stdout())
 > 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: str2time
 > ### Title: Convert DICOM Time/Date Entry
 > ### Aliases: str2time str2date
@@ -323,11 +367,14 @@ $time
 > 
 > 
 > 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("str2time", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
 > ### * <FOOTER>
 > ###
+> cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.115 0.085 1.225 0 0 
+Time elapsed:  1.95 0.026 2.114 0 0 
 > grDevices::dev.off()
 null device 
           1 

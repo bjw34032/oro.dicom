@@ -36,7 +36,7 @@ IOPmat <- header2matrix(IOP, ncol=6)
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}
+\url{https://www.dicomstandard.org}
 }
 \seealso{
 \code{\link{extractHeader}}, \code{\link{matrix}}

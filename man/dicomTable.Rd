@@ -43,7 +43,7 @@ the DICOM and NIfTI Data Standards in R, \emph{Journal of Statistical
 Software}, \bold{44} (6), 1--28.
 
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}
+\url{https://www.dicomstandard.org}
 }
 \author{
 Brandon Whitcher \email{bwhitcher@gmail.com}

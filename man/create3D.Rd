@@ -107,7 +107,7 @@ image(dcmImage[,,z], col=grey(0:64/64), axes=FALSE, xlab="", ylab="",
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}
+\url{https://www.dicomstandard.org}
 }
 \seealso{
 \code{\link{array}}, \code{\link{readDICOM}},

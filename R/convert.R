@@ -77,8 +77,8 @@
 #' @author Brandon Whitcher \email{bwhitcher@@gmail.com}
 #' @seealso \code{\link{readDICOM}}
 #' @references Digital Imaging and Communications in Medicine (DICOM)\cr
-#' \url{http://medical.nema.org}\cr
-#' \url{http://en.wikipedia.org/wiki/Digital_Imaging_and_Communications_in_Medicine}
+#' \url{https://www.dicomstandard.org}\cr
+#' \url{https://en.wikipedia.org/wiki/DICOM}
 #' 
 #' @examples 
 #' 

@@ -24,7 +24,7 @@ This function is a straightforward wrapper to \code{write.table}.
 }
 \references{
 Digital Imaging and Communications in Medicine (DICOM)\cr
-\url{http://medical.nema.org}
+\url{https://www.dicomstandard.org}
 }
 \seealso{
 \code{\link{write.table}}
