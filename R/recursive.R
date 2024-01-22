@@ -377,7 +377,7 @@ parsePixelData <- function(rawString, hdr, endian="little", flipupdown=TRUE) {
   bytes <- as.numeric(with(hdr, value[name == "BitsAllocated" & sequence == ""])) / 8
   length <- as.numeric(with(hdr, length[name == "PixelData" & sequence == ""]))
   if (length <= 0) {
-    transferSyntaxUID <- with(hdr, length[name == "TransferSyntaxuID" & sequence == ""])
+    transferSyntaxUID <- with(hdr, length[name == "TransferSyntaxUID" & sequence == ""])
     if (grepl("1.2.840.10008.1.2.4", transferSyntaxUID)) {
       stop("JPEG/MPEG compression is not currently supported.")
     }

@@ -1,6 +1,5 @@
 Package: oro.dicom
-Version: 0.5.4
-Date: 2022-09-09
+Version: 0.5.5
 Title: Rigorous - DICOM Input / Output
 Authors@R: 
     person(given = "Brandon",
@@ -22,4 +21,4 @@ License: BSD_3_clause + file LICENSE
 URL: https://rigorousanalytics.blogspot.com
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
